@@ -43,7 +43,7 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, onOpenN
               </div>
               <div className="flex flex-col">
                 <span className="text-base font-extrabold tracking-tight text-white flex items-center gap-1.5">
-                  PULSE <span className="text-[10px] font-mono font-medium px-1.5 py-0.5 rounded bg-purple-950/60 text-purple-300 border border-purple-800/60 tracking-wider">TRAINING OS</span>
+                  WORKOUTS <span className="text-[10px] font-mono font-medium px-1.5 py-0.5 rounded bg-purple-950/60 text-purple-300 border border-purple-800/60 tracking-wider">PRO OS</span>
                 </span>
                 <span className="text-[11px] text-zinc-500 font-medium">Head Coach: Yassen Ahmed</span>
               </div>

@@ -14,8 +14,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "PULSE | Professional Coach & Trainee Workout Platform",
-  description: "High-performance training portal for coaches and dedicated athletes. Program assignment, live workout execution, and volume metrics.",
+  title: "WORKOUTS | Professional Coach & Trainee Training Platform",
+  description: "High-performance training portal for Coach Yassen Ahmed and athletes. Program assignment, live workout execution, and volume metrics.",
 };
 
 export default function RootLayout({

@@ -34,7 +34,9 @@ interface GymContextType {
   deletePlan: (planId: string) => Promise<void>;
   saveWorkoutLog: (log: WorkoutLog) => Promise<void>;
   createTrainee: (name: string, email: string, goal: User['goal'], weightKg: number, heightCm: number) => Promise<User>;
+  updateUserProfile: (userId: string, updates: Partial<User>) => Promise<void>;
   updateUserNotes: (userId: string, notes: string) => Promise<void>;
+  deleteUser: (userId: string) => Promise<void>;
   addExercise: (exercise: Omit<Exercise, 'id'>) => Promise<Exercise>;
   deleteExercise: (exerciseId: string) => Promise<void>;
   getPlanForUser: (userId: string) => WorkoutPlan | undefined;
@@ -310,6 +312,40 @@ export function GymProvider({ children }: { children: React.ReactNode }) {
     return newUser;
   };
 
+  const updateUserProfile = async (userId: string, updates: Partial<User>) => {
+    setUsers((prev) =>
+      prev.map((u) => (u.id === userId ? { ...u, ...updates } : u))
+    );
+
+    if (isSupabaseConfigured && supabase) {
+      try {
+        const user = users.find((u) => u.id === userId);
+        if (user) {
+          const updatedUser = { ...user, ...updates };
+          const dbPayload = mapUserToDb(updatedUser);
+          const { error } = await supabase.from('users').upsert([dbPayload]);
+          if (error) {
+            console.error('Supabase updateUserProfile error:', error.message, error);
+          }
+        }
+      } catch (err) {
+        console.error('Supabase updateUserProfile catch error:', err);
+      }
+    }
+  };
+
+  const deleteUser = async (userId: string) => {
+    setUsers((prev) => prev.filter((u) => u.id !== userId));
+
+    if (isSupabaseConfigured && supabase) {
+      try {
+        await supabase.from('users').delete().eq('id', userId);
+      } catch (err) {
+        console.error('Supabase delete user error:', err);
+      }
+    }
+  };
+
   const updateUserNotes = async (userId: string, notes: string) => {
     setUsers((prev) => prev.map((u) => (u.id === userId ? { ...u, notes } : u)));
 
@@ -387,7 +423,9 @@ export function GymProvider({ children }: { children: React.ReactNode }) {
         deletePlan,
         saveWorkoutLog,
         createTrainee,
+        updateUserProfile,
         updateUserNotes,
+        deleteUser,
         addExercise,
         deleteExercise,
         getPlanForUser,

@@ -18,8 +18,10 @@ import {
   LogIn,
   Copy,
   Check,
-  Link as LinkIcon
+  Link as LinkIcon,
+  Edit3
 } from 'lucide-react';
+import { EditTraineeModal } from '@/components/modals/EditTraineeModal';
 
 interface ClientsListProps {
   onOpenAssignModal: (user: User) => void;
@@ -40,6 +42,7 @@ export const ClientsList: React.FC<ClientsListProps> = ({
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<'all' | 'active' | 'pending'>('all');
   const [copiedId, setCopiedId] = useState<string | null>(null);
+  const [editingTrainee, setEditingTrainee] = useState<User | null>(null);
 
   const trainees = users.filter((u) => u.role === 'trainee');
 
@@ -218,17 +221,28 @@ export const ClientsList: React.FC<ClientsListProps> = ({
                     </div>
                   </div>
 
-                  {assignedPlan ? (
-                    <span className="text-[10px] font-mono font-semibold px-2 py-0.5 rounded bg-emerald-950/60 text-emerald-400 border border-emerald-800/60 flex items-center gap-1">
-                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
-                      ACTIVE
-                    </span>
-                  ) : (
-                    <span className="text-[10px] font-mono font-semibold px-2 py-0.5 rounded bg-amber-950/60 text-amber-400 border border-amber-800/60 flex items-center gap-1">
-                      <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-ping" />
-                      NEEDS PLAN
-                    </span>
-                  )}
+                  <div className="flex items-center gap-1.5">
+                    <button
+                      type="button"
+                      onClick={() => setEditingTrainee(trainee)}
+                      className="p-1 rounded-md text-zinc-500 hover:text-purple-300 hover:bg-zinc-800 transition-colors"
+                      title="Edit athlete profile (email, weight, height, goal)"
+                    >
+                      <Edit3 className="w-3.5 h-3.5" />
+                    </button>
+
+                    {assignedPlan ? (
+                      <span className="text-[10px] font-mono font-semibold px-2 py-0.5 rounded bg-emerald-950/60 text-emerald-400 border border-emerald-800/60 flex items-center gap-1">
+                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+                        ACTIVE
+                      </span>
+                    ) : (
+                      <span className="text-[10px] font-mono font-semibold px-2 py-0.5 rounded bg-amber-950/60 text-amber-400 border border-amber-800/60 flex items-center gap-1">
+                        <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-ping" />
+                        NEEDS PLAN
+                      </span>
+                    )}
+                  </div>
                 </div>
 
                 {/* Body Metrics & Goal Badges */}
@@ -308,13 +322,14 @@ export const ClientsList: React.FC<ClientsListProps> = ({
                   </button>
                 </div>
 
-                {/* Inspect Profile & Copy Link & Switch */}
+                {/* Edit Profile & Copy Link & Switch */}
                 <div className="grid grid-cols-3 gap-1.5">
                   <button
-                    onClick={() => onSelectTraineeDetails(trainee)}
-                    className="py-1.5 text-[11px] font-semibold text-zinc-400 hover:text-white bg-zinc-900/50 hover:bg-zinc-800 rounded-md border border-zinc-800/70 transition-colors text-center truncate"
+                    onClick={() => setEditingTrainee(trainee)}
+                    className="py-1.5 text-[11px] font-semibold text-zinc-300 hover:text-white bg-zinc-900/60 hover:bg-zinc-800 rounded-md border border-zinc-800/80 transition-colors flex items-center justify-center gap-1 truncate"
                   >
-                    Profile
+                    <Edit3 className="w-3 h-3 text-purple-400" />
+                    <span>Edit</span>
                   </button>
 
                   <button
@@ -366,11 +381,20 @@ export const ClientsList: React.FC<ClientsListProps> = ({
               className="inline-flex items-center gap-2 px-6 py-3 text-xs font-bold text-white bg-purple-600 hover:bg-purple-500 rounded-xl transition-all shadow-[0_0_20px_rgba(168,85,247,0.35)]"
             >
               <Plus className="w-4 h-4 stroke-[2.5]" />
-              <span>Register Trainee Now</span>
+              <span>Register Athlete</span>
             </button>
           </div>
         )}
       </div>
+
+      {/* Edit Athlete Profile Modal */}
+      {editingTrainee && (
+        <EditTraineeModal
+          isOpen={Boolean(editingTrainee)}
+          onClose={() => setEditingTrainee(null)}
+          user={editingTrainee}
+        />
+      )}
     </div>
   );
 };

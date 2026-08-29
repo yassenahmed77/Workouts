@@ -4,7 +4,8 @@ export type UserGoal =
   | 'Hypertrophy / Muscle Gain' 
   | 'Strength & Power' 
   | 'Fat Loss & Conditioning' 
-  | 'Athletic Performance';
+  | 'Athletic Performance'
+  | 'Rehabilitation & Mobility';
 
 export interface User {
   id: string;

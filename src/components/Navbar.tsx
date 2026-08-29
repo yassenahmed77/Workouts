@@ -271,54 +271,104 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, onOpenN
         </div>
       </div>
 
-      {/* Mobile nav strip */}
-      <div className="md:hidden border-t border-zinc-900 px-4 py-2 flex items-center gap-2 overflow-x-auto">
+      {/* Mobile Top Nav Strip */}
+      <div className="md:hidden border-t border-zinc-900/80 px-3 py-1.5 flex items-center justify-between gap-1 overflow-x-auto scrollbar-none bg-[#09090d]">
+        <span className="text-[10px] font-mono text-zinc-500 uppercase tracking-wider pl-1">
+          {isCoach ? 'Admin Portal' : 'Athlete Portal'}
+        </span>
+        <span className="text-[10px] font-mono font-bold text-purple-400">
+          {currentUser.name}
+        </span>
+      </div>
+
+      {/* Mobile Bottom Fixed App Navigation Bar */}
+      <div className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-[#0c0c11]/95 backdrop-blur-lg border-t border-[#22222e] px-2 py-1.5 flex items-center justify-around shadow-[0_-5px_25px_rgba(0,0,0,0.6)]">
         {isCoach ? (
           <>
             <button
               onClick={() => setActiveTab('clients')}
-              className={`px-3 py-1 text-xs rounded font-medium whitespace-nowrap ${activeTab === 'clients' ? 'bg-purple-600 text-white font-semibold' : 'text-zinc-400'}`}
+              className={`flex flex-col items-center justify-center py-1 px-3 rounded-xl transition-all ${
+                activeTab === 'clients'
+                  ? 'text-purple-400 bg-purple-950/50 scale-105'
+                  : 'text-zinc-400 hover:text-zinc-200'
+              }`}
             >
-              Trainees
+              <Users className="w-5 h-5 mb-0.5" />
+              <span className="text-[10px] font-semibold">Trainees</span>
             </button>
+
             <button
               onClick={() => setActiveTab('plans')}
-              className={`px-3 py-1 text-xs rounded font-medium whitespace-nowrap ${activeTab === 'plans' ? 'bg-purple-600 text-white font-semibold' : 'text-zinc-400'}`}
+              className={`flex flex-col items-center justify-center py-1 px-3 rounded-xl transition-all ${
+                activeTab === 'plans'
+                  ? 'text-purple-400 bg-purple-950/50 scale-105'
+                  : 'text-zinc-400 hover:text-zinc-200'
+              }`}
             >
-              Workout Plans
+              <ClipboardList className="w-5 h-5 mb-0.5" />
+              <span className="text-[10px] font-semibold">Splits</span>
             </button>
+
             <button
               onClick={() => setActiveTab('exercises')}
-              className={`px-3 py-1 text-xs rounded font-medium whitespace-nowrap ${activeTab === 'exercises' ? 'bg-purple-600 text-white font-semibold' : 'text-zinc-400'}`}
+              className={`flex flex-col items-center justify-center py-1 px-3 rounded-xl transition-all ${
+                activeTab === 'exercises'
+                  ? 'text-purple-400 bg-purple-950/50 scale-105'
+                  : 'text-zinc-400 hover:text-zinc-200'
+              }`}
             >
-              Exercise Library
+              <BookOpen className="w-5 h-5 mb-0.5" />
+              <span className="text-[10px] font-semibold">Database</span>
             </button>
           </>
         ) : (
           <>
             <button
               onClick={() => setActiveTab('today')}
-              className={`px-3 py-1 text-xs rounded font-medium whitespace-nowrap ${activeTab === 'today' ? 'bg-purple-600 text-white font-semibold' : 'text-zinc-400'}`}
+              className={`flex flex-col items-center justify-center py-1 px-2.5 rounded-xl transition-all ${
+                activeTab === 'today'
+                  ? 'text-purple-400 bg-purple-950/50 scale-105'
+                  : 'text-zinc-400 hover:text-zinc-200'
+              }`}
             >
-              Today's Session
+              <Flame className="w-5 h-5 mb-0.5" />
+              <span className="text-[10px] font-semibold">Today</span>
             </button>
+
             <button
               onClick={() => setActiveTab('split')}
-              className={`px-3 py-1 text-xs rounded font-medium whitespace-nowrap ${activeTab === 'split' ? 'bg-purple-600 text-white font-semibold' : 'text-zinc-400'}`}
+              className={`flex flex-col items-center justify-center py-1 px-2.5 rounded-xl transition-all ${
+                activeTab === 'split'
+                  ? 'text-purple-400 bg-purple-950/50 scale-105'
+                  : 'text-zinc-400 hover:text-zinc-200'
+              }`}
             >
-              Weekly Split
+              <Calendar className="w-5 h-5 mb-0.5" />
+              <span className="text-[10px] font-semibold">Split</span>
             </button>
+
             <button
               onClick={() => setActiveTab('history')}
-              className={`px-3 py-1 text-xs rounded font-medium whitespace-nowrap ${activeTab === 'history' ? 'bg-purple-600 text-white font-semibold' : 'text-zinc-400'}`}
+              className={`flex flex-col items-center justify-center py-1 px-2.5 rounded-xl transition-all ${
+                activeTab === 'history'
+                  ? 'text-purple-400 bg-purple-950/50 scale-105'
+                  : 'text-zinc-400 hover:text-zinc-200'
+              }`}
             >
-              History & Logs
+              <History className="w-5 h-5 mb-0.5" />
+              <span className="text-[10px] font-semibold">History</span>
             </button>
+
             <button
               onClick={() => setActiveTab('profile')}
-              className={`px-3 py-1 text-xs rounded font-medium whitespace-nowrap ${activeTab === 'profile' ? 'bg-purple-600 text-white font-semibold' : 'text-zinc-400'}`}
+              className={`flex flex-col items-center justify-center py-1 px-2.5 rounded-xl transition-all ${
+                activeTab === 'profile'
+                  ? 'text-purple-400 bg-purple-950/50 scale-105'
+                  : 'text-zinc-400 hover:text-zinc-200'
+              }`}
             >
-              Profile
+              <UserIcon className="w-5 h-5 mb-0.5" />
+              <span className="text-[10px] font-semibold">Profile</span>
             </button>
           </>
         )}

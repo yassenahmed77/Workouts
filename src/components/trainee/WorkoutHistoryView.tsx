@@ -6,6 +6,9 @@ import { History, Calendar, Clock, Dumbbell, TrendingUp, CheckCircle2, MessageSq
 
 export const WorkoutHistoryView: React.FC = () => {
   const { currentUser, getUserLogs } = useGym();
+
+  if (!currentUser) return null;
+
   const logs = getUserLogs(currentUser.id);
 
   const totalVolume = logs.reduce((acc, l) => acc + l.totalVolumeKg, 0);
@@ -111,7 +114,7 @@ export const WorkoutHistoryView: React.FC = () => {
                     <MessageSquare className="w-4 h-4 text-purple-400 flex-shrink-0 mt-0.5" />
                     <div>
                       <span className="font-mono text-[10px] uppercase font-bold text-purple-400 block mb-0.5">
-                        Coach Feedback
+                        Performance Feedback
                       </span>
                       <p className="text-zinc-300">{log.coachFeedback}</p>
                     </div>

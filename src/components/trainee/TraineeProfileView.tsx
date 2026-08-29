@@ -7,12 +7,15 @@ import { User as UserIcon, Activity, Target, Shield, Check, Calendar, Dumbbell }
 
 export const TraineeProfileView: React.FC = () => {
   const { currentUser, getPlanForUser, getUserLogs } = useGym();
+
+  const [weightKg, setWeightKg] = useState(currentUser?.weightKg || 70);
+  const [targetWeightKg, setTargetWeightKg] = useState(currentUser?.targetWeightKg || 70);
+  const [savedSuccess, setSavedSuccess] = useState(false);
+
+  if (!currentUser) return null;
+
   const plan = getPlanForUser(currentUser.id);
   const logs = getUserLogs(currentUser.id);
-
-  const [weightKg, setWeightKg] = useState(currentUser.weightKg);
-  const [targetWeightKg, setTargetWeightKg] = useState(currentUser.targetWeightKg);
-  const [savedSuccess, setSavedSuccess] = useState(false);
 
   // BMI Calculation
   const heightM = currentUser.heightCm / 100;
@@ -141,7 +144,7 @@ export const TraineeProfileView: React.FC = () => {
         </form>
       </div>
 
-      {/* Program & Coach Instructions */}
+      {/* Program & Instructions */}
       <div className="p-6 rounded-2xl bg-[#111116] border border-[#22222d] space-y-4">
         <h3 className="text-sm font-bold text-white tracking-tight flex items-center gap-2">
           <Target className="w-4 h-4 text-purple-400" />
@@ -174,7 +177,7 @@ export const TraineeProfileView: React.FC = () => {
 
         <div className="pt-2">
           <span className="block text-[10px] font-mono uppercase tracking-wider text-zinc-400 mb-1.5">
-            Coach Directives
+            Directives & Technical Directives
           </span>
           <div className="p-3.5 rounded-xl bg-[#0d0d12] border border-zinc-900 text-xs text-zinc-300 leading-relaxed">
             {currentUser.notes || 'Prioritize form and consistent progressive overload.'}

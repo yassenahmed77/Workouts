@@ -1,9 +1,10 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useGym } from '@/context/GymContext';
 import { User, WorkoutPlan } from '@/types';
 import { Navbar } from '@/components/Navbar';
+import { AuthScreen } from '@/components/auth/AuthScreen';
 import { ClientsList } from '@/components/coach/ClientsList';
 import { WorkoutPlansView } from '@/components/coach/WorkoutPlansView';
 import { ExerciseLibraryView } from '@/components/coach/ExerciseLibraryView';
@@ -15,14 +16,13 @@ import { TraineeDashboard } from '@/components/trainee/TraineeDashboard';
 import { WeeklySplitView } from '@/components/trainee/WeeklySplitView';
 import { WorkoutHistoryView } from '@/components/trainee/WorkoutHistoryView';
 import { TraineeProfileView } from '@/components/trainee/TraineeProfileView';
+import { Loader2 } from 'lucide-react';
 
 export default function Home() {
-  const { currentUser, switchUser } = useGym();
+  const { currentUser, switchUser, isLoaded } = useGym();
   
   // Navigation tabs
-  const [activeTab, setActiveTab] = useState<string>(
-    currentUser.role === 'coach' ? 'clients' : 'today'
-  );
+  const [activeTab, setActiveTab] = useState<string>('clients');
 
   // Modals state
   const [isAssignModalOpen, setIsAssignModalOpen] = useState(false);
@@ -37,18 +37,35 @@ export default function Home() {
   const [isClientDetailModalOpen, setIsClientDetailModalOpen] = useState(false);
   const [detailUser, setDetailUser] = useState<User | null>(null);
 
-  // Sync active tab if role switches
-  React.useEffect(() => {
-    if (currentUser.role === 'coach') {
-      if (!['clients', 'plans', 'exercises'].includes(activeTab)) {
-        setActiveTab('clients');
-      }
-    } else {
-      if (!['today', 'split', 'history', 'profile'].includes(activeTab)) {
-        setActiveTab('today');
+  // Sync default tab when user changes
+  useEffect(() => {
+    if (currentUser) {
+      if (currentUser.role === 'coach') {
+        if (!['clients', 'plans', 'exercises'].includes(activeTab)) {
+          setActiveTab('clients');
+        }
+      } else {
+        if (!['today', 'split', 'history', 'profile'].includes(activeTab)) {
+          setActiveTab('today');
+        }
       }
     }
-  }, [currentUser.role]);
+  }, [currentUser, activeTab]);
+
+  // Loading state during initial storage/database hydration
+  if (!isLoaded) {
+    return (
+      <div className="min-h-screen bg-[#09090b] flex flex-col items-center justify-center text-white">
+        <Loader2 className="w-8 h-8 text-purple-500 animate-spin mb-3" />
+        <span className="text-xs font-mono text-zinc-400">Loading Workouts PRO OS...</span>
+      </div>
+    );
+  }
+
+  // Not logged in -> Show Authentication / Portal Selection Screen
+  if (!currentUser) {
+    return <AuthScreen />;
+  }
 
   // Coach Actions
   const handleOpenAssignModal = (user: User) => {
@@ -74,7 +91,7 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-[#09090b] text-[#f4f4f6] flex flex-col selection:bg-purple-600 selection:text-white">
-      {/* Top Navbar with live role switcher */}
+      {/* Top Navbar with live role switcher & sign out */}
       <Navbar
         activeTab={activeTab}
         setActiveTab={setActiveTab}
@@ -110,7 +127,7 @@ export default function Home() {
             {activeTab === 'exercises' && <ExerciseLibraryView />}
           </>
         ) : (
-          // Trainee View
+          // Trainee View (Rawan Ahmed or any Athlete)
           <>
             {activeTab === 'today' && (
               <TraineeDashboard
@@ -153,7 +170,6 @@ export default function Home() {
         isOpen={isNewTraineeModalOpen}
         onClose={() => setIsNewTraineeModalOpen(false)}
         onSuccessSelect={(newUserId) => {
-          // Open assign plan immediately for newly added trainee
           const added = { id: newUserId } as User;
           handleOpenAssignModal(added);
         }}

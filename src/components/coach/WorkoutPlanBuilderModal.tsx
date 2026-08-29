@@ -14,7 +14,12 @@ import {
   ChevronRight, 
   Sparkles,
   Info,
-  Calendar
+  Calendar,
+  GripVertical,
+  ChevronUp,
+  ChevronDown,
+  Video,
+  Play
 } from 'lucide-react';
 
 interface WorkoutPlanBuilderModalProps {
@@ -25,7 +30,11 @@ interface WorkoutPlanBuilderModalProps {
 }
 
 const MUSCLE_OPTIONS: MuscleGroup[] = [
-  'Chest', 'Back', 'Shoulders', 'Quads', 'Hamstrings', 'Arms', 'Core', 'Full Body'
+  'Chest', 'Back', 'Shoulders', 'Quads', 'Hamstrings', 'Glutes', 'Arms', 'Biceps', 'Triceps', 'Calves', 'Core', 'Forearms', 'Traps', 'Full Body'
+];
+
+const EQUIPMENT_OPTIONS: EquipmentType[] = [
+  'Barbell', 'Dumbbell', 'Cable', 'Machine', 'Bodyweight', 'Smith Machine', 'EZ Bar', 'Kettlebell', 'Resistance Band', 'Other'
 ];
 
 export const WorkoutPlanBuilderModal: React.FC<WorkoutPlanBuilderModalProps> = ({
@@ -34,7 +43,7 @@ export const WorkoutPlanBuilderModal: React.FC<WorkoutPlanBuilderModalProps> = (
   initialPlan,
   targetUserId
 }) => {
-  const { exercises, createPlan, updatePlan, assignPlanToUser, users } = useGym();
+  const { exercises, createPlan, updatePlan, assignPlanToUser, users, addExercise } = useGym();
 
   const [title, setTitle] = useState(initialPlan?.title || '');
   const [description, setDescription] = useState(initialPlan?.description || '');
@@ -54,9 +63,25 @@ export const WorkoutPlanBuilderModal: React.FC<WorkoutPlanBuilderModalProps> = (
   );
   const [activeDayIndex, setActiveDayIndex] = useState(0);
   const [assignToUserId, setAssignToUserId] = useState<string>(targetUserId || '');
+  
+  // Exercise picker drawer state
   const [isExercisePickerOpen, setIsExercisePickerOpen] = useState(false);
   const [pickerMuscleFilter, setPickerMuscleFilter] = useState<string>('All');
   const [pickerSearch, setPickerSearch] = useState('');
+
+  // Drag & drop reorder state
+  const [draggedExerciseIndex, setDraggedExerciseIndex] = useState<number | null>(null);
+  const [dragOverExerciseIndex, setDragOverExerciseIndex] = useState<number | null>(null);
+
+  // New Exercise Creation Modal inside Plan Builder
+  const [isNewMovementModalOpen, setIsNewMovementModalOpen] = useState(false);
+  const [newExName, setNewExName] = useState('');
+  const [newExEquipment, setNewExEquipment] = useState<EquipmentType>('Barbell');
+  const [newExMuscle, setNewExMuscle] = useState<MuscleGroup>('Chest');
+  const [newExCategory, setNewExCategory] = useState<'Compound' | 'Isolation'>('Compound');
+  const [newExVideoUrl, setNewExVideoUrl] = useState('');
+  const [newExAlternative, setNewExAlternative] = useState('');
+  const [newExCue, setNewExCue] = useState('');
 
   if (!isOpen) return null;
 
@@ -98,11 +123,14 @@ export const WorkoutPlanBuilderModal: React.FC<WorkoutPlanBuilderModalProps> = (
       exerciseName: ex.name,
       targetMuscle: ex.targetMuscle,
       equipment: ex.equipment,
-      sets: 3,
-      targetReps: '8-10',
-      targetRpe: 8,
-      restSeconds: 90,
-      notes: ex.executionCue
+      sets: 1,
+      targetReps: '4-10',
+      targetRpe: '1-2',
+      restSeconds: 150,
+      notes: '',
+      alternativeExercise: ex.alternativeExercise || '',
+      videoUrl: ex.videoUrl || '',
+      tips: ex.tips
     };
 
     handleUpdateActiveDay({
@@ -125,12 +153,66 @@ export const WorkoutPlanBuilderModal: React.FC<WorkoutPlanBuilderModalProps> = (
     });
   };
 
-  const handleSave = (e: React.FormEvent) => {
+  const handleDragStart = (index: number) => {
+    setDraggedExerciseIndex(index);
+  };
+
+  const handleDragEnter = (index: number) => {
+    setDragOverExerciseIndex(index);
+  };
+
+  const handleDragEnd = () => {
+    if (
+      draggedExerciseIndex !== null &&
+      dragOverExerciseIndex !== null &&
+      draggedExerciseIndex !== dragOverExerciseIndex
+    ) {
+      const nextExercises = [...activeDay.exercises];
+      const [draggedItem] = nextExercises.splice(draggedExerciseIndex, 1);
+      nextExercises.splice(dragOverExerciseIndex, 0, draggedItem);
+      handleUpdateActiveDay({ exercises: nextExercises });
+    }
+    setDraggedExerciseIndex(null);
+    setDragOverExerciseIndex(null);
+  };
+
+  const handleMoveExercise = (index: number, direction: 'up' | 'down') => {
+    const targetIndex = direction === 'up' ? index - 1 : index + 1;
+    if (targetIndex < 0 || targetIndex >= activeDay.exercises.length) return;
+    const nextExercises = [...activeDay.exercises];
+    const [item] = nextExercises.splice(index, 1);
+    nextExercises.splice(targetIndex, 0, item);
+    handleUpdateActiveDay({ exercises: nextExercises });
+  };
+
+  const handleCreateNewExerciseSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!newExName.trim()) return;
+
+    const created = await addExercise({
+      name: newExName.trim(),
+      targetMuscle: newExMuscle,
+      equipment: newExEquipment,
+      category: newExCategory,
+      videoUrl: newExVideoUrl.trim() || undefined,
+      alternativeExercise: newExAlternative.trim() || undefined,
+      executionCue: newExCue.trim() || 'Execute with strict form.',
+      tips: ['Maintain control', 'Keep core tight']
+    });
+
+    handleAddExerciseToActiveDay(created);
+    setNewExName('');
+    setNewExVideoUrl('');
+    setNewExAlternative('');
+    setNewExCue('');
+    setIsNewMovementModalOpen(false);
+  };
+
+  const handleSavePlan = async () => {
     if (!title.trim()) return;
 
     if (initialPlan) {
-      updatePlan({
+      await updatePlan({
         ...initialPlan,
         title,
         description,
@@ -140,10 +222,10 @@ export const WorkoutPlanBuilderModal: React.FC<WorkoutPlanBuilderModalProps> = (
         days
       });
       if (assignToUserId) {
-        assignPlanToUser(assignToUserId, initialPlan.id);
+        await assignPlanToUser(assignToUserId, initialPlan.id);
       }
     } else {
-      const created = createPlan({
+      const created = await createPlan({
         title,
         description,
         level,
@@ -153,416 +235,485 @@ export const WorkoutPlanBuilderModal: React.FC<WorkoutPlanBuilderModalProps> = (
         createdForUserId: assignToUserId || undefined
       });
       if (assignToUserId) {
-        assignPlanToUser(assignToUserId, created.id);
+        await assignPlanToUser(assignToUserId, created.id);
       }
     }
 
     onClose();
   };
 
+  const toggleDayMuscle = (muscle: MuscleGroup) => {
+    const current = activeDay.targetMuscles || [];
+    const exists = current.includes(muscle);
+    const next = exists ? current.filter((m) => m !== muscle) : [...current, muscle];
+    handleUpdateActiveDay({ targetMuscles: next });
+  };
+
   const filteredExercises = exercises.filter((ex) => {
-    const matchesFilter = pickerMuscleFilter === 'All' || ex.targetMuscle === pickerMuscleFilter;
-    const matchesSearch = ex.name.toLowerCase().includes(pickerSearch.toLowerCase()) ||
-                          ex.targetMuscle.toLowerCase().includes(pickerSearch.toLowerCase());
-    return matchesFilter && matchesSearch;
+    const matchesMuscle = pickerMuscleFilter === 'All' || ex.targetMuscle === pickerMuscleFilter;
+    const matchesSearch =
+      ex.name.toLowerCase().includes(pickerSearch.toLowerCase()) ||
+      ex.executionCue.toLowerCase().includes(pickerSearch.toLowerCase()) ||
+      (ex.alternativeExercise && ex.alternativeExercise.toLowerCase().includes(pickerSearch.toLowerCase()));
+    return matchesMuscle && matchesSearch;
   });
 
   const trainees = users.filter((u) => u.role === 'trainee');
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md animate-in fade-in duration-150">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/85 backdrop-blur-sm animate-in fade-in duration-150">
       <div 
-        className="w-full max-w-5xl bg-[#111116] border border-[#262634] rounded-2xl shadow-2xl flex flex-col max-h-[92vh] overflow-hidden"
+        className="w-full max-w-4xl bg-[#0f0f14] border border-[#262634] rounded-2xl p-4 sm:p-6 shadow-2xl relative max-h-[92vh] flex flex-col animate-in zoom-in-95 duration-150"
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Modal Header */}
-        <div className="px-6 py-4 border-b border-[#22222e] bg-[#14141c] flex items-center justify-between">
+        {/* Top Header */}
+        <div className="flex items-center justify-between pb-4 border-b border-zinc-800/80 flex-shrink-0">
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-lg bg-purple-600/20 border border-purple-500/30 flex items-center justify-center text-purple-400">
+            <div className="w-10 h-10 rounded-xl bg-purple-600/10 border border-purple-500/30 flex items-center justify-center text-purple-400">
               <Layers className="w-5 h-5" />
             </div>
             <div>
-              <h2 className="text-base font-bold text-white tracking-tight">
-                {initialPlan ? 'Edit Workout Plan' : 'Custom Workout Plan Architect'}
+              <h2 className="text-base sm:text-lg font-bold text-white tracking-tight">
+                {initialPlan ? 'Edit Training Split' : 'Build Custom Training Split'}
               </h2>
               <p className="text-xs text-zinc-400">
-                Design custom splits, configure sets & rest periods, and assign to trainees
+                Design periodized split days, custom exercise sets, reps, and video guides
               </p>
             </div>
           </div>
+
           <button
+            type="button"
             onClick={onClose}
-            className="text-zinc-500 hover:text-zinc-300 p-1.5 rounded-lg hover:bg-zinc-800/60 transition-colors"
+            className="p-1.5 rounded-lg text-zinc-500 hover:text-zinc-300 hover:bg-zinc-800 transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
-        {/* Modal Body */}
-        <form onSubmit={handleSave} className="flex-1 overflow-y-auto p-6 space-y-6">
-          
-          {/* Metadata Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 p-4 rounded-xl bg-[#0d0d12] border border-[#20202c]">
-            <div className="md:col-span-2">
-              <label className="block text-[10px] font-mono uppercase tracking-wider text-zinc-400 mb-1.5">
-                Plan Name / Title
+        {/* Scrollable Form Content */}
+        <form 
+          onSubmit={(e) => {
+            e.preventDefault();
+            handleSavePlan();
+          }}
+          className="flex-1 overflow-y-auto py-4 space-y-6 pr-1 scrollbar-thin"
+        >
+          {/* Section 1: Split Metadata */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 p-4 rounded-xl bg-[#13131a] border border-[#232330]">
+            <div className="sm:col-span-2">
+              <label className="block text-[11px] font-mono uppercase tracking-wider text-zinc-400 mb-1">
+                Split Title *
               </label>
               <input
                 type="text"
                 required
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
-                placeholder="e.g. 4-Day Hypertrophy & Density"
-                className="w-full px-3.5 py-2 rounded-lg bg-[#14141c] border border-[#282836] text-xs font-semibold text-white focus:outline-none focus:border-purple-500 transition-colors"
+                placeholder="e.g. 4-Day Push / Pull / Legs Hypertrophy Split"
+                className="w-full px-3 py-2 rounded-lg bg-[#0d0d12] border border-[#262634] text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-purple-500"
               />
             </div>
 
             <div>
-              <label className="block text-[10px] font-mono uppercase tracking-wider text-zinc-400 mb-1.5">
-                Experience Level
+              <label className="block text-[11px] font-mono uppercase tracking-wider text-zinc-400 mb-1">
+                Assign to Athlete (Optional)
               </label>
               <select
-                value={level}
-                onChange={(e) => setLevel(e.target.value as WorkoutPlan['level'])}
-                className="w-full px-3.5 py-2 rounded-lg bg-[#14141c] border border-[#282836] text-xs text-white focus:outline-none focus:border-purple-500 transition-colors"
+                value={assignToUserId}
+                onChange={(e) => setAssignToUserId(e.target.value)}
+                className="w-full px-3 py-2 rounded-lg bg-[#0d0d12] border border-[#262634] text-xs text-white focus:outline-none focus:border-purple-500"
               >
-                <option value="Beginner">Beginner</option>
-                <option value="Intermediate">Intermediate</option>
-                <option value="Advanced">Advanced</option>
+                <option value="">None (Template Only)</option>
+                {trainees.map((t) => (
+                  <option key={t.id} value={t.id}>
+                    {t.name} ({t.goal})
+                  </option>
+                ))}
               </select>
             </div>
 
-            <div>
-              <label className="block text-[10px] font-mono uppercase tracking-wider text-zinc-400 mb-1.5">
-                Duration (Weeks)
-              </label>
-              <input
-                type="number"
-                min="1"
-                max="52"
-                value={durationWeeks}
-                onChange={(e) => setDurationWeeks(Number(e.target.value))}
-                className="w-full px-3.5 py-2 rounded-lg bg-[#14141c] border border-[#282836] text-xs font-numeric text-white focus:outline-none focus:border-purple-500 transition-colors"
-              />
-            </div>
-
-            <div className="md:col-span-3">
-              <label className="block text-[10px] font-mono uppercase tracking-wider text-zinc-400 mb-1.5">
-                Program Description / Objective
+            <div className="sm:col-span-3">
+              <label className="block text-[11px] font-mono uppercase tracking-wider text-zinc-400 mb-1">
+                Program Description & Directives
               </label>
               <input
                 type="text"
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
-                placeholder="Brief protocol goals, intensity targets, and progression notes..."
-                className="w-full px-3.5 py-2 rounded-lg bg-[#14141c] border border-[#282836] text-xs text-white focus:outline-none focus:border-purple-500 transition-colors"
+                placeholder="e.g. Progressive overload focus, 2 RIR in compound lifts, strict rest intervals"
+                className="w-full px-3 py-2 rounded-lg bg-[#0d0d12] border border-[#262634] text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-purple-500"
               />
-            </div>
-
-            <div>
-              <label className="block text-[10px] font-mono uppercase tracking-wider text-zinc-400 mb-1.5">
-                Direct Trainee Assignment
-              </label>
-              <select
-                value={assignToUserId}
-                onChange={(e) => setAssignToUserId(e.target.value)}
-                className="w-full px-3.5 py-2 rounded-lg bg-[#14141c] border border-[#282836] text-xs text-purple-300 font-semibold focus:outline-none focus:border-purple-500 transition-colors"
-              >
-                <option value="">-- No Direct Assignment --</option>
-                {trainees.map((t) => (
-                  <option key={t.id} value={t.id}>
-                    Assign to {t.name}
-                  </option>
-                ))}
-              </select>
             </div>
           </div>
 
-          {/* Workout Days Tabs */}
-          <div>
-            <div className="flex items-center justify-between mb-3">
-              <div className="flex items-center gap-2">
-                <span className="text-xs font-bold uppercase tracking-wider text-zinc-300">
-                  Split Days ({days.length})
-                </span>
-                <span className="text-[10px] text-zinc-500 font-mono">
-                  {days.filter(d => !d.isRestDay).length} Active Training Days
-                </span>
-              </div>
+          {/* Section 2: Split Days Tabs Header */}
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
+              <label className="text-[11px] font-mono uppercase tracking-wider text-zinc-400 flex items-center gap-2">
+                <Calendar className="w-3.5 h-3.5 text-purple-400" />
+                <span>Split Schedule ({days.length} Days)</span>
+              </label>
+
               <button
                 type="button"
                 onClick={handleAddDay}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold text-purple-300 bg-purple-950/40 hover:bg-purple-900/60 border border-purple-800/40 transition-colors"
+                className="flex items-center gap-1 text-xs font-semibold text-purple-400 hover:text-purple-300 transition-colors"
               >
                 <Plus className="w-3.5 h-3.5" />
-                Add Split Day
+                <span>Add Day</span>
               </button>
             </div>
 
-            {/* Day selector pill strip */}
-            <div className="flex items-center gap-2 overflow-x-auto pb-2">
-              {days.map((day, idx) => {
-                const isActive = idx === activeDayIndex;
+            {/* Days Tabs Bar */}
+            <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
+              {days.map((d, index) => {
+                const isActive = index === activeDayIndex;
                 return (
-                  <div
-                    key={day.id}
-                    className={`flex items-center rounded-lg border transition-all ${
+                  <button
+                    key={d.id}
+                    type="button"
+                    onClick={() => setActiveDayIndex(index)}
+                    className={`flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all ${
                       isActive
-                        ? 'bg-[#1e1e2c] border-purple-500 text-white shadow-[0_0_10px_rgba(168,85,247,0.2)]'
-                        : 'bg-[#101016] border-[#22222e] text-zinc-400 hover:border-zinc-700'
+                        ? 'bg-purple-600 text-white shadow-[0_0_15px_rgba(168,85,247,0.35)]'
+                        : 'bg-[#13131a] text-zinc-400 hover:text-white border border-[#22222d]'
                     }`}
                   >
-                    <button
-                      type="button"
-                      onClick={() => setActiveDayIndex(idx)}
-                      className="px-3.5 py-2 text-xs font-semibold whitespace-nowrap flex items-center gap-2"
-                    >
-                      <span>{day.dayName}</span>
-                      {day.isRestDay ? (
-                        <span className="text-[9px] px-1.5 py-0.5 rounded bg-zinc-800 text-zinc-400 font-mono">
-                          REST
-                        </span>
-                      ) : (
-                        <span className="text-[9px] px-1.5 py-0.5 rounded bg-purple-950/60 text-purple-300 font-numeric">
-                          {day.exercises.length} ex
-                        </span>
-                      )}
-                    </button>
-
+                    <span>Day {index + 1}</span>
+                    {d.isRestDay && (
+                      <span className="text-[9px] px-1 py-0.2 rounded bg-black/40 text-zinc-300 font-mono">
+                        Rest
+                      </span>
+                    )}
                     {days.length > 1 && (
-                      <button
-                        type="button"
+                      <span
                         onClick={(e) => {
                           e.stopPropagation();
-                          handleRemoveDay(idx);
+                          handleRemoveDay(index);
                         }}
-                        className="p-1.5 mr-1 text-zinc-500 hover:text-red-400 transition-colors rounded"
+                        className="p-0.5 rounded hover:bg-black/30 text-white/70 hover:text-white"
                       >
-                        <Trash2 className="w-3 h-3" />
-                      </button>
+                        <X className="w-3 h-3" />
+                      </span>
                     )}
-                  </div>
+                  </button>
                 );
               })}
             </div>
           </div>
 
-          {/* Active Day Configuration */}
+          {/* Section 3: Active Day Content */}
           {activeDay && (
-            <div className="p-5 rounded-xl bg-[#0f0f14] border border-[#242432] space-y-4">
-              
-              {/* Day settings bar */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-3 pb-4 border-b border-zinc-800/80">
-                <div>
+            <div className="p-4 sm:p-5 rounded-2xl bg-[#111117] border border-[#242433] space-y-4">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-zinc-800/80">
+                <div className="flex-1 max-w-sm">
                   <label className="block text-[10px] font-mono uppercase tracking-wider text-zinc-400 mb-1">
-                    Day Title
+                    Day Name
                   </label>
                   <input
                     type="text"
                     value={activeDay.dayName}
                     onChange={(e) => handleUpdateActiveDay({ dayName: e.target.value })}
-                    className="w-full px-3 py-1.5 rounded-lg bg-[#14141c] border border-[#292938] text-xs font-semibold text-white focus:outline-none focus:border-purple-500"
+                    placeholder="e.g. Day 1: Chest & Shoulders"
+                    className="w-full px-3 py-1.5 rounded-lg bg-[#0d0d12] border border-[#242430] text-xs text-white font-bold focus:outline-none focus:border-purple-500"
                   />
                 </div>
 
-                <div>
-                  <label className="block text-[10px] font-mono uppercase tracking-wider text-zinc-400 mb-1">
-                    Est. Duration (Mins)
-                  </label>
-                  <input
-                    type="number"
-                    value={activeDay.estimatedMinutes}
-                    onChange={(e) => handleUpdateActiveDay({ estimatedMinutes: Number(e.target.value) })}
-                    className="w-full px-3 py-1.5 rounded-lg bg-[#14141c] border border-[#292938] text-xs font-numeric text-white focus:outline-none focus:border-purple-500"
-                  />
-                </div>
-
-                <div className="flex items-center gap-3 pt-4">
-                  <label className="flex items-center gap-2 cursor-pointer select-none">
+                <div className="flex items-center gap-4">
+                  <label className="flex items-center gap-2 cursor-pointer text-xs font-semibold text-zinc-300">
                     <input
                       type="checkbox"
                       checked={activeDay.isRestDay}
                       onChange={(e) => handleUpdateActiveDay({ isRestDay: e.target.checked })}
-                      className="w-4 h-4 rounded border-zinc-700 bg-zinc-900 text-purple-500 focus:ring-0"
+                      className="rounded bg-[#0d0d12] border-zinc-700 text-purple-600 focus:ring-0"
                     />
-                    <span className="text-xs text-zinc-300 font-medium">Mark as Active Recovery / Rest Day</span>
+                    <span>Mark as Rest / Recovery Day</span>
                   </label>
                 </div>
               </div>
 
-              {/* Day Exercises */}
               {!activeDay.isRestDay ? (
-                <div>
-                  <div className="flex items-center justify-between mb-3">
-                    <span className="text-xs font-bold uppercase tracking-wider text-zinc-300">
-                      Exercise Routine ({activeDay.exercises.length})
+                <div className="space-y-4">
+                  {/* Target Muscles Pills */}
+                  <div>
+                    <span className="block text-[10px] font-mono uppercase tracking-wider text-zinc-400 mb-1.5">
+                      Target Muscles for this Day
                     </span>
+                    <div className="flex items-center gap-1.5 flex-wrap">
+                      {MUSCLE_OPTIONS.map((muscle) => {
+                        const isSelected = activeDay.targetMuscles.includes(muscle);
+                        return (
+                          <button
+                            key={muscle}
+                            type="button"
+                            onClick={() => toggleDayMuscle(muscle)}
+                            className={`px-2.5 py-1 rounded-lg text-[11px] font-semibold transition-colors ${
+                              isSelected
+                                ? 'bg-purple-600 text-white shadow-[0_0_10px_rgba(168,85,247,0.3)]'
+                                : 'bg-[#0d0d12] text-zinc-400 hover:text-white border border-[#242430]'
+                            }`}
+                          >
+                            {muscle}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+
+                  {/* Exercises List Header */}
+                  <div className="flex items-center justify-between pt-2">
+                    <div>
+                      <h4 className="text-xs font-bold text-white">
+                        Prescribed Exercises ({activeDay.exercises.length})
+                      </h4>
+                      <p className="text-[10px] text-zinc-500">
+                        Drag to reorder or use ▲/▼ arrows to change exercise sequence
+                      </p>
+                    </div>
+
                     <button
                       type="button"
                       onClick={() => setIsExercisePickerOpen(true)}
                       className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold text-white bg-purple-600 hover:bg-purple-500 transition-all shadow-[0_0_12px_rgba(168,85,247,0.3)]"
                     >
                       <Plus className="w-3.5 h-3.5 stroke-[2.5]" />
-                      Add Exercise
+                      <span>+ Add Movement</span>
                     </button>
                   </div>
 
                   {activeDay.exercises.length === 0 ? (
                     <div className="text-center py-10 border border-dashed border-zinc-800 rounded-xl bg-[#09090c]/50">
                       <Dumbbell className="w-8 h-8 mx-auto text-zinc-600 mb-2" />
-                      <p className="text-xs text-zinc-400 font-medium">No exercises added to this day yet</p>
-                      <p className="text-[11px] text-zinc-600 mt-1">Click "Add Exercise" to pick movements from your exercise library</p>
+                      <p className="text-xs text-zinc-400 font-medium">No movements added to this day yet</p>
+                      <p className="text-[11px] text-zinc-600 mt-1">Click "+ Add Movement" to choose or create exercises</p>
                     </div>
                   ) : (
                     <div className="space-y-2.5">
-                      {activeDay.exercises.map((item, exIdx) => (
-                        <div
-                          key={item.id}
-                          className="p-3.5 rounded-xl bg-[#14141c] border border-[#252532] hover:border-[#323242] transition-colors"
-                        >
-                          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-3">
-                            <div className="flex items-center gap-2.5">
-                              <span className="w-5 h-5 rounded bg-zinc-800 text-zinc-300 font-mono text-[11px] flex items-center justify-center font-bold">
-                                {exIdx + 1}
-                              </span>
-                              <div>
-                                <h4 className="text-xs font-bold text-white tracking-tight">
-                                  {item.exerciseName}
-                                </h4>
-                                <div className="flex items-center gap-2 mt-0.5">
-                                  <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-zinc-800 text-zinc-400">
-                                    {item.targetMuscle}
-                                  </span>
-                                  <span className="text-[10px] text-zinc-500">
-                                    {item.equipment}
-                                  </span>
+                      {activeDay.exercises.map((item, exIdx) => {
+                        const isDragging = draggedExerciseIndex === exIdx;
+                        const isDragOver = dragOverExerciseIndex === exIdx && !isDragging;
+
+                        return (
+                          <div
+                            key={item.id}
+                            draggable
+                            onDragStart={() => handleDragStart(exIdx)}
+                            onDragEnter={() => handleDragEnter(exIdx)}
+                            onDragOver={(e) => e.preventDefault()}
+                            onDragEnd={handleDragEnd}
+                            className={`p-3.5 rounded-xl transition-all ${
+                              isDragging
+                                ? 'opacity-40 scale-[0.99] border-2 border-purple-500 bg-purple-950/20'
+                                : isDragOver
+                                ? 'border-2 border-purple-400 border-dashed bg-purple-950/30 scale-[1.01]'
+                                : 'bg-[#14141c] border border-[#252532] hover:border-[#3a3a4c]'
+                            }`}
+                          >
+                            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-3">
+                              <div className="flex items-center gap-2">
+                                {/* Drag Handle */}
+                                <div 
+                                  className="cursor-grab active:cursor-grabbing p-1 rounded hover:bg-zinc-800 text-zinc-500 hover:text-purple-400 transition-colors"
+                                  title="Drag to reorder movement"
+                                >
+                                  <GripVertical className="w-4 h-4" />
+                                </div>
+
+                                {/* Up / Down Quick Reorder Buttons */}
+                                <div className="flex flex-col gap-0.5">
+                                  <button
+                                    type="button"
+                                    disabled={exIdx === 0}
+                                    onClick={() => handleMoveExercise(exIdx, 'up')}
+                                    className="p-0.5 rounded hover:bg-zinc-800 text-zinc-500 hover:text-white disabled:opacity-20 disabled:pointer-events-none transition-colors"
+                                    title="Move Up"
+                                  >
+                                    <ChevronUp className="w-3.5 h-3.5" />
+                                  </button>
+                                  <button
+                                    type="button"
+                                    disabled={exIdx === activeDay.exercises.length - 1}
+                                    onClick={() => handleMoveExercise(exIdx, 'down')}
+                                    className="p-0.5 rounded hover:bg-zinc-800 text-zinc-500 hover:text-white disabled:opacity-20 disabled:pointer-events-none transition-colors"
+                                    title="Move Down"
+                                  >
+                                    <ChevronDown className="w-3.5 h-3.5" />
+                                  </button>
+                                </div>
+
+                                <span className="w-5 h-5 rounded bg-zinc-800 text-zinc-300 font-mono text-[11px] flex items-center justify-center font-bold">
+                                  {exIdx + 1}
+                                </span>
+
+                                <div>
+                                  <h4 className="text-xs font-bold text-white tracking-tight">
+                                    {item.exerciseName}
+                                  </h4>
+                                  <div className="flex items-center gap-2 mt-0.5">
+                                    <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-zinc-800 text-zinc-400">
+                                      {item.targetMuscle}
+                                    </span>
+                                    <span className="text-[10px] text-zinc-500">
+                                      {item.equipment}
+                                    </span>
+                                  </div>
                                 </div>
                               </div>
+
+                              <button
+                                type="button"
+                                onClick={() => handleRemoveExercise(item.id)}
+                                className="text-zinc-500 hover:text-red-400 self-start sm:self-auto p-1 transition-colors"
+                                title="Remove exercise"
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </button>
                             </div>
 
-                            <button
-                              type="button"
-                              onClick={() => handleRemoveExercise(item.id)}
-                              className="text-zinc-500 hover:text-red-400 self-start sm:self-auto p-1 transition-colors"
-                            >
-                              <Trash2 className="w-4 h-4" />
-                            </button>
+                            {/* Exercise Parameters Grid */}
+                            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 text-xs">
+                              <div className="col-span-2">
+                                <span className="block text-[9px] font-mono uppercase tracking-wider text-zinc-500 mb-1">
+                                  Exercise Name
+                                </span>
+                                <input
+                                  type="text"
+                                  value={item.exerciseName}
+                                  onChange={(e) => handleUpdateExercise(item.id, { exerciseName: e.target.value })}
+                                  className="w-full px-2.5 py-1.5 rounded bg-[#0d0d12] border border-[#242430] text-white text-xs focus:outline-none focus:border-purple-500 font-medium"
+                                />
+                              </div>
+
+                              <div>
+                                <span className="block text-[9px] font-mono uppercase tracking-wider text-zinc-500 mb-1">
+                                  Equipment
+                                </span>
+                                <select
+                                  value={item.equipment}
+                                  onChange={(e) => handleUpdateExercise(item.id, { equipment: e.target.value as EquipmentType })}
+                                  className="w-full px-2.5 py-1.5 rounded bg-[#0d0d12] border border-[#242430] text-zinc-200 text-xs focus:outline-none focus:border-purple-500"
+                                >
+                                  {EQUIPMENT_OPTIONS.map((eq) => (
+                                    <option key={eq} value={eq}>{eq}</option>
+                                  ))}
+                                </select>
+                              </div>
+
+                              <div>
+                                <span className="block text-[9px] font-mono uppercase tracking-wider text-zinc-500 mb-1">
+                                  Target Muscle
+                                </span>
+                                <select
+                                  value={item.targetMuscle}
+                                  onChange={(e) => handleUpdateExercise(item.id, { targetMuscle: e.target.value as MuscleGroup })}
+                                  className="w-full px-2.5 py-1.5 rounded bg-[#0d0d12] border border-[#242430] text-zinc-200 text-xs focus:outline-none focus:border-purple-500"
+                                >
+                                  {MUSCLE_OPTIONS.map((m) => (
+                                    <option key={m} value={m}>{m}</option>
+                                  ))}
+                                </select>
+                              </div>
+
+                              <div className="col-span-2">
+                                <span className="block text-[9px] font-mono uppercase tracking-wider text-purple-400 mb-1 flex items-center justify-between">
+                                  <span>Alternative Movement (Badeel)</span>
+                                  <span className="text-[8px] text-zinc-500 font-normal">If busy</span>
+                                </span>
+                                <input
+                                  type="text"
+                                  value={item.alternativeExercise || ''}
+                                  onChange={(e) => handleUpdateExercise(item.id, { alternativeExercise: e.target.value })}
+                                  placeholder="e.g. Incline DB Press or Machine Press"
+                                  className="w-full px-2.5 py-1.5 rounded bg-[#0d0d12] border border-purple-900/40 text-purple-200 text-xs focus:outline-none focus:border-purple-500"
+                                />
+                              </div>
+
+                              <div className="col-span-2">
+                                <span className="block text-[9px] font-mono uppercase tracking-wider text-blue-400 mb-1 flex items-center justify-between">
+                                  <span>Video Guide Link (YouTube URL)</span>
+                                  <span className="text-[8px] text-zinc-500 font-normal">Form video</span>
+                                </span>
+                                <input
+                                  type="url"
+                                  value={item.videoUrl || ''}
+                                  onChange={(e) => handleUpdateExercise(item.id, { videoUrl: e.target.value })}
+                                  placeholder="https://youtube.com/watch?v=..."
+                                  className="w-full px-2.5 py-1.5 rounded bg-[#0d0d12] border border-blue-900/40 text-blue-200 text-xs focus:outline-none focus:border-blue-500"
+                                />
+                              </div>
+
+                              <div>
+                                <span className="block text-[9px] font-mono uppercase tracking-wider text-zinc-500 mb-1">
+                                  Sets Count
+                                </span>
+                                <input
+                                  type="number"
+                                  min="1"
+                                  max="20"
+                                  value={item.sets}
+                                  onChange={(e) => handleUpdateExercise(item.id, { sets: Number(e.target.value) })}
+                                  className="w-full px-2.5 py-1.5 rounded bg-[#0d0d12] border border-[#242430] font-numeric text-white text-xs focus:outline-none focus:border-purple-500"
+                                />
+                              </div>
+
+                              <div>
+                                <span className="block text-[9px] font-mono uppercase tracking-wider text-zinc-500 mb-1">
+                                  Target Reps
+                                </span>
+                                <input
+                                  type="text"
+                                  value={item.targetReps}
+                                  onChange={(e) => handleUpdateExercise(item.id, { targetReps: e.target.value })}
+                                  placeholder="e.g. 4-10"
+                                  className="w-full px-2.5 py-1.5 rounded bg-[#0d0d12] border border-[#242430] font-numeric text-white text-xs focus:outline-none focus:border-purple-500"
+                                />
+                              </div>
+
+                              <div>
+                                <span className="block text-[9px] font-mono uppercase tracking-wider text-zinc-500 mb-1">
+                                  Target RPE / RIR
+                                </span>
+                                <input
+                                  type="text"
+                                  value={item.targetRpe !== undefined ? item.targetRpe : ''}
+                                  onChange={(e) => handleUpdateExercise(item.id, { targetRpe: e.target.value })}
+                                  placeholder="e.g. 1-2"
+                                  className="w-full px-2.5 py-1.5 rounded bg-[#0d0d12] border border-[#242430] font-numeric text-white text-xs focus:outline-none focus:border-purple-500"
+                                />
+                              </div>
+
+                              <div>
+                                <span className="block text-[9px] font-mono uppercase tracking-wider text-zinc-500 mb-1">
+                                  Rest Period (Sec)
+                                </span>
+                                <input
+                                  type="number"
+                                  min="15"
+                                  max="600"
+                                  step="15"
+                                  value={item.restSeconds}
+                                  onChange={(e) => handleUpdateExercise(item.id, { restSeconds: Number(e.target.value) })}
+                                  className="w-full px-2.5 py-1.5 rounded bg-[#0d0d12] border border-[#242430] font-numeric text-purple-400 text-xs focus:outline-none focus:border-purple-500"
+                                />
+                              </div>
+
+                              <div className="col-span-2 sm:col-span-4">
+                                <span className="block text-[9px] font-mono uppercase tracking-wider text-zinc-500 mb-1">
+                                  Form Checklist & Execution Tips (Optional)
+                                </span>
+                                <input
+                                  type="text"
+                                  value={item.notes || ''}
+                                  onChange={(e) => handleUpdateExercise(item.id, { notes: e.target.value })}
+                                  placeholder="Notes & form directives..."
+                                  className="w-full px-2.5 py-1.5 rounded bg-[#0d0d12] border border-[#242430] text-zinc-300 text-xs focus:outline-none focus:border-purple-500"
+                                />
+                              </div>
+                            </div>
                           </div>
-
-                          {/* Exercise Parameters Grid */}
-                          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 text-xs">
-                            <div className="col-span-2">
-                              <span className="block text-[9px] font-mono uppercase tracking-wider text-zinc-500 mb-1">
-                                Exercise Name
-                              </span>
-                              <input
-                                type="text"
-                                value={item.exerciseName}
-                                onChange={(e) => handleUpdateExercise(item.id, { exerciseName: e.target.value })}
-                                className="w-full px-2.5 py-1.5 rounded bg-[#0d0d12] border border-[#242430] text-white text-xs focus:outline-none focus:border-purple-500 font-medium"
-                              />
-                            </div>
-
-                            <div className="col-span-2">
-                              <span className="block text-[9px] font-mono uppercase tracking-wider text-purple-400 mb-1 flex items-center justify-between">
-                                <span>Alternative Movement (Badeel)</span>
-                                <span className="text-[8px] text-zinc-500 font-normal">If machine is busy</span>
-                              </span>
-                              <input
-                                type="text"
-                                value={item.alternativeExercise || ''}
-                                onChange={(e) => handleUpdateExercise(item.id, { alternativeExercise: e.target.value })}
-                                placeholder="e.g. Incline DB Press or Machine Press"
-                                className="w-full px-2.5 py-1.5 rounded bg-[#0d0d12] border border-purple-900/40 text-purple-200 text-xs focus:outline-none focus:border-purple-500"
-                              />
-                            </div>
-
-                            <div className="col-span-2 sm:col-span-4">
-                              <span className="block text-[9px] font-mono uppercase tracking-wider text-blue-400 mb-1 flex items-center justify-between">
-                                <span>Video Guide Link (YouTube / Drive / Reel)</span>
-                                <span className="text-[8px] text-zinc-500 font-normal">Trainee can watch form</span>
-                              </span>
-                              <input
-                                type="url"
-                                value={item.videoUrl || ''}
-                                onChange={(e) => handleUpdateExercise(item.id, { videoUrl: e.target.value })}
-                                placeholder="e.g. https://youtube.com/watch?v=..."
-                                className="w-full px-2.5 py-1.5 rounded bg-[#0d0d12] border border-blue-900/40 text-blue-200 text-xs focus:outline-none focus:border-blue-500"
-                              />
-                            </div>
-
-                            <div>
-                              <span className="block text-[9px] font-mono uppercase tracking-wider text-zinc-500 mb-1">
-                                Sets Count
-                              </span>
-                              <input
-                                type="number"
-                                min="1"
-                                max="20"
-                                value={item.sets}
-                                onChange={(e) => handleUpdateExercise(item.id, { sets: Number(e.target.value) })}
-                                className="w-full px-2.5 py-1.5 rounded bg-[#0d0d12] border border-[#242430] font-numeric text-white text-xs focus:outline-none focus:border-purple-500"
-                              />
-                            </div>
-
-                            <div>
-                              <span className="block text-[9px] font-mono uppercase tracking-wider text-zinc-500 mb-1">
-                                Target Reps
-                              </span>
-                              <input
-                                type="text"
-                                value={item.targetReps}
-                                onChange={(e) => handleUpdateExercise(item.id, { targetReps: e.target.value })}
-                                placeholder="e.g. 8-10 or 5"
-                                className="w-full px-2.5 py-1.5 rounded bg-[#0d0d12] border border-[#242430] font-numeric text-white text-xs focus:outline-none focus:border-purple-500"
-                              />
-                            </div>
-
-                            <div>
-                              <span className="block text-[9px] font-mono uppercase tracking-wider text-zinc-500 mb-1">
-                                Target RPE
-                              </span>
-                              <input
-                                type="number"
-                                min="1"
-                                max="10"
-                                step="0.5"
-                                value={item.targetRpe || 8}
-                                onChange={(e) => handleUpdateExercise(item.id, { targetRpe: Number(e.target.value) })}
-                                className="w-full px-2.5 py-1.5 rounded bg-[#0d0d12] border border-[#242430] font-numeric text-white text-xs focus:outline-none focus:border-purple-500"
-                              />
-                            </div>
-
-                            <div>
-                              <span className="block text-[9px] font-mono uppercase tracking-wider text-zinc-500 mb-1">
-                                Rest Period (Sec)
-                              </span>
-                              <input
-                                type="number"
-                                min="15"
-                                max="600"
-                                step="15"
-                                value={item.restSeconds}
-                                onChange={(e) => handleUpdateExercise(item.id, { restSeconds: Number(e.target.value) })}
-                                className="w-full px-2.5 py-1.5 rounded bg-[#0d0d12] border border-[#242430] font-numeric text-purple-400 text-xs focus:outline-none focus:border-purple-500"
-                              />
-                            </div>
-
-                            <div className="col-span-2 sm:col-span-4">
-                              <span className="block text-[9px] font-mono uppercase tracking-wider text-zinc-500 mb-1">
-                                Form Checklist & Execution Tips
-                              </span>
-                              <input
-                                type="text"
-                                value={item.notes || ''}
-                                onChange={(e) => handleUpdateExercise(item.id, { notes: e.target.value })}
-                                placeholder="e.g. 3-second negative descent, elbows 45°, squeeze chest at apex..."
-                                className="w-full px-2.5 py-1.5 rounded bg-[#0d0d12] border border-[#242430] text-zinc-300 text-xs focus:outline-none focus:border-purple-500"
-                              />
-                            </div>
-                          </div>
-                        </div>
-                      ))}
+                        );
+                      })}
                     </div>
                   )}
                 </div>
@@ -597,12 +748,12 @@ export const WorkoutPlanBuilderModal: React.FC<WorkoutPlanBuilderModalProps> = (
 
         {/* Exercise Library Picker Drawer */}
         {isExercisePickerOpen && (
-          <div className="absolute inset-0 z-50 bg-[#09090c]/95 backdrop-blur-md p-6 flex flex-col animate-in fade-in duration-100">
-            <div className="flex items-center justify-between pb-4 border-b border-zinc-800">
+          <div className="absolute inset-0 z-50 bg-[#09090c]/95 backdrop-blur-md p-4 sm:p-6 flex flex-col animate-in fade-in duration-100 rounded-2xl">
+            <div className="flex items-center justify-between pb-3 border-b border-zinc-800">
               <div className="flex items-center gap-2.5">
                 <Dumbbell className="w-5 h-5 text-purple-400" />
                 <h3 className="text-sm font-bold text-white tracking-tight">
-                  Exercise Library Directory
+                  Exercise Library Directory ({exercises.length} Saved)
                 </h3>
               </div>
               <button
@@ -615,20 +766,31 @@ export const WorkoutPlanBuilderModal: React.FC<WorkoutPlanBuilderModalProps> = (
             </div>
 
             {/* Filter search & muscle groups */}
-            <div className="py-4 space-y-3">
-              <input
-                type="text"
-                value={pickerSearch}
-                onChange={(e) => setPickerSearch(e.target.value)}
-                placeholder="Search exercise name or technique cues..."
-                className="w-full px-3.5 py-2 rounded-lg bg-[#14141c] border border-[#282836] text-xs text-white focus:outline-none focus:border-purple-500"
-              />
+            <div className="py-3 space-y-2.5">
+              <div className="flex items-center gap-2">
+                <input
+                  type="text"
+                  value={pickerSearch}
+                  onChange={(e) => setPickerSearch(e.target.value)}
+                  placeholder="Search exercise name or alternative..."
+                  className="flex-1 px-3.5 py-2 rounded-lg bg-[#14141c] border border-[#282836] text-xs text-white focus:outline-none focus:border-purple-500"
+                />
 
-              <div className="flex items-center gap-1.5 overflow-x-auto pb-1">
+                <button
+                  type="button"
+                  onClick={() => setIsNewMovementModalOpen(true)}
+                  className="px-3.5 py-2 rounded-lg text-xs font-bold text-white bg-purple-600 hover:bg-purple-500 transition-all flex items-center gap-1.5 whitespace-nowrap shadow-[0_0_10px_rgba(168,85,247,0.3)]"
+                >
+                  <Plus className="w-4 h-4" />
+                  <span>+ Create & Save New Movement</span>
+                </button>
+              </div>
+
+              <div className="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none">
                 <button
                   type="button"
                   onClick={() => setPickerMuscleFilter('All')}
-                  className={`px-3 py-1 rounded text-[11px] font-semibold whitespace-nowrap transition-colors ${
+                  className={`px-3 py-1 rounded-lg text-[11px] font-semibold whitespace-nowrap transition-colors ${
                     pickerMuscleFilter === 'All'
                       ? 'bg-purple-600 text-white'
                       : 'bg-zinc-800 text-zinc-300 hover:bg-zinc-700'
@@ -641,7 +803,7 @@ export const WorkoutPlanBuilderModal: React.FC<WorkoutPlanBuilderModalProps> = (
                     key={muscle}
                     type="button"
                     onClick={() => setPickerMuscleFilter(muscle)}
-                    className={`px-3 py-1 rounded text-[11px] font-semibold whitespace-nowrap transition-colors ${
+                    className={`px-3 py-1 rounded-lg text-[11px] font-semibold whitespace-nowrap transition-colors ${
                       pickerMuscleFilter === muscle
                         ? 'bg-purple-600 text-white'
                         : 'bg-zinc-800 text-zinc-300 hover:bg-zinc-700'
@@ -651,35 +813,6 @@ export const WorkoutPlanBuilderModal: React.FC<WorkoutPlanBuilderModalProps> = (
                   </button>
                 ))}
               </div>
-            </div>
-
-            {/* Quick Action to Add a Custom Movement on the fly */}
-            <div className="mb-3 p-3 rounded-xl bg-purple-950/30 border border-purple-800/40 flex items-center justify-between">
-              <div>
-                <p className="text-xs font-bold text-white">Need a specific custom movement?</p>
-                <p className="text-[10px] text-purple-300">Add any movement name, substitute, and video guide on the fly</p>
-              </div>
-              <button
-                type="button"
-                onClick={() => {
-                  const customEx = {
-                    id: `ex-custom-${Date.now()}`,
-                    name: pickerSearch.trim() || 'Custom Movement',
-                    targetMuscle: (pickerMuscleFilter !== 'All' ? pickerMuscleFilter : 'Chest') as MuscleGroup,
-                    equipment: 'Dumbbell' as EquipmentType,
-                    category: 'Compound' as const,
-                    executionCue: 'Focus on full range of motion and mind-muscle connection.',
-                    tips: ['Control eccentric tempo', 'Keep core tight'],
-                    alternativeExercise: '',
-                    videoUrl: ''
-                  };
-                  handleAddExerciseToActiveDay(customEx);
-                }}
-                className="px-3 py-1.5 rounded-lg text-xs font-bold text-white bg-purple-600 hover:bg-purple-500 transition-colors shadow-[0_0_10px_rgba(168,85,247,0.3)] flex items-center gap-1.5"
-              >
-                <Plus className="w-3.5 h-3.5" />
-                <span>Add "{pickerSearch.trim() || 'Custom'}" Now</span>
-              </button>
             </div>
 
             {/* Exercise List */}
@@ -698,19 +831,208 @@ export const WorkoutPlanBuilderModal: React.FC<WorkoutPlanBuilderModalProps> = (
                       <span className="text-[9px] font-mono px-1.5 py-0.5 rounded bg-zinc-800 text-zinc-400">
                         {ex.targetMuscle}
                       </span>
-                      <span className="text-[9px] text-zinc-500 font-medium">
+                      <span className="text-[9px] font-mono px-1.5 py-0.5 rounded bg-purple-950/60 text-purple-300 border border-purple-800/50">
                         {ex.equipment}
                       </span>
+                      {ex.videoUrl && (
+                        <span className="text-[9px] font-mono text-blue-400 flex items-center gap-0.5">
+                          <Video className="w-2.5 h-2.5" />
+                          <span>Video</span>
+                        </span>
+                      )}
                     </div>
-                    <p className="text-[11px] text-zinc-400 mt-1 line-clamp-1">
-                      {ex.executionCue}
-                    </p>
+                    {ex.alternativeExercise && (
+                      <p className="text-[10px] text-purple-300/80 mt-0.5">
+                        Alt: {ex.alternativeExercise}
+                      </p>
+                    )}
                   </div>
                   <div className="w-7 h-7 rounded-lg bg-zinc-800 group-hover:bg-purple-600 group-hover:text-white flex items-center justify-center text-zinc-400 transition-colors">
                     <Plus className="w-4 h-4 stroke-[2.5]" />
                   </div>
                 </div>
               ))}
+
+              {filteredExercises.length === 0 && (
+                <div className="py-12 text-center border border-dashed border-zinc-800 rounded-xl bg-[#0c0c11]">
+                  <Dumbbell className="w-7 h-7 text-zinc-600 mx-auto mb-2" />
+                  <p className="text-xs font-semibold text-white">No movements in library</p>
+                  <p className="text-[11px] text-zinc-500 mt-1 mb-3">Click below to create your first movement with video link</p>
+                  <button
+                    type="button"
+                    onClick={() => setIsNewMovementModalOpen(true)}
+                    className="px-4 py-2 rounded-lg text-xs font-bold text-white bg-purple-600 hover:bg-purple-500 transition-colors inline-flex items-center gap-1.5"
+                  >
+                    <Plus className="w-4 h-4" />
+                    <span>Create New Movement</span>
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* Dedicated Create Movement Modal inside Plan Builder */}
+        {isNewMovementModalOpen && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md animate-in fade-in duration-150">
+            <div 
+              className="w-full max-w-lg bg-[#121218] border border-[#2c2c3e] rounded-2xl p-6 shadow-2xl relative max-h-[90vh] overflow-y-auto animate-in zoom-in-95 duration-150"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <button
+                type="button"
+                onClick={() => setIsNewMovementModalOpen(false)}
+                className="absolute top-5 right-5 text-zinc-500 hover:text-zinc-300 p-1 rounded-lg hover:bg-zinc-800"
+              >
+                <X className="w-5 h-5" />
+              </button>
+
+              <div className="flex items-center gap-3 mb-5">
+                <div className="w-10 h-10 rounded-xl bg-purple-600/10 border border-purple-500/30 flex items-center justify-center text-purple-400">
+                  <Dumbbell className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="text-base font-bold text-white tracking-tight">
+                    Add New Exercise to Supabase
+                  </h3>
+                  <p className="text-xs text-zinc-400">
+                    Saves permanently with video link & equipment type to your database
+                  </p>
+                </div>
+              </div>
+
+              <form onSubmit={handleCreateNewExerciseSubmit} className="space-y-4">
+                <div>
+                  <label className="block text-[11px] font-mono uppercase tracking-wider text-zinc-400 mb-1">
+                    Exercise Name *
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    value={newExName}
+                    onChange={(e) => setNewExName(e.target.value)}
+                    placeholder="e.g. Incline Dumbbell Bench Press"
+                    className="w-full px-3.5 py-2.5 rounded-lg bg-[#0d0d12] border border-[#262632] text-xs text-white focus:outline-none focus:border-purple-500"
+                  />
+                </div>
+
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-[11px] font-mono uppercase tracking-wider text-zinc-400 mb-1">
+                      Equipment Type
+                    </label>
+                    <select
+                      value={newExEquipment}
+                      onChange={(e) => setNewExEquipment(e.target.value as EquipmentType)}
+                      className="w-full px-3.5 py-2.5 rounded-lg bg-[#0d0d12] border border-[#262632] text-xs text-white focus:outline-none focus:border-purple-500"
+                    >
+                      {EQUIPMENT_OPTIONS.map((eq) => (
+                        <option key={eq} value={eq}>{eq}</option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-[11px] font-mono uppercase tracking-wider text-zinc-400 mb-1">
+                      Target Muscle
+                    </label>
+                    <select
+                      value={newExMuscle}
+                      onChange={(e) => setNewExMuscle(e.target.value as MuscleGroup)}
+                      className="w-full px-3.5 py-2.5 rounded-lg bg-[#0d0d12] border border-[#262632] text-xs text-white focus:outline-none focus:border-purple-500"
+                    >
+                      {MUSCLE_OPTIONS.map((m) => (
+                        <option key={m} value={m}>{m}</option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-[11px] font-mono uppercase tracking-wider text-zinc-400 mb-1">
+                    Video Guide Link (YouTube URL)
+                  </label>
+                  <input
+                    type="url"
+                    value={newExVideoUrl}
+                    onChange={(e) => setNewExVideoUrl(e.target.value)}
+                    placeholder="https://youtube.com/watch?v=..."
+                    className="w-full px-3.5 py-2.5 rounded-lg bg-[#0d0d12] border border-[#262632] text-xs text-white focus:outline-none focus:border-purple-500 placeholder-zinc-600"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-[11px] font-mono uppercase tracking-wider text-zinc-400 mb-1">
+                    Alternative Movement (Badeel el-tamrena)
+                  </label>
+                  <input
+                    type="text"
+                    value={newExAlternative}
+                    onChange={(e) => setNewExAlternative(e.target.value)}
+                    placeholder="e.g. Incline Smith Machine Press / Chest Press Machine"
+                    className="w-full px-3.5 py-2.5 rounded-lg bg-[#0d0d12] border border-[#262632] text-xs text-white focus:outline-none focus:border-purple-500 placeholder-zinc-600"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-[11px] font-mono uppercase tracking-wider text-zinc-400 mb-1">
+                    Movement Category
+                  </label>
+                  <div className="grid grid-cols-2 gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setNewExCategory('Compound')}
+                      className={`py-2 rounded-lg text-xs font-bold border transition-colors ${
+                        newExCategory === 'Compound' 
+                          ? 'bg-purple-600 text-white border-purple-500' 
+                          : 'bg-[#0d0d12] text-zinc-400 border-[#262632]'
+                      }`}
+                    >
+                      Compound
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setNewExCategory('Isolation')}
+                      className={`py-2 rounded-lg text-xs font-bold border transition-colors ${
+                        newExCategory === 'Isolation' 
+                          ? 'bg-purple-600 text-white border-purple-500' 
+                          : 'bg-[#0d0d12] text-zinc-400 border-[#262632]'
+                      }`}
+                    >
+                      Isolation
+                    </button>
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-[11px] font-mono uppercase tracking-wider text-zinc-400 mb-1">
+                    Technique & Form Cue
+                  </label>
+                  <input
+                    type="text"
+                    value={newExCue}
+                    onChange={(e) => setNewExCue(e.target.value)}
+                    placeholder="e.g. Retract scapulae, touch lower sternum..."
+                    className="w-full px-3.5 py-2.5 rounded-lg bg-[#0d0d12] border border-[#262632] text-xs text-white focus:outline-none focus:border-purple-500"
+                  />
+                </div>
+
+                <div className="pt-3 flex items-center justify-end gap-2.5">
+                  <button
+                    type="button"
+                    onClick={() => setIsNewMovementModalOpen(false)}
+                    className="px-4 py-2 text-xs font-semibold text-zinc-400 hover:text-white rounded-lg hover:bg-zinc-800"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    className="px-5 py-2 text-xs font-bold text-white bg-purple-600 hover:bg-purple-500 rounded-lg transition-all shadow-[0_0_15px_rgba(168,85,247,0.3)]"
+                  >
+                    Save Exercise to Supabase & Add
+                  </button>
+                </div>
+              </form>
             </div>
           </div>
         )}

@@ -26,11 +26,11 @@ export const NewTraineeModal: React.FC<NewTraineeModalProps> = ({
 
   if (!isOpen) return null;
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!name.trim() || !email.trim()) return;
 
-    const newTrainee = createTrainee(
+    const newTrainee = await createTrainee(
       name.trim(),
       email.trim(),
       goal,
@@ -68,7 +68,7 @@ export const NewTraineeModal: React.FC<NewTraineeModalProps> = ({
               Register New Trainee
             </h3>
             <p className="text-xs text-zinc-400">
-              Add athlete profile to your coaching dashboard
+              Add athlete profile to your athlete roster
             </p>
           </div>
         </div>

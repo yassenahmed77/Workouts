@@ -28,8 +28,14 @@ export type MuscleGroup =
   | 'Shoulders' 
   | 'Quads' 
   | 'Hamstrings' 
+  | 'Glutes' 
   | 'Arms' 
+  | 'Biceps' 
+  | 'Triceps' 
+  | 'Calves' 
   | 'Core' 
+  | 'Forearms' 
+  | 'Traps' 
   | 'Full Body';
 
 export type EquipmentType = 
@@ -38,7 +44,11 @@ export type EquipmentType =
   | 'Cable' 
   | 'Machine' 
   | 'Bodyweight' 
-  | 'Smith Machine';
+  | 'Smith Machine' 
+  | 'EZ Bar' 
+  | 'Kettlebell' 
+  | 'Resistance Band' 
+  | 'Other';
 
 export interface Exercise {
   id: string;
@@ -60,7 +70,7 @@ export interface RoutineExercise {
   equipment: EquipmentType;
   sets: number;
   targetReps: string; // e.g., "8-10", "12-15", "5"
-  targetRpe?: number; // e.g., 8
+  targetRpe?: string | number; // e.g., "1-2", "8-9", "RIR 1-2", 8
   restSeconds: number; // e.g., 90
   notes?: string;
   alternativeExercise?: string; // El badeel bta3 el tamrena

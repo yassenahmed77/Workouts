@@ -187,6 +187,14 @@ export const AssignPlanModal: React.FC<AssignPlanModalProps> = ({
                   </div>
                 );
               })}
+
+              {plans.length === 0 && (
+                <div className="p-6 rounded-xl bg-[#0d0d12] border border-dashed border-zinc-800 text-center">
+                  <p className="text-xs text-zinc-400">
+                    No workout protocols created yet. Build a new workout split first using the <span className="text-purple-400 font-semibold">+ Build / Edit Split</span> button.
+                  </p>
+                </div>
+              )}
             </div>
           </div>
         </div>

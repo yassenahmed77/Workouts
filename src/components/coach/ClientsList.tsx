@@ -15,7 +15,10 @@ import {
   CheckCircle2, 
   AlertCircle, 
   Clock,
-  LogIn
+  LogIn,
+  Copy,
+  Check,
+  Link as LinkIcon
 } from 'lucide-react';
 
 interface ClientsListProps {
@@ -36,6 +39,7 @@ export const ClientsList: React.FC<ClientsListProps> = ({
   const { users, plans, logs } = useGym();
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<'all' | 'active' | 'pending'>('all');
+  const [copiedId, setCopiedId] = useState<string | null>(null);
 
   const trainees = users.filter((u) => u.role === 'trainee');
 
@@ -55,6 +59,15 @@ export const ClientsList: React.FC<ClientsListProps> = ({
 
   const activePlansCount = trainees.filter((t) => t.assignedPlanId).length;
   const pendingPlansCount = trainees.length - activePlansCount;
+
+  const handleCopyAthleteLink = (traineeId: string) => {
+    if (typeof window !== 'undefined') {
+      const url = `${window.location.origin}/?user=${traineeId}`;
+      navigator.clipboard.writeText(url);
+      setCopiedId(traineeId);
+      setTimeout(() => setCopiedId(null), 2500);
+    }
+  };
 
   return (
     <div className="space-y-6">
@@ -97,7 +110,7 @@ export const ClientsList: React.FC<ClientsListProps> = ({
         </div>
       </div>
 
-      {/* Direct Quick Action Bar for Instant Modifying */}
+      {/* Direct Quick Action Bar */}
       <div className="p-4 rounded-xl bg-gradient-to-r from-purple-950/40 via-[#14141d] to-[#101017] border border-purple-900/40 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-[0_0_25px_rgba(168,85,247,0.08)]">
         <div className="flex items-center gap-3">
           <div className="w-9 h-9 rounded-lg bg-purple-600/20 border border-purple-500/30 flex items-center justify-center text-purple-400">
@@ -181,6 +194,7 @@ export const ClientsList: React.FC<ClientsListProps> = ({
         {filteredTrainees.map((trainee) => {
           const assignedPlan = plans.find((p) => p.id === trainee.assignedPlanId);
           const traineeLogs = logs.filter((l) => l.userId === trainee.id);
+          const isCopied = copiedId === trainee.id;
 
           return (
             <div
@@ -277,7 +291,7 @@ export const ClientsList: React.FC<ClientsListProps> = ({
                 </div>
               </div>
 
-              {/* Action Buttons: High accessibility for modifying */}
+              {/* Action Buttons */}
               <div className="pt-3 border-t border-zinc-800/80 space-y-2">
                 <div className="grid grid-cols-2 gap-2">
                   <button
@@ -294,20 +308,43 @@ export const ClientsList: React.FC<ClientsListProps> = ({
                   </button>
                 </div>
 
-                {/* Inspect Profile / Switch View */}
-                <div className="flex items-center gap-2">
+                {/* Inspect Profile & Copy Link & Switch */}
+                <div className="grid grid-cols-3 gap-1.5">
                   <button
                     onClick={() => onSelectTraineeDetails(trainee)}
-                    className="flex-1 py-1.5 text-[11px] font-semibold text-zinc-400 hover:text-white bg-zinc-900/50 hover:bg-zinc-800 rounded-md border border-zinc-800/70 transition-colors"
+                    className="py-1.5 text-[11px] font-semibold text-zinc-400 hover:text-white bg-zinc-900/50 hover:bg-zinc-800 rounded-md border border-zinc-800/70 transition-colors text-center truncate"
                   >
-                    Profile & Notes
+                    Profile
                   </button>
+
+                  <button
+                    onClick={() => handleCopyAthleteLink(trainee.id)}
+                    className={`py-1.5 text-[11px] font-semibold rounded-md border transition-all flex items-center justify-center gap-1 ${
+                      isCopied
+                        ? 'bg-emerald-950/60 text-emerald-300 border-emerald-700/60'
+                        : 'text-zinc-300 hover:text-white bg-zinc-900/50 hover:bg-zinc-800 border-zinc-800/70'
+                    }`}
+                    title="Copy direct WhatsApp login link for this athlete"
+                  >
+                    {isCopied ? (
+                      <>
+                        <Check className="w-3 h-3 text-emerald-400" />
+                        <span>Copied!</span>
+                      </>
+                    ) : (
+                      <>
+                        <LinkIcon className="w-3 h-3 text-purple-400" />
+                        <span>Link</span>
+                      </>
+                    )}
+                  </button>
+
                   <button
                     onClick={() => onSwitchToTrainee(trainee.id)}
-                    className="flex-1 py-1.5 text-[11px] font-semibold text-purple-300 hover:text-white bg-purple-950/40 hover:bg-purple-900/50 rounded-md border border-purple-800/40 transition-colors flex items-center justify-center gap-1"
+                    className="py-1.5 text-[11px] font-semibold text-purple-300 hover:text-white bg-purple-950/40 hover:bg-purple-900/50 rounded-md border border-purple-800/40 transition-colors flex items-center justify-center gap-1"
                   >
                     <LogIn className="w-3 h-3" />
-                    <span>Test View</span>
+                    <span>View</span>
                   </button>
                 </div>
               </div>

@@ -14,7 +14,8 @@ import {
   ShieldCheck, 
   Plus, 
   Sparkles,
-  Flame
+  Flame,
+  LogOut
 } from 'lucide-react';
 import { UserGoal } from '@/types';
 
@@ -25,8 +26,10 @@ interface NavbarProps {
 }
 
 export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, onOpenNewTraineeModal }) => {
-  const { currentUser, users, switchUser } = useGym();
+  const { currentUser, users, switchUser, logout } = useGym();
   const [isSwitcherOpen, setIsSwitcherOpen] = useState(false);
+
+  if (!currentUser) return null;
 
   const isCoach = currentUser.role === 'coach';
 
@@ -45,7 +48,7 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, onOpenN
                 <span className="text-base font-extrabold tracking-tight text-white flex items-center gap-1.5">
                   WORKOUTS <span className="text-[10px] font-mono font-medium px-1.5 py-0.5 rounded bg-purple-950/60 text-purple-300 border border-purple-800/60 tracking-wider">PRO OS</span>
                 </span>
-                <span className="text-[11px] text-zinc-500 font-medium">Head Coach: Yassen Ahmed</span>
+                <span className="text-[11px] text-zinc-500 font-medium">Yassen Ahmed</span>
               </div>
             </div>
 
@@ -145,7 +148,7 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, onOpenN
               {isCoach ? (
                 <>
                   <ShieldCheck className="w-3.5 h-3.5 text-purple-400" />
-                  <span className="text-purple-400">COACH</span>
+                  <span className="text-purple-400">ADMIN</span>
                 </>
               ) : (
                 <>
@@ -171,7 +174,7 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, onOpenN
                     {currentUser.name}
                   </span>
                   <span className="text-[10px] text-zinc-500 capitalize">
-                    {currentUser.role}
+                    {isCoach ? 'Admin' : 'Trainee'}
                   </span>
                 </div>
                 <ChevronDown className="w-3.5 h-3.5 text-zinc-500 group-hover:text-zinc-300 ml-0.5" />
@@ -225,25 +228,39 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, onOpenN
                               ? 'bg-purple-950/60 text-purple-300 border border-purple-800/50' 
                               : 'bg-zinc-800 text-zinc-400'
                           }`}>
-                            {u.role}
+                            {userIsCoach ? 'ADMIN' : 'TRAINEE'}
                           </span>
                         </button>
                       );
                     })}
                   </div>
 
-                  {/* Add New Trainee Button */}
-                  <div className="mt-2 pt-2 border-t border-zinc-800/80">
+                  {/* Actions section */}
+                  <div className="mt-2 pt-2 border-t border-zinc-800/80 space-y-1">
+                    {isCoach && (
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setIsSwitcherOpen(false);
+                          onOpenNewTraineeModal();
+                        }}
+                        className="w-full flex items-center justify-center gap-2 py-2 px-3 rounded-lg text-xs font-medium text-zinc-300 hover:text-white bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 transition-colors"
+                      >
+                        <Plus className="w-3.5 h-3.5 text-purple-400" />
+                        Register New Trainee
+                      </button>
+                    )}
+
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
                         setIsSwitcherOpen(false);
-                        onOpenNewTraineeModal();
+                        logout();
                       }}
-                      className="w-full flex items-center justify-center gap-2 py-2 px-3 rounded-lg text-xs font-medium text-zinc-300 hover:text-white bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 transition-colors"
+                      className="w-full flex items-center justify-center gap-2 py-2 px-3 rounded-lg text-xs font-semibold text-red-400 hover:text-red-300 bg-red-950/20 hover:bg-red-950/40 border border-red-900/30 transition-colors"
                     >
-                      <Plus className="w-3.5 h-3.5 text-purple-400" />
-                      Register New Trainee
+                      <LogOut className="w-3.5 h-3.5" />
+                      Sign Out / Switch Portal
                     </button>
                   </div>
                 </div>

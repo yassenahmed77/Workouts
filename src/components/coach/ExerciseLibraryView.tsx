@@ -11,15 +11,23 @@ import {
   Filter, 
   CheckCircle2, 
   Sparkles,
-  X
+  X,
+  Play,
+  ExternalLink,
+  Video,
+  Trash2
 } from 'lucide-react';
 
 const MUSCLE_GROUPS: MuscleGroup[] = [
-  'Chest', 'Back', 'Shoulders', 'Quads', 'Hamstrings', 'Arms', 'Core'
+  'Chest', 'Back', 'Shoulders', 'Quads', 'Hamstrings', 'Glutes', 'Arms', 'Biceps', 'Triceps', 'Calves', 'Core', 'Forearms', 'Traps', 'Full Body'
+];
+
+const EQUIPMENT_TYPES: EquipmentType[] = [
+  'Barbell', 'Dumbbell', 'Cable', 'Machine', 'Bodyweight', 'Smith Machine', 'EZ Bar', 'Kettlebell', 'Resistance Band', 'Other'
 ];
 
 export const ExerciseLibraryView: React.FC = () => {
-  const { exercises, addExercise } = useGym();
+  const { exercises, addExercise, deleteExercise } = useGym();
   const [selectedMuscle, setSelectedMuscle] = useState<string>('All');
   const [searchQuery, setSearchQuery] = useState('');
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
@@ -29,6 +37,8 @@ export const ExerciseLibraryView: React.FC = () => {
   const [targetMuscle, setTargetMuscle] = useState<MuscleGroup>('Chest');
   const [equipment, setEquipment] = useState<EquipmentType>('Barbell');
   const [category, setCategory] = useState<'Compound' | 'Isolation'>('Compound');
+  const [videoUrl, setVideoUrl] = useState('');
+  const [alternativeExercise, setAlternativeExercise] = useState('');
   const [executionCue, setExecutionCue] = useState('');
   const [tipInput, setTipInput] = useState('');
 
@@ -36,24 +46,29 @@ export const ExerciseLibraryView: React.FC = () => {
     const matchesMuscle = selectedMuscle === 'All' || ex.targetMuscle === selectedMuscle;
     const matchesSearch =
       ex.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      ex.executionCue.toLowerCase().includes(searchQuery.toLowerCase());
+      ex.executionCue.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      (ex.alternativeExercise && ex.alternativeExercise.toLowerCase().includes(searchQuery.toLowerCase()));
     return matchesMuscle && matchesSearch;
   });
 
-  const handleCreateExercise = (e: React.FormEvent) => {
+  const handleCreateExercise = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!name.trim()) return;
 
-    addExercise({
+    await addExercise({
       name: name.trim(),
       targetMuscle,
       equipment,
       category,
+      videoUrl: videoUrl.trim() || undefined,
+      alternativeExercise: alternativeExercise.trim() || undefined,
       executionCue: executionCue.trim() || 'Execute with controlled tempo and strict form.',
       tips: tipInput ? tipInput.split(',').map((t) => t.trim()).filter(Boolean) : ['Maintain neutral spine', 'Control eccentric']
     });
 
     setName('');
+    setVideoUrl('');
+    setAlternativeExercise('');
     setExecutionCue('');
     setTipInput('');
     setIsAddModalOpen(false);
@@ -66,57 +81,59 @@ export const ExerciseLibraryView: React.FC = () => {
         <div>
           <h2 className="text-lg font-bold text-white tracking-tight flex items-center gap-2">
             <BookOpen className="w-5 h-5 text-purple-400" />
-            Movement & Exercise Database
+            Exercise Database & Video Guides
           </h2>
           <p className="text-xs text-zinc-400 mt-1">
-            Curated library of standard movements, form cues, and equipment specifications
+            Saved exercises with video links and alternatives. Saved exercises will be instantly available when building splits.
           </p>
         </div>
 
         <button
           onClick={() => setIsAddModalOpen(true)}
-          className="flex items-center gap-2 px-4 py-2.5 text-xs font-bold text-white bg-purple-600 hover:bg-purple-500 rounded-lg transition-all shadow-[0_0_15px_rgba(168,85,247,0.3)] self-start sm:self-auto"
+          className="flex items-center gap-2 px-4 py-2 text-xs font-bold text-white bg-purple-600 hover:bg-purple-500 rounded-xl transition-all shadow-[0_0_15px_rgba(168,85,247,0.3)] self-start sm:self-auto"
         >
           <Plus className="w-4 h-4 stroke-[2.5]" />
-          <span>Add Custom Exercise</span>
+          <span>Add New Exercise</span>
         </button>
       </div>
 
       {/* Filter & Search Bar */}
-      <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3">
-        <div className="relative flex-1 max-w-md">
-          <Search className="w-4 h-4 text-zinc-500 absolute left-3.5 top-1/2 -translate-y-1/2" />
-          <input
-            type="text"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Search movements or biomechanical cues..."
-            className="w-full pl-9 pr-3.5 py-2 rounded-lg bg-[#111116] border border-[#23232f] text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-purple-500 transition-colors"
-          />
+      <div className="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-3">
+        <div className="flex items-center gap-2 flex-1 max-w-md">
+          <div className="relative w-full">
+            <Search className="w-4 h-4 text-zinc-500 absolute left-3.5 top-1/2 -translate-y-1/2" />
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search exercise by name, cue, or alternative..."
+              className="w-full pl-9 pr-3.5 py-2 rounded-lg bg-[#111116] border border-[#23232f] text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-purple-500 transition-colors"
+            />
+          </div>
         </div>
 
-        {/* Muscle group chips */}
-        <div className="flex items-center gap-1.5 overflow-x-auto pb-1">
+        {/* Muscle group filter pills */}
+        <div className="flex items-center gap-1.5 overflow-x-auto pb-1 lg:pb-0 scrollbar-none">
           <button
             onClick={() => setSelectedMuscle('All')}
-            className={`px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-all ${
+            className={`px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-colors ${
               selectedMuscle === 'All'
-                ? 'bg-purple-600 text-white shadow-[0_0_10px_rgba(168,85,247,0.3)]'
-                : 'bg-[#111116] text-zinc-400 hover:text-white border border-[#23232f]'
+                ? 'bg-purple-600 text-white'
+                : 'bg-[#121218] text-zinc-400 hover:text-white border border-[#22222d]'
             }`}
           >
-            All Movements ({exercises.length})
+            All Muscles ({exercises.length})
           </button>
           {MUSCLE_GROUPS.map((muscle) => {
-            const count = exercises.filter((ex) => ex.targetMuscle === muscle).length;
+            const count = exercises.filter((e) => e.targetMuscle === muscle).length;
             return (
               <button
                 key={muscle}
                 onClick={() => setSelectedMuscle(muscle)}
-                className={`px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-all ${
+                className={`px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-colors ${
                   selectedMuscle === muscle
-                    ? 'bg-purple-600 text-white shadow-[0_0_10px_rgba(168,85,247,0.3)]'
-                    : 'bg-[#111116] text-zinc-400 hover:text-white border border-[#23232f]'
+                    ? 'bg-purple-600 text-white'
+                    : 'bg-[#121218] text-zinc-400 hover:text-white border border-[#22222d]'
                 }`}
               >
                 {muscle} ({count})
@@ -127,73 +144,115 @@ export const ExerciseLibraryView: React.FC = () => {
       </div>
 
       {/* Exercises Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
         {filteredExercises.map((ex) => (
           <div
             key={ex.id}
-            className="p-5 rounded-xl bg-[#111116] border border-[#22222e] hover:border-[#323242] transition-all flex flex-col justify-between"
+            className="p-5 rounded-2xl bg-[#111117] border border-[#22222e] hover:border-purple-500/40 transition-all flex flex-col justify-between group"
           >
             <div>
-              <div className="flex items-start justify-between gap-2 mb-2">
-                <h3 className="text-sm font-bold text-white tracking-tight">
-                  {ex.name}
-                </h3>
-                <span className={`text-[9px] font-mono uppercase tracking-wider px-2 py-0.5 rounded font-semibold ${
-                  ex.category === 'Compound' 
-                    ? 'bg-purple-950/60 text-purple-300 border border-purple-800/50' 
-                    : 'bg-cyan-500/15 text-cyan-300 border border-cyan-500/30'
-                }`}>
-                  {ex.category}
-                </span>
-              </div>
+              <div className="flex items-start justify-between gap-3 mb-2.5">
+                <div>
+                  <h3 className="text-sm font-bold text-white tracking-tight group-hover:text-purple-300 transition-colors">
+                    {ex.name}
+                  </h3>
+                  <div className="flex items-center gap-2 mt-1">
+                    <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-purple-950/60 text-purple-300 border border-purple-800/50">
+                      {ex.targetMuscle}
+                    </span>
+                    <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-zinc-800 text-zinc-400">
+                      {ex.equipment}
+                    </span>
+                  </div>
+                </div>
 
-              <div className="flex items-center gap-2 mb-3 text-[11px] font-mono text-zinc-400">
-                <span className="px-2 py-0.5 rounded bg-zinc-800 text-zinc-300">
-                  {ex.targetMuscle}
-                </span>
-                <span>•</span>
-                <span>{ex.equipment}</span>
-              </div>
-
-              <div className="p-3 rounded-lg bg-[#0d0d12] border border-zinc-900 mb-3">
-                <span className="block text-[9px] font-mono uppercase tracking-wider text-zinc-500 mb-1">
-                  Primary Execution Cue
-                </span>
-                <p className="text-xs text-zinc-300 leading-relaxed">
-                  {ex.executionCue}
-                </p>
-              </div>
-
-              {ex.tips && ex.tips.length > 0 && (
-                <div className="space-y-1">
-                  <span className="block text-[9px] font-mono uppercase tracking-wider text-zinc-500">
-                    Coach Form Checklist
+                <div className="flex items-center gap-1.5">
+                  <span className={`text-[10px] font-mono font-semibold px-2 py-0.5 rounded ${
+                    ex.category === 'Compound' 
+                      ? 'bg-purple-950/60 text-purple-300 border border-purple-800/50' 
+                      : 'bg-zinc-800 text-zinc-400'
+                  }`}>
+                    {ex.category}
                   </span>
-                  <ul className="space-y-1">
-                    {ex.tips.map((tip, idx) => (
-                      <li key={idx} className="text-[11px] text-zinc-400 flex items-center gap-1.5">
-                        <span className="w-1 h-1 rounded-full bg-purple-400" />
-                        <span>{tip}</span>
-                      </li>
-                    ))}
-                  </ul>
+
+                  <button
+                    type="button"
+                    onClick={() => deleteExercise(ex.id)}
+                    className="p-1 rounded-md text-zinc-500 hover:text-red-400 hover:bg-zinc-800/60 transition-colors"
+                    title="Delete exercise from database"
+                  >
+                    <Trash2 className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+              </div>
+
+              {/* Alternative Exercise */}
+              {ex.alternativeExercise && (
+                <div className="my-2 px-2.5 py-1.5 rounded-lg bg-purple-950/20 border border-purple-900/40 text-[11px] text-purple-300 flex items-center gap-1.5">
+                  <span className="font-mono text-[10px] uppercase font-bold text-purple-400">Alt:</span>
+                  <span>{ex.alternativeExercise}</span>
+                </div>
+              )}
+
+              {/* Execution Cue */}
+              <p className="text-xs text-zinc-400 line-clamp-3 leading-relaxed mt-2">
+                {ex.executionCue}
+              </p>
+
+              {/* Tips */}
+              {ex.tips && ex.tips.length > 0 && (
+                <div className="mt-3 pt-3 border-t border-zinc-800/60 space-y-1">
+                  <span className="text-[10px] font-mono uppercase tracking-wider text-zinc-500 block">
+                    Checklist Cues
+                  </span>
+                  {ex.tips.slice(0, 2).map((tip, idx) => (
+                    <div key={idx} className="flex items-center gap-1.5 text-[11px] text-zinc-300">
+                      <span className="w-1 h-1 rounded-full bg-purple-400" />
+                      <span className="truncate">{tip}</span>
+                    </div>
+                  ))}
                 </div>
               )}
             </div>
+
+            {/* Video Guide Link */}
+            {ex.videoUrl && (
+              <div className="mt-4 pt-3 border-t border-zinc-800/60 flex items-center justify-between">
+                <a
+                  href={ex.videoUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-[11px] font-semibold text-purple-400 hover:text-purple-300 transition-colors flex items-center gap-1.5"
+                >
+                  <Video className="w-3.5 h-3.5 text-purple-400" />
+                  <span>Watch Video Guide ↗</span>
+                </a>
+              </div>
+            )}
           </div>
         ))}
+
+        {filteredExercises.length === 0 && (
+          <div className="col-span-full py-16 text-center border border-dashed border-zinc-800 rounded-2xl bg-[#0e0e14]">
+            <Dumbbell className="w-8 h-8 text-zinc-600 mx-auto mb-2" />
+            <h3 className="text-sm font-bold text-white">No Movements Found</h3>
+            <p className="text-xs text-zinc-500 mt-1">
+              Try a different search query or add a new custom exercise
+            </p>
+          </div>
+        )}
       </div>
 
       {/* Add New Exercise Modal */}
       {isAddModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-150">
           <div 
-            className="w-full max-w-md bg-[#121218] border border-[#272734] rounded-2xl p-6 shadow-2xl relative animate-in zoom-in-95 duration-150"
+            className="w-full max-w-lg bg-[#121218] border border-[#272734] rounded-2xl p-6 shadow-2xl relative max-h-[90vh] overflow-y-auto animate-in zoom-in-95 duration-150"
             onClick={(e) => e.stopPropagation()}
           >
             <button
               onClick={() => setIsAddModalOpen(false)}
-              className="absolute top-5 right-5 text-zinc-500 hover:text-zinc-300 p-1 rounded-lg hover:bg-zinc-800/60 transition-colors"
+              className="absolute top-5 right-5 text-zinc-500 hover:text-zinc-300 p-1 rounded-lg hover:bg-zinc-800"
             >
               <X className="w-5 h-5" />
             </button>
@@ -204,10 +263,10 @@ export const ExerciseLibraryView: React.FC = () => {
               </div>
               <div>
                 <h3 className="text-base font-bold text-white tracking-tight">
-                  Add New Exercise
+                  Add New Exercise To Database
                 </h3>
                 <p className="text-xs text-zinc-400">
-                  Expand your database with custom movements
+                  Save exercise once with its video link to use across all workout plans
                 </p>
               </div>
             </div>
@@ -222,8 +281,8 @@ export const ExerciseLibraryView: React.FC = () => {
                   required
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  placeholder="e.g. Incline Smith Machine Press"
-                  className="w-full px-3.5 py-2 rounded-lg bg-[#0d0d12] border border-[#262632] text-xs text-white focus:outline-none focus:border-purple-500"
+                  placeholder="e.g. Incline Dumbbell Bench Press"
+                  className="w-full px-3.5 py-2.5 rounded-lg bg-[#0d0d12] border border-[#262632] text-xs text-white focus:outline-none focus:border-purple-500"
                 />
               </div>
 
@@ -235,7 +294,7 @@ export const ExerciseLibraryView: React.FC = () => {
                   <select
                     value={targetMuscle}
                     onChange={(e) => setTargetMuscle(e.target.value as MuscleGroup)}
-                    className="w-full px-3.5 py-2 rounded-lg bg-[#0d0d12] border border-[#262632] text-xs text-white focus:outline-none focus:border-purple-500"
+                    className="w-full px-3.5 py-2.5 rounded-lg bg-[#0d0d12] border border-[#262632] text-xs text-white focus:outline-none focus:border-purple-500"
                   >
                     {MUSCLE_GROUPS.map((m) => (
                       <option key={m} value={m}>{m}</option>
@@ -250,16 +309,39 @@ export const ExerciseLibraryView: React.FC = () => {
                   <select
                     value={equipment}
                     onChange={(e) => setEquipment(e.target.value as EquipmentType)}
-                    className="w-full px-3.5 py-2 rounded-lg bg-[#0d0d12] border border-[#262632] text-xs text-white focus:outline-none focus:border-purple-500"
+                    className="w-full px-3.5 py-2.5 rounded-lg bg-[#0d0d12] border border-[#262632] text-xs text-white focus:outline-none focus:border-purple-500"
                   >
-                    <option value="Barbell">Barbell</option>
-                    <option value="Dumbbell">Dumbbell</option>
-                    <option value="Cable">Cable</option>
-                    <option value="Machine">Machine</option>
-                    <option value="Bodyweight">Bodyweight</option>
-                    <option value="Smith Machine">Smith Machine</option>
+                    {EQUIPMENT_TYPES.map((eq) => (
+                      <option key={eq} value={eq}>{eq}</option>
+                    ))}
                   </select>
                 </div>
+              </div>
+
+              <div>
+                <label className="block text-[11px] font-mono uppercase tracking-wider text-zinc-400 mb-1">
+                  Video Guide Link (YouTube / URL)
+                </label>
+                <input
+                  type="url"
+                  value={videoUrl}
+                  onChange={(e) => setVideoUrl(e.target.value)}
+                  placeholder="https://youtube.com/watch?v=... or search link"
+                  className="w-full px-3.5 py-2.5 rounded-lg bg-[#0d0d12] border border-[#262632] text-xs text-white focus:outline-none focus:border-purple-500 placeholder-zinc-600"
+                />
+              </div>
+
+              <div>
+                <label className="block text-[11px] font-mono uppercase tracking-wider text-zinc-400 mb-1">
+                  Alternative Exercise (Badayel el-tamrena)
+                </label>
+                <input
+                  type="text"
+                  value={alternativeExercise}
+                  onChange={(e) => setAlternativeExercise(e.target.value)}
+                  placeholder="e.g. Incline Smith Machine Press / Chest Press Machine"
+                  className="w-full px-3.5 py-2.5 rounded-lg bg-[#0d0d12] border border-[#262632] text-xs text-white focus:outline-none focus:border-purple-500 placeholder-zinc-600"
+                />
               </div>
 
               <div>
@@ -294,14 +376,14 @@ export const ExerciseLibraryView: React.FC = () => {
 
               <div>
                 <label className="block text-[11px] font-mono uppercase tracking-wider text-zinc-400 mb-1">
-                  Execution Cue
+                  Technique & Form Cue
                 </label>
                 <input
                   type="text"
                   value={executionCue}
                   onChange={(e) => setExecutionCue(e.target.value)}
-                  placeholder="e.g. Retract scapulae, touch lower sternum..."
-                  className="w-full px-3.5 py-2 rounded-lg bg-[#0d0d12] border border-[#262632] text-xs text-white focus:outline-none focus:border-purple-500"
+                  placeholder="e.g. Retract scapulae, touch lower sternum, 3s eccentric descent..."
+                  className="w-full px-3.5 py-2.5 rounded-lg bg-[#0d0d12] border border-[#262632] text-xs text-white focus:outline-none focus:border-purple-500"
                 />
               </div>
 
@@ -313,8 +395,8 @@ export const ExerciseLibraryView: React.FC = () => {
                   type="text"
                   value={tipInput}
                   onChange={(e) => setTipInput(e.target.value)}
-                  placeholder="e.g. Keep wrists neutral, Drive through heels"
-                  className="w-full px-3.5 py-2 rounded-lg bg-[#0d0d12] border border-[#262632] text-xs text-white focus:outline-none focus:border-purple-500"
+                  placeholder="e.g. Keep wrists neutral, Drive feet firmly into floor"
+                  className="w-full px-3.5 py-2.5 rounded-lg bg-[#0d0d12] border border-[#262632] text-xs text-white focus:outline-none focus:border-purple-500"
                 />
               </div>
 
@@ -330,7 +412,7 @@ export const ExerciseLibraryView: React.FC = () => {
                   type="submit"
                   className="px-5 py-2 text-xs font-bold text-white bg-purple-600 hover:bg-purple-500 rounded-lg transition-all shadow-[0_0_15px_rgba(168,85,247,0.3)]"
                 >
-                  Save Exercise
+                  Save Exercise to Database
                 </button>
               </div>
             </form>

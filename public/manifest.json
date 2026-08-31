@@ -14,16 +14,29 @@
       "sizes": "any",
       "type": "image/svg+xml",
       "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "⚡ Start Workout",
+      "short_name": "Workout",
+      "description": "Open today's workout split session",
+      "url": "/?tab=split",
+      "icons": [{ "src": "/icon.svg", "sizes": "any" }]
     },
     {
-      "src": "/icon-192.png",
-      "sizes": "192x192",
-      "type": "image/png"
+      "name": "💧 Daily Habits",
+      "short_name": "Habits",
+      "description": "Log daily habits and check-in",
+      "url": "/?tab=habits",
+      "icons": [{ "src": "/icon.svg", "sizes": "any" }]
     },
     {
-      "src": "/icon-512.png",
-      "sizes": "512x512",
-      "type": "image/png"
+      "name": "📈 Progress & PRs",
+      "short_name": "Progress",
+      "description": "View strength progression and metrics",
+      "url": "/?tab=history",
+      "icons": [{ "src": "/icon.svg", "sizes": "any" }]
     }
   ]
 }

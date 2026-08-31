@@ -39,6 +39,17 @@ export default function Home() {
   const [isClientDetailModalOpen, setIsClientDetailModalOpen] = useState(false);
   const [detailUser, setDetailUser] = useState<User | null>(null);
 
+  // Sync tab from URL query parameter (PWA 3D Touch Shortcuts)
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      const tabParam = params.get('tab');
+      if (tabParam) {
+        setActiveTab(tabParam);
+      }
+    }
+  }, []);
+
   // Sync default tab when user changes
   useEffect(() => {
     if (currentUser) {

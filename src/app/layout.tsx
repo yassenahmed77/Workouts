@@ -15,13 +15,17 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "WORKOUTS | Athlete Training App",
+  title: "WORKOUTS PRO | Athlete & Coach OS",
   description: "High-performance training app for Coach Yassen Ahmed and athletes.",
   manifest: "/manifest.json",
   appleWebApp: {
     capable: true,
     statusBarStyle: "black-translucent",
-    title: "WORKOUTS"
+    title: "WORKOUTS PRO"
+  },
+  icons: {
+    icon: "/icon.svg",
+    apple: "/icon.svg"
   }
 };
 

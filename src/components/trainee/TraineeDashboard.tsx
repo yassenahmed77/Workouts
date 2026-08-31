@@ -416,17 +416,17 @@ export const TraineeDashboard: React.FC<TraineeDashboardProps> = ({
         <div className="p-5 rounded-3xl bg-[#111218] border border-[#212330] shadow-xl space-y-4">
           <div>
             <div className="flex items-center justify-between mb-3">
-              <div>
-                <h2 className="text-base font-extrabold text-white tracking-tight">
-                  Today's Workout
+              <div className="min-w-0 flex-1 mr-2">
+                <h2 className="text-base font-extrabold text-white tracking-tight truncate">
+                  {plan ? plan.title : 'Custom Workout Split'}
                 </h2>
-                <p className="text-xs font-bold text-[#ff6b00] mt-0.5 tracking-wide">
-                  {activeDay ? activeDay.dayName : 'Upper (A)'}
+                <p className="text-xs font-bold text-[#ff6b00] mt-0.5 tracking-wide truncate">
+                  {activeDay ? activeDay.dayName : 'Today\'s Session'}
                 </p>
               </div>
 
-              <span className="text-[10px] font-mono font-semibold px-2.5 py-1 rounded-full bg-[#1a1b26] text-zinc-300 border border-[#2a2d3d]">
-                {activeDay?.exercises.length || 10} Exercises
+              <span className="text-[10px] font-mono font-semibold px-2.5 py-1 rounded-full bg-[#1a1b26] text-zinc-300 border border-[#2a2d3d] flex-shrink-0">
+                {activeDay?.exercises.length || 0} Movements
               </span>
             </div>
 

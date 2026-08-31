@@ -175,7 +175,7 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, onOpenN
                       }`}
                     >
                       <Home className="w-3.5 h-3.5" />
-                      Dashboard
+                      Home
                     </button>
                     <button
                       onClick={() => setActiveTab('split')}
@@ -434,7 +434,7 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, onOpenN
           </>
         ) : (
           <>
-            {/* 1. Dashboard Tab (Home Icon with Fill + Orange Highlight) */}
+            {/* 1. Home Tab (Home Icon with Fill + Orange Highlight) */}
             <button
               onClick={() => setActiveTab('today')}
               className={`flex flex-col items-center justify-center py-1 px-2.5 rounded-xl transition-all relative group cursor-pointer active:scale-95 ${
@@ -444,7 +444,7 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, onOpenN
               }`}
             >
               <Home className={`w-5 h-5 mb-0.5 ${activeTab === 'today' ? 'fill-current' : ''}`} />
-              <span className="text-[10px] tracking-tight">Dashboard</span>
+              <span className="text-[10px] tracking-tight">Home</span>
               {activeTab === 'today' && (
                 <span className="absolute bottom-0 w-5 h-0.5 rounded-full bg-[#ff6b00] shadow-[0_0_10px_#ff6b00]" />
               )}

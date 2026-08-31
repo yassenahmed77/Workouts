@@ -825,7 +825,7 @@ export const LiveWorkoutSession: React.FC<LiveWorkoutSessionProps> = ({
               onClick={onSessionCompleted}
               className="w-full py-3.5 rounded-2xl btn-orange text-xs font-black tracking-wide flex items-center justify-center gap-2 cursor-pointer"
             >
-              <span>Back to Dashboard</span>
+              <span>Back to Home</span>
               <ArrowRight className="w-4 h-4" />
             </button>
           </div>

@@ -2,22 +2,21 @@
 
 import React, { useState } from 'react';
 import { useGym } from '@/context/GymContext';
+import { useToast } from '@/context/ToastContext';
 import { 
   Dumbbell, 
   ShieldCheck, 
   User as UserIcon, 
   ArrowRight, 
   Mail, 
-  Sparkles, 
-  Database, 
   CheckCircle2, 
   Users, 
-  Flame,
-  KeyRound
+  Flame
 } from 'lucide-react';
 
 export const AuthScreen: React.FC = () => {
-  const { users, login, loginWithEmail, isSupabaseActive } = useGym();
+  const { users, login, loginWithEmail } = useGym();
+  const { showToast } = useToast();
   const [emailInput, setEmailInput] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
   const [activeTab, setActiveTab] = useState<'quick' | 'email'>('quick');
@@ -32,72 +31,66 @@ export const AuthScreen: React.FC = () => {
 
     const loggedUser = loginWithEmail(emailInput.trim());
     if (!loggedUser) {
-      setErrorMessage('No athlete account found with this email. Please check your spelling or choose from the profiles below.');
+      setErrorMessage('No athlete account found with this email. Please check spelling or select below.');
+    } else {
+      showToast(`Welcome back, ${loggedUser.name}!`, 'success');
     }
   };
 
-  return (
-    <div className="min-h-screen bg-[#07070a] text-[#f4f4f6] flex flex-col justify-center items-center p-4 sm:p-6 selection:bg-purple-600 selection:text-white relative overflow-hidden">
-      {/* Dynamic Background Glows */}
-      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[600px] h-[600px] bg-purple-600/10 rounded-full blur-[140px] pointer-events-none" />
-      <div className="absolute bottom-10 right-10 w-[300px] h-[300px] bg-violet-600/10 rounded-full blur-[100px] pointer-events-none" />
+  const handleQuickLogin = (userId: string, name: string) => {
+    login(userId);
+    showToast(`Logged in as ${name}`, 'info');
+  };
 
+  return (
+    <div className="min-h-screen bg-[#09090b] text-[#f4f4f5] flex flex-col justify-center items-center p-4 sm:p-6 selection:bg-zinc-700 selection:text-white">
       {/* Main Container Card */}
-      <div className="w-full max-w-xl relative z-10 space-y-6">
+      <div className="w-full max-w-lg space-y-6">
         
         {/* Brand Header */}
         <div className="text-center space-y-3">
-          <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-tr from-purple-600 to-violet-400 text-white shadow-[0_0_35px_rgba(168,85,247,0.4)] border border-purple-400/40 transform hover:scale-105 transition-transform duration-300">
-            <Dumbbell className="w-7 h-7 stroke-[2.2]" />
+          <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-[#14151e] border border-[#2e303d] text-[#ccff00] shadow-sm">
+            <svg className="w-7 h-7 fill-current" viewBox="0 0 24 24">
+              <path d="M12 3L2 21h20L12 3zm0 4.5l6.5 11.5H5.5L12 7.5z" />
+            </svg>
           </div>
           <div>
             <div className="flex items-center justify-center gap-2">
-              <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-white">
-                WORKOUTS <span className="text-purple-400">PRO OS</span>
+              <h1 className="text-2xl sm:text-3xl font-black tracking-wider text-white">
+                WORKOUTS <span className="text-[#ccff00]">PRO</span>
               </h1>
-              <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-purple-950/80 text-purple-300 border border-purple-800/60">
-                CLOUD V3
-              </span>
             </div>
             <p className="text-xs sm:text-sm text-zinc-400 font-medium mt-1">
-              Admin & Athlete Portal • <span className="text-zinc-200 font-semibold">Yassen Ahmed</span>
+              Athlete Training Platform • <span className="text-zinc-200 font-semibold">Coach Yassen Ahmed</span>
             </p>
-          </div>
-
-          {/* Database Status Indicator */}
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#111116] border border-[#262634] text-[11px] font-mono text-zinc-400">
-            <Database className={`w-3.5 h-3.5 ${isSupabaseActive ? 'text-emerald-400' : 'text-purple-400'}`} />
-            <span>
-              {isSupabaseActive ? 'Supabase Database Active ⚡' : 'Local & Cloud Ready 🟢'}
-            </span>
           </div>
         </div>
 
         {/* Tab Switcher */}
-        <div className="p-1 rounded-xl bg-[#111117] border border-[#232330] flex items-center gap-1">
+        <div className="p-1 rounded-2xl bg-[#12131a] border border-[#232530] flex items-center gap-1">
           <button
             onClick={() => {
               setActiveTab('quick');
               setErrorMessage('');
             }}
-            className={`flex-1 py-2 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-1.5 ${
+            className={`flex-1 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2 ${
               activeTab === 'quick'
-                ? 'bg-purple-600 text-white shadow-[0_0_15px_rgba(168,85,247,0.35)]'
-                : 'text-zinc-400 hover:text-white'
+                ? 'bg-[#1c1d27] text-[#ccff00] shadow-sm border border-[#ccff00]/30'
+                : 'text-zinc-400 hover:text-zinc-200'
             }`}
           >
             <Users className="w-3.5 h-3.5" />
-            <span>1-Click Portal Access</span>
+            <span>Select Account</span>
           </button>
           <button
             onClick={() => {
               setActiveTab('email');
               setErrorMessage('');
             }}
-            className={`flex-1 py-2 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-1.5 ${
+            className={`flex-1 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2 ${
               activeTab === 'email'
-                ? 'bg-purple-600 text-white shadow-[0_0_15px_rgba(168,85,247,0.35)]'
-                : 'text-zinc-400 hover:text-white'
+                ? 'bg-[#1c1d27] text-[#ccff00] shadow-sm border border-[#ccff00]/30'
+                : 'text-zinc-400 hover:text-zinc-200'
             }`}
           >
             <Mail className="w-3.5 h-3.5" />
@@ -106,39 +99,43 @@ export const AuthScreen: React.FC = () => {
         </div>
 
         {/* Content Box */}
-        <div className="p-6 rounded-2xl bg-[#0f0f15]/90 border border-[#262636] backdrop-blur-xl shadow-2xl space-y-5">
+        <div className="p-5 sm:p-6 rounded-3xl bg-[#121215] border border-zinc-800 shadow-xl space-y-5">
           {activeTab === 'quick' ? (
             <div className="space-y-4">
               
               {/* 1. Admin Profile Card */}
               {coachUser && (
                 <div>
-                  <span className="block text-[10px] font-mono uppercase tracking-wider text-purple-400 font-bold mb-2">
-                    🛡️ Admin Portal (Yassen Ahmed)
-                  </span>
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-[10px] font-mono uppercase tracking-wider text-zinc-400 font-semibold flex items-center gap-1.5">
+                      <ShieldCheck className="w-3.5 h-3.5 text-zinc-400" />
+                      Head Coach Portal
+                    </span>
+                    <span className="text-[10px] font-mono text-zinc-500">Admin</span>
+                  </div>
                   <button
-                    onClick={() => login(coachUser.id)}
-                    className="w-full flex items-center justify-between p-4 rounded-xl bg-gradient-to-r from-purple-950/50 via-[#181824] to-[#12121a] border border-purple-600/40 hover:border-purple-400 hover:scale-[1.01] transition-all text-left group shadow-[0_0_20px_rgba(168,85,247,0.15)]"
+                    onClick={() => handleQuickLogin(coachUser.id, coachUser.name)}
+                    className="w-full flex items-center justify-between p-4 rounded-2xl bg-[#18181c] border border-zinc-700/80 hover:border-zinc-500 hover:bg-[#202026] transition-all text-left group"
                   >
                     <div className="flex items-center gap-3.5">
-                      <div className="w-11 h-11 rounded-xl bg-gradient-to-tr from-purple-600 to-violet-500 text-white flex items-center justify-center font-bold text-sm shadow-md">
+                      <div className="w-11 h-11 rounded-xl bg-zinc-800 border border-zinc-700 text-white flex items-center justify-center font-bold text-sm shadow-sm">
                         {coachUser.avatarText || 'YA'}
                       </div>
                       <div>
                         <div className="flex items-center gap-2">
-                          <h3 className="text-sm font-extrabold text-white tracking-tight group-hover:text-purple-300 transition-colors">
+                          <h3 className="text-sm font-bold text-white tracking-tight group-hover:text-zinc-200 transition-colors">
                             {coachUser.name}
                           </h3>
-                          <span className="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-purple-900/80 text-purple-200 border border-purple-700/60">
-                            ADMIN
+                          <span className="px-2 py-0.5 rounded text-[9px] font-mono font-semibold bg-zinc-800 text-zinc-300 border border-zinc-700">
+                            COACH
                           </span>
                         </div>
                         <p className="text-[11px] text-zinc-400 mt-0.5">
-                          Manage athletes, design workout splits & assign protocols
+                          Architect workout splits, manage athletes & assign protocols
                         </p>
                       </div>
                     </div>
-                    <div className="w-8 h-8 rounded-lg bg-purple-600/20 text-purple-300 flex items-center justify-center group-hover:bg-purple-600 group-hover:text-white transition-all">
+                    <div className="w-8 h-8 rounded-xl bg-zinc-800 text-zinc-300 flex items-center justify-center group-hover:bg-zinc-700 group-hover:text-white transition-all">
                       <ArrowRight className="w-4 h-4" />
                     </div>
                   </button>
@@ -147,38 +144,42 @@ export const AuthScreen: React.FC = () => {
 
               {/* 2. Trainees Profiles List */}
               <div className="pt-2">
-                <span className="block text-[10px] font-mono uppercase tracking-wider text-zinc-400 font-bold mb-2">
-                  ⚡ Athlete Portals (Trainees)
-                </span>
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-[10px] font-mono uppercase tracking-wider text-zinc-400 font-semibold flex items-center gap-1.5">
+                    <Flame className="w-3.5 h-3.5 text-zinc-400" />
+                    Athlete Portals ({trainees.length})
+                  </span>
+                  <span className="text-[10px] font-mono text-zinc-500">1-Click</span>
+                </div>
                 <div className="space-y-2 max-h-72 overflow-y-auto pr-1">
                   {trainees.map((trainee) => (
                     <button
                       key={trainee.id}
-                      onClick={() => login(trainee.id)}
-                      className="w-full flex items-center justify-between p-3.5 rounded-xl bg-[#14141d] border border-[#232330] hover:border-purple-500/50 hover:bg-[#1a1a26] transition-all text-left group"
+                      onClick={() => handleQuickLogin(trainee.id, trainee.name)}
+                      className="w-full flex items-center justify-between p-3.5 rounded-2xl bg-[#16161a] border border-zinc-800 hover:border-zinc-600 hover:bg-[#1c1c22] transition-all text-left group"
                     >
                       <div className="flex items-center gap-3">
-                        <div className="w-9 h-9 rounded-lg bg-zinc-800 border border-zinc-700/60 text-zinc-200 flex items-center justify-center font-bold text-xs group-hover:border-purple-500/50 group-hover:text-white">
+                        <div className="w-10 h-10 rounded-xl bg-zinc-800 border border-zinc-700 text-zinc-200 flex items-center justify-center font-bold text-xs">
                           {trainee.avatarText}
                         </div>
                         <div>
                           <div className="flex items-center gap-2">
-                            <h4 className="text-xs font-bold text-white group-hover:text-purple-300 transition-colors">
+                            <h4 className="text-xs font-bold text-white group-hover:text-zinc-200 transition-colors">
                               {trainee.name}
                             </h4>
-                            {trainee.name.toLowerCase().includes('rawan') && (
-                              <span className="text-[9px] font-mono px-1.5 py-0.5 rounded bg-emerald-950/80 text-emerald-300 border border-emerald-800/60">
-                                ACTIVE PROTOCOL
+                            {trainee.assignedPlanId && (
+                              <span className="text-[9px] font-mono px-1.5 py-0.5 rounded bg-emerald-950/40 text-emerald-400 border border-emerald-800/40">
+                                ACTIVE
                               </span>
                             )}
                           </div>
-                          <p className="text-[10px] text-zinc-500 truncate max-w-[200px]">
+                          <p className="text-[10px] text-zinc-400 truncate max-w-[220px] mt-0.5">
                             {trainee.email} • {trainee.goal}
                           </p>
                         </div>
                       </div>
                       <div className="flex items-center gap-2">
-                        <span className="text-[10px] font-mono text-purple-400 font-semibold group-hover:translate-x-0.5 transition-transform flex items-center gap-1">
+                        <span className="text-[10px] font-mono text-zinc-400 font-semibold group-hover:text-zinc-200 group-hover:translate-x-0.5 transition-all flex items-center gap-1">
                           <span>Enter</span>
                           <ArrowRight className="w-3 h-3" />
                         </span>
@@ -187,8 +188,8 @@ export const AuthScreen: React.FC = () => {
                   ))}
 
                   {trainees.length === 0 && (
-                    <div className="p-4 rounded-xl bg-zinc-900/50 border border-zinc-800 text-center text-xs text-zinc-400">
-                      No athletes found. Log in as Head Coach to register your first trainee!
+                    <div className="p-5 rounded-2xl bg-zinc-900/50 border border-zinc-800 text-center text-xs text-zinc-400">
+                      No athletes found. Log in as Coach to register athletes.
                     </div>
                   )}
                 </div>
@@ -200,7 +201,7 @@ export const AuthScreen: React.FC = () => {
             <form onSubmit={handleEmailSubmit} className="space-y-4">
               <div>
                 <label className="block text-[11px] font-mono uppercase tracking-wider text-zinc-400 mb-1.5">
-                  Your Account Email
+                  Account Email
                 </label>
                 <div className="relative">
                   <Mail className="w-4 h-4 text-zinc-500 absolute left-3.5 top-1/2 -translate-y-1/2" />
@@ -213,28 +214,28 @@ export const AuthScreen: React.FC = () => {
                       setErrorMessage('');
                     }}
                     placeholder="e.g. rawan.ahmed@fitness.io or yassen.ahmed@fitness.io"
-                    className="w-full pl-10 pr-3.5 py-3 rounded-xl bg-[#0a0a0f] border border-[#272738] text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-purple-500 transition-colors"
+                    className="w-full pl-10 pr-3.5 py-2.5 rounded-xl bg-[#09090b] border border-zinc-800 text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-zinc-600 transition-colors"
                   />
                 </div>
               </div>
 
               {errorMessage && (
-                <div className="p-3 rounded-lg bg-red-950/40 border border-red-800/50 text-xs text-red-300">
+                <div className="p-3 rounded-xl bg-rose-950/40 border border-rose-800/40 text-xs text-rose-300">
                   {errorMessage}
                 </div>
               )}
 
               <button
                 type="submit"
-                className="w-full py-3 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-bold text-xs tracking-wide transition-all shadow-[0_0_20px_rgba(168,85,247,0.35)] flex items-center justify-center gap-2"
+                className="w-full py-2.5 rounded-xl bg-zinc-100 hover:bg-white text-zinc-900 font-bold text-xs tracking-wide transition-all shadow-sm flex items-center justify-center gap-2"
               >
                 <span>Access Workout Dashboard</span>
                 <ArrowRight className="w-4 h-4" />
               </button>
 
               <div className="pt-2 text-center">
-                <span className="text-[11px] text-zinc-500">
-                  Tip: Quick try with <button type="button" onClick={() => setEmailInput('rawan.ahmed@fitness.io')} className="text-purple-400 underline font-mono">rawan.ahmed@fitness.io</button> or <button type="button" onClick={() => setEmailInput('yassen.ahmed@fitness.io')} className="text-purple-400 underline font-mono">yassen.ahmed@fitness.io</button>
+                <span className="text-[11px] text-zinc-400">
+                  Quick demo: <button type="button" onClick={() => setEmailInput('rawan.ahmed@fitness.io')} className="text-zinc-200 underline font-mono">rawan.ahmed@fitness.io</button> or <button type="button" onClick={() => setEmailInput('yassen.ahmed@fitness.io')} className="text-zinc-200 underline font-mono">yassen.ahmed@fitness.io</button>
                 </span>
               </div>
             </form>
@@ -242,9 +243,9 @@ export const AuthScreen: React.FC = () => {
         </div>
 
         {/* Footer info */}
-        <div className="text-center space-y-1">
+        <div className="text-center">
           <p className="text-[11px] text-zinc-500">
-            Direct Athlete Link: Trainees can also access directly via their personalized URL link.
+            Athletes can bookmark their direct URL link (<code className="font-mono text-zinc-400">/?user=athlete-id</code>) for quick access.
           </p>
         </div>
       </div>

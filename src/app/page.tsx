@@ -16,6 +16,8 @@ import { TraineeDashboard } from '@/components/trainee/TraineeDashboard';
 import { WeeklySplitView } from '@/components/trainee/WeeklySplitView';
 import { WorkoutHistoryView } from '@/components/trainee/WorkoutHistoryView';
 import { TraineeProfileView } from '@/components/trainee/TraineeProfileView';
+import { TraineeHabitsView } from '@/components/trainee/TraineeHabitsView';
+import { InstallPwaBanner } from '@/components/pwa/InstallPwaBanner';
 import { Loader2 } from 'lucide-react';
 
 export default function Home() {
@@ -45,7 +47,7 @@ export default function Home() {
           setActiveTab('clients');
         }
       } else {
-        if (!['today', 'split', 'history', 'profile'].includes(activeTab)) {
+        if (!['today', 'split', 'habits', 'history', 'profile'].includes(activeTab)) {
           setActiveTab('today');
         }
       }
@@ -56,7 +58,7 @@ export default function Home() {
   if (!isLoaded) {
     return (
       <div className="min-h-screen bg-[#09090b] flex flex-col items-center justify-center text-white">
-        <Loader2 className="w-8 h-8 text-purple-500 animate-spin mb-3" />
+        <Loader2 className="w-8 h-8 text-zinc-400 animate-spin mb-3" />
         <span className="text-xs font-mono text-zinc-400">Loading Workouts PRO OS...</span>
       </div>
     );
@@ -90,7 +92,7 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-[#09090b] text-[#f4f4f6] flex flex-col selection:bg-purple-600 selection:text-white">
+    <div className="min-h-screen bg-[#09090b] text-[#f4f4f5] flex flex-col selection:bg-zinc-700 selection:text-white">
       {/* Top Navbar with live role switcher & sign out */}
       <Navbar
         activeTab={activeTab}
@@ -98,15 +100,15 @@ export default function Home() {
         onOpenNewTraineeModal={() => setIsNewTraineeModalOpen(true)}
       />
 
-      {/* Main Content Area */}
-      <main className="flex-1 max-w-7xl w-full mx-auto px-3 sm:px-6 lg:px-8 py-5 sm:py-8 pb-28 sm:pb-8">
+      {/* Main Content Area (Mobile Phone Centered Frame) */}
+      <main className="flex-1 w-full max-w-md mx-auto px-3 sm:px-4 pt-2 sm:pt-4 pb-28">
         {currentUser.role === 'coach' ? (
           // Coach View
           <>
             {activeTab === 'clients' && (
               <ClientsList
                 onOpenAssignModal={handleOpenAssignModal}
-                onOpenPlanBuilderForUser={(userId) => handleOpenPlanBuilder(undefined, userId)}
+                onOpenPlanBuilderForUser={(userId, plan) => handleOpenPlanBuilder(plan, userId)}
                 onOpenNewTraineeModal={() => setIsNewTraineeModalOpen(true)}
                 onSelectTraineeDetails={handleOpenClientDetails}
                 onSwitchToTrainee={handleSwitchToTrainee}
@@ -133,10 +135,13 @@ export default function Home() {
               <TraineeDashboard
                 onNavigateToSplit={() => setActiveTab('split')}
                 onNavigateToHistory={() => setActiveTab('history')}
+                onNavigateToHabits={() => setActiveTab('habits')}
               />
             )}
 
             {activeTab === 'split' && <WeeklySplitView />}
+
+            {activeTab === 'habits' && <TraineeHabitsView />}
 
             {activeTab === 'history' && <WorkoutHistoryView />}
 
@@ -185,6 +190,9 @@ export default function Home() {
         onOpenAssignPlan={(u) => handleOpenAssignModal(u)}
         onOpenPlanBuilderForUser={(userId) => handleOpenPlanBuilder(undefined, userId)}
       />
+
+      {/* PWA Install Banner */}
+      <InstallPwaBanner />
     </div>
   );
 }

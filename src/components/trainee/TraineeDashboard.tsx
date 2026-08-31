@@ -1,33 +1,71 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useGym } from '@/context/GymContext';
-import { WorkoutPlan, WorkoutDay } from '@/types';
+import { useToast } from '@/context/ToastContext';
+import { WorkoutPlan, WorkoutDay, Exercise } from '@/types';
 import { LiveWorkoutSession } from './LiveWorkoutSession';
+import { getISOWeekKey } from '@/lib/progressEngine';
+import { getSavedWeightLogs, calculateDynamicWeightChange } from '@/lib/weightEngine';
 import { 
-  Flame, 
-  Calendar, 
-  Dumbbell, 
-  Clock, 
+  UserHabit,
+  getUserHabits,
+  getTodayRecordForHabit,
+  setHabitRecord,
+  calculateHabitStreak
+} from '@/lib/habitsEngine';
+import { RenderHabitIcon } from './TraineeHabitsView';
+import { 
   Play, 
-  AlertCircle, 
-  ChevronRight,
+  ChevronRight, 
+  Calendar, 
+  Flame, 
+  Check, 
+  Plus, 
+  Minus, 
+  Pill, 
+  CigaretteOff, 
+  Droplets, 
+  Moon, 
+  Dumbbell, 
+  Layers, 
+  Target, 
+  Shield, 
+  Zap, 
+  Activity, 
+  CalendarDays,
+  CheckCircle2,
   TrendingUp,
-  Target,
+  Award,
+  Scale,
   Sparkles
 } from 'lucide-react';
 
 interface TraineeDashboardProps {
   onNavigateToSplit: () => void;
   onNavigateToHistory: () => void;
+  onNavigateToHabits: () => void;
 }
 
 export const TraineeDashboard: React.FC<TraineeDashboardProps> = ({
   onNavigateToSplit,
-  onNavigateToHistory
+  onNavigateToHistory,
+  onNavigateToHabits
 }) => {
   const { currentUser, getPlanForUser, getUserLogs } = useGym();
+  const { showToast } = useToast();
+
   const [activeSessionDay, setActiveSessionDay] = useState<WorkoutDay | null>(null);
+
+  // Dynamic Habits state from persistent habitsEngine
+  const [userHabits, setUserHabits] = useState<UserHabit[]>(() => currentUser ? getUserHabits(currentUser.id) : []);
+  const [habitRefreshKey, setHabitRefreshKey] = useState(0);
+
+  useEffect(() => {
+    if (currentUser) {
+      setUserHabits(getUserHabits(currentUser.id));
+    }
+  }, [currentUser, habitRefreshKey]);
 
   if (!currentUser) return null;
 
@@ -49,212 +87,566 @@ export const TraineeDashboard: React.FC<TraineeDashboardProps> = ({
     );
   }
 
+  // Active workout day
+  const activeDay = plan?.days.find(d => !d.isRestDay) || plan?.days[0];
+  const nextDay = plan?.days.find(d => d.id !== activeDay?.id && !d.isRestDay) || activeDay;
+
+  // Exercise category icon mapper
+  const getExerciseIcon = (name: string) => {
+    const n = name.toLowerCase();
+    if (n.includes('bench') || n.includes('press') || n.includes('chest')) {
+      return <Dumbbell className="w-4 h-4 text-[#ff6b00]" />;
+    }
+    if (n.includes('lat') || n.includes('row') || n.includes('pull')) {
+      return <Layers className="w-4 h-4 text-cyan-400" />;
+    }
+    if (n.includes('curl') || n.includes('triceps') || n.includes('arm') || n.includes('wrist')) {
+      return <Target className="w-4 h-4 text-amber-400" />;
+    }
+    if (n.includes('shoulder') || n.includes('delt') || n.includes('raise')) {
+      return <Shield className="w-4 h-4 text-purple-400" />;
+    }
+    if (n.includes('squat') || n.includes('leg') || n.includes('quad') || n.includes('hamstring') || n.includes('calf')) {
+      return <Zap className="w-4 h-4 text-emerald-400" />;
+    }
+    return <Activity className="w-4 h-4 text-[#ff6b00]" />;
+  };
+
+  // 100% Dynamic Time-of-Day Greeting & Motivational Cue Engine
+  const { greeting, motivationalQuote } = useMemo(() => {
+    const hour = new Date().getHours();
+    const todayStr = new Date().toISOString().split('T')[0];
+    const hasLoggedToday = userLogs.some((l) => l.date === todayStr);
+
+    let greet = 'Good morning,';
+    let quotes = [
+      'Attack the morning, win the day ☀️',
+      'First fuel, then fury. Let\'s get to work ⚡',
+      'Early hours build championship discipline.',
+      'Wake up with intent, train with purpose 🎯'
+    ];
+
+    if (hour >= 5 && hour < 12) {
+      greet = 'Good morning,';
+      quotes = [
+        'Attack the morning, win the day ☀️',
+        'First fuel, then fury. Let\'s get to work ⚡',
+        'Early hours build championship discipline.',
+        'Wake up with intent, train with purpose 🎯'
+      ];
+    } else if (hour >= 12 && hour < 17) {
+      greet = 'Good afternoon,';
+      quotes = [
+        'Peak energy window. Time to move iron ⚡',
+        'Turn afternoon momentum into muscle gains 🦾',
+        'Midday intensity. Lock in and execute.',
+        'No slacking on the grind. Let\'s dominate 🔥'
+      ];
+    } else if (hour >= 17 && hour < 22) {
+      greet = 'Good evening,';
+      quotes = [
+        'Unleash the daily pressure in the weightroom 🔥',
+        'Finish the day stronger than you started 🎯',
+        'Prime evening session loading. Lock in.',
+        'Discipline tonight sets up tomorrow\'s triumph ⚡'
+      ];
+    } else {
+      greet = 'Late night focus,';
+      quotes = [
+        'Quiet hours, loudest progress 🌙',
+        'While others sleep, champions build silently ⚡',
+        'Late night iron therapy. Let\'s finish strong.',
+        'Complete the protocol, recover deep, conquer tomorrow.'
+      ];
+    }
+
+    if (hasLoggedToday) {
+      return {
+        greeting: greet,
+        motivationalQuote: 'Session crushed today! 🏆 Great recovery & hydration ahead.'
+      };
+    }
+
+    if (activeDay?.isRestDay) {
+      return {
+        greeting: greet,
+        motivationalQuote: 'Scheduled Rest Day 🧘 Grow, repair, and recharge for the next session.'
+      };
+    }
+
+    // Pick deterministic quote based on day of month to rotate daily
+    const dayOfMonth = new Date().getDate();
+    const quote = quotes[dayOfMonth % quotes.length];
+
+    return {
+      greeting: greet,
+      motivationalQuote: quote
+    };
+  }, [userLogs, activeDay]);
+
+  // 100% Dynamic Weekly Calculations (No static dummy data)
+  const now = new Date();
+  const currentWeekKey = getISOWeekKey(now.toISOString().split('T')[0]);
+  
+  // 1. Logs completed in the current calendar week
+  const thisWeekLogs = userLogs.filter((l) => getISOWeekKey(l.date) === currentWeekKey);
+  
+  // 2. Weekly Target Sessions (From assigned workout plan, e.g. 4 days/week)
+  const weeklyTargetSessions = plan?.daysPerWeek || plan?.days.filter(d => !d.isRestDay).length || 4;
+  const completedSessions = thisWeekLogs.length;
+  
+  // 3. Weekly Completion Percentage
+  const progressPercent = Math.min(100, Math.round((completedSessions / weeklyTargetSessions) * 100));
+
+  // 4. Dynamic Exercises Count (Target in routine vs Completed this week)
+  const targetExercisesThisWeek = plan?.days.reduce((acc, d) => acc + (d.isRestDay ? 0 : d.exercises.length), 0) || 16;
+  const completedExercisesThisWeek = thisWeekLogs.reduce((acc, l) => acc + l.completedExercises.length, 0);
+
+  // 5. Dynamic Weight Change Analysis
+  const weightLogs = useMemo(() => getSavedWeightLogs(currentUser.id), [currentUser.id]);
+  const weightAnalysis = useMemo(
+    () => calculateDynamicWeightChange(weightLogs, currentUser.weightKg || 70),
+    [weightLogs, currentUser.weightKg]
+  );
+
+  // 6. Dynamic Calendar Strip (Current Week Monday-Sunday with real logged dates)
+  const calendarDays = useMemo(() => {
+    const daysArr = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
+    const curr = new Date();
+    // Get Monday of current week
+    const dayOfWeek = curr.getDay(); // 0 is Sunday
+    const distanceToMonday = (dayOfWeek + 6) % 7;
+    const monday = new Date(curr);
+    monday.setDate(curr.getDate() - distanceToMonday);
+
+    return Array.from({ length: 7 }, (_, i) => {
+      const d = new Date(monday);
+      d.setDate(monday.getDate() + i);
+      const dateStr = d.toISOString().split('T')[0];
+      const hasLog = userLogs.some((l) => l.date === dateStr);
+      const isToday = dateStr === now.toISOString().split('T')[0];
+
+      let status: 'completed' | 'today' | 'upcoming' = 'upcoming';
+      if (isToday) {
+        status = hasLog ? 'completed' : 'today';
+      } else if (hasLog) {
+        status = 'completed';
+      } else if (d < now) {
+        status = 'upcoming';
+      }
+
+      return {
+        day: daysArr[d.getDay()],
+        date: d.getDate(),
+        dateStr,
+        status
+      };
+    });
+  }, [userLogs]);
+
   return (
-    <div className="space-y-6 max-w-6xl mx-auto">
-      {/* 1. Athlete Header & Biometrics Summary */}
-      <div className="p-6 rounded-2xl bg-[#111116] border border-[#22222d] flex flex-col md:flex-row md:items-center justify-between gap-5">
-        <div>
-          <div className="flex items-center gap-2">
-            <span className="text-[11px] font-mono uppercase tracking-wider text-purple-400 font-bold px-2 py-0.5 rounded bg-purple-950/60 border border-purple-800/50">
-              Athlete Portal
+    <div className="max-w-md mx-auto space-y-4 pb-28 px-0">
+      
+      {/* 1. Hero Greeting Section with Glowing Concentric Background Rings */}
+      <div className="relative p-5 rounded-3xl bg-[#111218] border border-[#212330] overflow-hidden shadow-xl">
+        {/* Glowing Concentric Rings Effect in Top-Right */}
+        <div className="absolute -top-12 -right-12 w-64 h-64 pointer-events-none opacity-40">
+          <div className="absolute inset-0 rounded-full border border-[#ff6b00]/30 animate-pulse" />
+          <div className="absolute inset-6 rounded-full border border-[#ff6b00]/20" />
+          <div className="absolute inset-14 rounded-full border border-[#ff6b00]/10" />
+          <div className="absolute inset-0 rounded-full bg-radial from-[#ff6b00]/15 to-transparent blur-xl" />
+        </div>
+
+        <div className="relative z-10">
+          <span className="text-xl font-bold text-zinc-300 block tracking-tight">
+            {greeting}
+          </span>
+          <h1 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight mt-0.5">
+            <span className="text-[#ff6b00] drop-shadow-[0_0_24px_rgba(255,107,0,0.4)]">
+              {currentUser.name}
             </span>
-            <span className="text-zinc-600">•</span>
-            <span className="text-xs text-zinc-400 font-mono">
-              {plan ? `${plan.durationWeeks} Weeks Protocol` : 'Pending Program'}
-            </span>
-          </div>
-          <h1 className="text-2xl font-black text-white tracking-tight mt-1.5">
-            Welcome back, {currentUser.name}
           </h1>
-          <p className="text-xs text-zinc-400 mt-1">
-            {plan ? (
-              <span className="text-zinc-300 font-semibold">{plan.title}</span>
-            ) : (
-              'Program is being structured by Yassen Ahmed'
-            )}
+          <p className="text-xs text-zinc-300 mt-1.5 font-medium flex items-center gap-1.5">
+            <span>{motivationalQuote}</span>
           </p>
         </div>
 
-        {/* Quick Stats Strip */}
-        <div className="grid grid-cols-3 gap-2.5 sm:gap-3">
-          <div className="px-4 py-2.5 rounded-xl bg-[#09090d] border border-zinc-800 text-center">
-            <span className="block text-[9px] font-mono uppercase text-zinc-500">Weight</span>
-            <span className="text-sm font-bold font-numeric text-white">{currentUser.weightKg} kg</span>
-          </div>
-          <div className="px-4 py-2.5 rounded-xl bg-[#09090d] border border-zinc-800 text-center">
-            <span className="block text-[9px] font-mono uppercase text-zinc-500">Target</span>
-            <span className="text-sm font-bold font-numeric text-purple-400">{currentUser.targetWeightKg} kg</span>
-          </div>
-          <div className="px-4 py-2.5 rounded-xl bg-[#09090d] border border-zinc-800 text-center">
-            <span className="block text-[9px] font-mono uppercase text-zinc-500">Logged</span>
-            <span className="text-sm font-bold font-numeric text-emerald-400">{userLogs.length}</span>
-          </div>
-        </div>
-      </div>
-
-      {/* 2. Manual Workout Split Grid (No auto-recommendations) */}
-      {plan ? (
-        <div className="space-y-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <h2 className="text-base font-extrabold text-white tracking-tight flex items-center gap-2">
-                <Calendar className="w-4 h-4 text-purple-400" />
-                <span>Your Training Split</span>
-              </h2>
-              <p className="text-xs text-zinc-400 mt-0.5">
-                Select your workout day to begin session tracking
-              </p>
-            </div>
+        {/* 2. Weekly Progress Integrated Directly into Hero Card (100% Dynamic Math) */}
+        <div className="mt-5 pt-4 border-t border-[#1e202c]">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-[10px] font-mono uppercase tracking-wider text-zinc-400 font-bold flex items-center gap-1.5">
+              <TrendingUp className="w-3.5 h-3.5 text-[#ff6b00]" />
+              <span>Weekly Progress</span>
+            </span>
             <button
-              onClick={onNavigateToSplit}
-              className="text-xs font-semibold text-purple-400 hover:text-purple-300 transition-colors flex items-center gap-1"
+              onClick={onNavigateToHistory}
+              className="text-[11px] font-bold text-[#ff6b00] hover:underline flex items-center gap-1 cursor-pointer"
             >
-              <span>Full Details</span>
+              <span>See analytics</span>
               <ChevronRight className="w-3.5 h-3.5" />
             </button>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {plan.days.map((day, idx) => (
-              <div
-                key={day.id}
-                className={`p-5 rounded-2xl border transition-all flex flex-col justify-between ${
-                  day.isRestDay
-                    ? 'bg-[#0c0c11] border-[#1d1d28] opacity-80'
-                    : 'bg-[#121219] border-[#252535] hover:border-purple-500/40 hover:shadow-[0_0_20px_rgba(168,85,247,0.12)]'
-                }`}
-              >
-                <div>
-                  <div className="flex items-center justify-between gap-2 mb-2">
-                    <div className="flex items-center gap-2">
-                      <span className="w-6 h-6 rounded-md bg-purple-950/80 border border-purple-800/60 text-purple-300 font-mono text-xs font-bold flex items-center justify-center">
-                        {idx + 1}
-                      </span>
-                      <h3 className="text-sm font-bold text-white tracking-tight">
-                        {day.dayName}
-                      </h3>
-                    </div>
+          <div className="flex items-center justify-between gap-3 pt-1">
+            {/* Circular SVG Ring */}
+            <div className="relative w-20 h-20 flex items-center justify-center flex-shrink-0">
+              <svg className="w-full h-full transform -rotate-90" viewBox="0 0 36 36">
+                <path
+                  className="text-[#1a1b26]"
+                  strokeWidth="3.5"
+                  stroke="currentColor"
+                  fill="none"
+                  d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                />
+                <path
+                  className="text-[#ff6b00] transition-all duration-1000 ease-out"
+                  strokeDasharray={`${progressPercent}, 100`}
+                  strokeWidth={3.5}
+                  strokeLinecap="round"
+                  stroke="currentColor"
+                  fill="none"
+                  d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                />
+              </svg>
+              <div className="absolute flex flex-col items-center justify-center text-center">
+                <span className="text-sm font-black font-numeric text-white leading-none">
+                  {progressPercent}%
+                </span>
+                <span className="text-[7px] font-mono uppercase text-zinc-400 mt-0.5 font-bold">
+                  Workouts
+                </span>
+              </div>
+            </div>
 
-                    {day.isRestDay ? (
-                      <span className="text-[10px] font-mono font-semibold px-2 py-0.5 rounded bg-zinc-800 text-zinc-400">
-                        REST DAY
-                      </span>
-                    ) : (
-                      <span className="text-[10px] font-mono font-semibold px-2 py-0.5 rounded bg-purple-950/60 text-purple-300 border border-purple-800/50">
-                        {day.exercises.length} MOVEMENTS
-                      </span>
-                    )}
-                  </div>
+            {/* Stats Breakdown (100% Real Dynamic Calculations) */}
+            <div className="flex-1 space-y-1.5 text-xs">
+              <div className="flex items-center justify-between p-2 px-3 rounded-2xl bg-[#09090b]/90 border border-[#1e202c]">
+                <span className="text-zinc-400 text-[11px] font-medium">Sessions</span>
+                <span className="font-mono font-bold text-white text-[11px]">
+                  <span className="text-[#ff6b00]">{completedSessions}</span> / {weeklyTargetSessions}
+                </span>
+              </div>
 
-                  {!day.isRestDay ? (
-                    <>
-                      <div className="flex items-center gap-3 text-[11px] text-zinc-400 font-numeric mb-3">
-                        <span className="flex items-center gap-1">
-                          <Clock className="w-3 h-3 text-zinc-500" />
-                          {day.estimatedMinutes} Mins
-                        </span>
-                        <span>•</span>
-                        <span className="text-purple-300 font-mono">
-                          {day.targetMuscles.join(' / ')}
-                        </span>
-                      </div>
+              <div className="flex items-center justify-between p-2 px-3 rounded-2xl bg-[#09090b]/90 border border-[#1e202c]">
+                <span className="text-zinc-400 text-[11px] font-medium">Exercises</span>
+                <span className="font-mono font-bold text-white text-[11px]">
+                  <span className="text-zinc-200">{completedExercisesThisWeek}</span> / {targetExercisesThisWeek}
+                </span>
+              </div>
 
-                      {/* Exercises Checklist */}
-                      <div className="space-y-1.5 mb-4">
-                        {day.exercises.map((ex, exIdx) => (
-                          <div
-                            key={ex.id}
-                            className="flex items-center justify-between p-2 rounded-lg bg-[#0a0a0f] border border-zinc-800/80 text-xs"
-                          >
-                            <div className="flex items-center gap-2 truncate">
-                              <span className="text-zinc-500 font-mono text-[10px]">
-                                {exIdx + 1}.
-                              </span>
-                              <span className="text-zinc-200 font-medium truncate">
-                                {ex.exerciseName}
-                              </span>
-                              {ex.alternativeExercise && (
-                                <span className="text-[10px] text-purple-400/80 hidden sm:inline truncate">
-                                  ({ex.alternativeExercise})
-                                </span>
-                              )}
-                            </div>
-                            <span className="text-[10px] font-numeric font-semibold text-zinc-400 whitespace-nowrap ml-2">
-                              {ex.sets} × {ex.targetReps}
-                            </span>
-                          </div>
-                        ))}
-                      </div>
-                    </>
+              <div className="flex items-center justify-between p-2 px-3 rounded-2xl bg-[#09090b]/90 border border-[#1e202c]">
+                <span className="text-zinc-400 text-[11px] font-medium">Body Weight</span>
+                <div className="flex items-center gap-1.5 font-mono text-[11px]">
+                  <span className="font-bold text-[#ff6b00]">{weightAnalysis.currentWeightKg} kg</span>
+                  {weightAnalysis.recentWeeklyDeltaKg !== 0 ? (
+                    <span className={`text-[10px] font-bold ${
+                      weightAnalysis.hasDecreased ? 'text-emerald-400' : 'text-amber-400'
+                    }`}>
+                      ({weightAnalysis.recentWeeklyDeltaKg > 0 ? `+${weightAnalysis.recentWeeklyDeltaKg}` : weightAnalysis.recentWeeklyDeltaKg}kg)
+                    </span>
                   ) : (
-                    <div className="py-8 text-center text-xs text-zinc-500 italic">
-                      Scheduled recovery and rest. Hydrate and prioritize nutrition.
-                    </div>
+                    <span className="text-[10px] text-zinc-500 font-normal">Steady</span>
                   )}
                 </div>
-
-                {!day.isRestDay && (
-                  <button
-                    onClick={() => setActiveSessionDay(day)}
-                    className="w-full py-2.5 px-4 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-bold text-xs tracking-wide transition-all shadow-[0_0_15px_rgba(168,85,247,0.25)] flex items-center justify-center gap-2"
-                  >
-                    <Play className="w-3.5 h-3.5 fill-current" />
-                    <span>Start Workout Session</span>
-                  </button>
-                )}
               </div>
-            ))}
-          </div>
-        </div>
-      ) : (
-        <div className="p-8 rounded-3xl bg-[#121218] border border-amber-500/30 text-center space-y-3">
-          <div className="w-12 h-12 rounded-2xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400 mx-auto">
-            <AlertCircle className="w-6 h-6" />
-          </div>
-          <h3 className="text-base font-bold text-white">
-            Program Under Preparation
-          </h3>
-          <p className="text-xs text-zinc-400 max-w-md mx-auto">
-            Your customized workout protocol is currently being set up by Yassen Ahmed. You will see your routines here once assigned.
-          </p>
-        </div>
-      )}
-
-      {/* 3. Directives & Training Focus */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div className="p-5 rounded-2xl bg-[#111116] border border-[#22222d]">
-          <span className="text-[10px] font-mono uppercase tracking-wider text-purple-400 font-bold block mb-2">
-            Target Focus & Biometrics
-          </span>
-          <div className="space-y-2 text-xs">
-            <div className="flex items-center justify-between py-1.5 border-b border-zinc-900">
-              <span className="text-zinc-400">Primary Objective</span>
-              <span className="font-semibold text-white">{currentUser.goal}</span>
             </div>
-            <div className="flex items-center justify-between py-1.5 border-b border-zinc-900">
-              <span className="text-zinc-400">Current Weight</span>
-              <span className="font-numeric font-bold text-purple-400">{currentUser.weightKg} kg</span>
-            </div>
-            <div className="flex items-center justify-between py-1.5">
-              <span className="text-zinc-400">Target Weight</span>
-              <span className="font-numeric font-bold text-white">{currentUser.targetWeightKg} kg</span>
-            </div>
-          </div>
-        </div>
-
-        <div className="p-5 rounded-2xl bg-[#111116] border border-[#22222d]">
-          <span className="text-[10px] font-mono uppercase tracking-wider text-purple-400 font-bold block mb-2">
-            Instructions & Training Notes
-          </span>
-          <p className="text-xs text-zinc-300 leading-relaxed">
-            {currentUser.notes || 'Stick strictly to prescribed rest periods and progressive overload on compound lifts.'}
-          </p>
-          <div className="mt-3 pt-3 border-t border-zinc-900 flex items-center justify-between text-[11px] text-zinc-500 font-mono">
-            <span>By: Yassen Ahmed</span>
-            <span className="text-emerald-400">Active</span>
           </div>
         </div>
       </div>
+
+      {/* 3. Training Calendar Strip */}
+      <div className="p-4 rounded-3xl bg-[#111218] border border-[#212330] shadow-md">
+        <div className="flex items-center justify-between mb-3">
+          <h3 className="text-xs font-bold text-white tracking-tight">
+            Training Calendar
+          </h3>
+          <button
+            onClick={onNavigateToSplit}
+            className="text-xs font-semibold text-[#ff6b00] hover:underline flex items-center gap-1"
+          >
+            <span>See full calendar</span>
+            <ChevronRight className="w-3.5 h-3.5" />
+          </button>
+        </div>
+
+        {/* 7-Day Horizontal Row */}
+        <div className="grid grid-cols-7 gap-1.5">
+          {calendarDays.map((item, i) => {
+            const isToday = item.status === 'today';
+            const isCompleted = item.status === 'completed';
+
+            return (
+              <div
+                key={i}
+                className={`flex flex-col items-center justify-center py-2.5 px-1 rounded-2xl transition-all ${
+                  isToday
+                    ? 'bg-[#ff6b00] text-white shadow-lg shadow-[#ff6b00]/30 scale-105'
+                    : 'bg-[#09090b] border border-[#1e202c] text-zinc-300'
+                }`}
+              >
+                <span className={`text-[9px] font-mono font-bold uppercase ${isToday ? 'text-white' : 'text-zinc-400'}`}>
+                  {item.day}
+                </span>
+                <span className={`text-sm font-extrabold font-numeric mt-0.5 ${isToday ? 'text-white' : 'text-zinc-100'}`}>
+                  {item.date}
+                </span>
+
+                {/* Status Dot / Checkmark */}
+                <div className="mt-1.5 flex items-center justify-center">
+                  {isToday ? (
+                    <span className="w-2.5 h-2.5 rounded-full bg-white ring-2 ring-white/30" />
+                  ) : isCompleted ? (
+                    <span className="w-3.5 h-3.5 rounded-full bg-[#1c1d27] border border-[#ff6b00]/40 flex items-center justify-center text-[#ff6b00]">
+                      <Check className="w-2.5 h-2.5 stroke-[3]" />
+                    </span>
+                  ) : (
+                    <span className="w-2 h-2 rounded-full bg-zinc-700/60" />
+                  )}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* 4. Main Mobile App Stack: Today's Workout -> Habits -> Progress -> Next */}
+      <div className="space-y-4">
+        
+        {/* Today's Workout Card */}
+        <div className="p-5 rounded-3xl bg-[#111218] border border-[#212330] shadow-xl space-y-4">
+          <div>
+            <div className="flex items-center justify-between mb-3">
+              <div>
+                <h2 className="text-base font-extrabold text-white tracking-tight">
+                  Today's Workout
+                </h2>
+                <p className="text-xs font-bold text-[#ff6b00] mt-0.5 tracking-wide">
+                  {activeDay ? activeDay.dayName : 'Upper (A)'}
+                </p>
+              </div>
+
+              <span className="text-[10px] font-mono font-semibold px-2.5 py-1 rounded-full bg-[#1a1b26] text-zinc-300 border border-[#2a2d3d]">
+                {activeDay?.exercises.length || 10} Exercises
+              </span>
+            </div>
+
+            {/* Exercises Preview List */}
+            <div className="space-y-2">
+              {activeDay && activeDay.exercises.length > 0 ? (
+                activeDay.exercises.slice(0, 6).map((ex, idx) => (
+                  <div
+                    key={ex.id}
+                    onClick={() => setActiveSessionDay(activeDay)}
+                    className="flex items-center justify-between p-2.5 rounded-2xl bg-[#09090b] border border-[#1e202c] hover:border-[#35384d] hover:bg-[#14151e] transition-all cursor-pointer group"
+                  >
+                    <div className="flex items-center gap-2.5 min-w-0">
+                      {/* Number Badge */}
+                      <span className="w-6 h-6 rounded-lg bg-[#161722] text-[#ff6b00] font-mono text-xs font-black flex items-center justify-center flex-shrink-0">
+                        {idx + 1}
+                      </span>
+
+                      {/* Icon */}
+                      <div className="w-7 h-7 rounded-lg bg-[#14151e] border border-[#252736] flex items-center justify-center flex-shrink-0">
+                        {getExerciseIcon(ex.exerciseName)}
+                      </div>
+
+                      <div className="min-w-0">
+                        <p className="text-xs font-bold text-zinc-200 group-hover:text-white truncate">
+                          {ex.exerciseName}
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-1.5 flex-shrink-0 ml-2">
+                      <span className="text-[11px] font-mono font-bold text-zinc-400">
+                        {ex.sets} × {ex.targetReps}
+                      </span>
+                      <ChevronRight className="w-3.5 h-3.5 text-zinc-600 group-hover:text-[#ff6b00] transition-colors" />
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <div className="p-4 rounded-xl bg-[#09090b] text-center text-xs text-zinc-500">
+                  No exercises scheduled for today
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Big Orange Gradient CTA Button */}
+          {activeDay && (
+            <button
+              onClick={() => setActiveSessionDay(activeDay)}
+              className="w-full py-3.5 px-5 rounded-2xl btn-orange text-xs sm:text-sm font-black flex items-center justify-center gap-2 cursor-pointer"
+            >
+              <Play className="w-4 h-4 fill-current" />
+              <span>START WORKOUT</span>
+            </button>
+          )}
+        </div>
+
+        {/* Right Column: Habits & Weekly Progress */}
+        <div className="space-y-4">
+          
+          {/* Dynamic User Habits Widget */}
+          <div className="p-4 sm:p-5 rounded-3xl bg-[#111218] border border-[#212330] shadow-md space-y-3">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Sparkles className="w-4 h-4 text-[#ff6b00]" />
+                <h3 className="text-xs sm:text-sm font-bold text-white tracking-tight">
+                  Daily Habits ({userHabits.length})
+                </h3>
+              </div>
+              <button
+                onClick={onNavigateToHabits}
+                className="text-xs font-semibold text-[#ff6b00] hover:underline flex items-center gap-1 cursor-pointer"
+              >
+                <span>Manage</span>
+                <ChevronRight className="w-3.5 h-3.5" />
+              </button>
+            </div>
+
+            <div className="space-y-2">
+              {userHabits.slice(0, 4).map((habit) => {
+                const record = getTodayRecordForHabit(currentUser.id, habit);
+                const streak = calculateHabitStreak(currentUser.id, habit.id);
+
+                return (
+                  <div 
+                    key={habit.id}
+                    className={`flex items-center justify-between p-2.5 rounded-2xl border transition-all ${
+                      record.completed 
+                        ? 'bg-[#18151f] border-[#ff6b00]/30 shadow-sm' 
+                        : 'bg-[#09090b] border-[#1e202c]'
+                    }`}
+                  >
+                    <div className="flex items-center gap-2.5 min-w-0 flex-1">
+                      <div 
+                        className="w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0"
+                        style={{
+                          backgroundColor: `${habit.color}18`,
+                          borderColor: `${habit.color}40`,
+                          borderWidth: '1px',
+                          color: habit.color
+                        }}
+                      >
+                        <RenderHabitIcon iconKey={habit.iconKey} className="w-4 h-4" />
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <div className="flex items-center gap-1.5">
+                          <h4 className="text-xs font-extrabold text-white truncate">{habit.title}</h4>
+                          {streak > 0 && (
+                            <span className="text-[9px] font-mono font-bold px-1.5 py-0.2 rounded bg-[#1c1d27] text-[#ff6b00]">
+                              {streak}d
+                            </span>
+                          )}
+                        </div>
+                        <p className="text-[10px] text-zinc-400 truncate">
+                          {habit.type === 'boolean' 
+                            ? 'Daily check' 
+                            : `Goal: ${habit.targetValue} ${habit.unit}`}
+                        </p>
+                      </div>
+                    </div>
+
+                    {habit.type === 'boolean' ? (
+                      <button
+                        onClick={() => {
+                          const next = !record.completed;
+                          setHabitRecord(currentUser.id, habit, next ? 1 : 0, next);
+                          setHabitRefreshKey(k => k + 1);
+                          if (next) showToast(`Marked "${habit.title}" completed! 🔥`, 'success');
+                        }}
+                        className={`w-7 h-7 rounded-xl flex items-center justify-center transition-all cursor-pointer flex-shrink-0 ${
+                          record.completed
+                            ? 'bg-[#ff6b00] text-white shadow-md shadow-[#ff6b00]/25'
+                            : 'bg-[#1a1b26] text-zinc-500 border border-[#2a2d3d] hover:text-white'
+                        }`}
+                      >
+                        <Check className="w-3.5 h-3.5 stroke-[3]" />
+                      </button>
+                    ) : (
+                      <div className="flex items-center gap-1 flex-shrink-0">
+                        <button
+                          onClick={() => {
+                            const stepSize = habit.targetValue <= 10 ? 0.5 : 10;
+                            const next = Math.max(0, habit.targetValue <= 10 ? Math.round((record.value - stepSize) * 10) / 10 : record.value - stepSize);
+                            setHabitRecord(currentUser.id, habit, next, next >= habit.targetValue);
+                            setHabitRefreshKey(k => k + 1);
+                          }}
+                          className="w-5 h-5 rounded-md bg-[#161722] text-zinc-400 hover:text-white flex items-center justify-center active:scale-95 cursor-pointer"
+                        >
+                          <Minus className="w-3 h-3" />
+                        </button>
+                        <span className="text-xs font-extrabold font-numeric text-white min-w-[34px] text-center">
+                          {record.value}
+                        </span>
+                        <button
+                          onClick={() => {
+                            const stepSize = habit.targetValue <= 10 ? 0.5 : 10;
+                            const next = habit.targetValue <= 10 ? Math.round((record.value + stepSize) * 10) / 10 : record.value + stepSize;
+                            setHabitRecord(currentUser.id, habit, next, next >= habit.targetValue);
+                            setHabitRefreshKey(k => k + 1);
+                            if (next >= habit.targetValue && record.value < habit.targetValue) {
+                              showToast(`Target reached for "${habit.title}"! 🎯`, 'success');
+                            }
+                          }}
+                          className="w-5 h-5 rounded-md bg-[#161722] text-[#ff6b00] hover:bg-[#202230] flex items-center justify-center active:scale-95 cursor-pointer"
+                        >
+                          <Plus className="w-3 h-3" />
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+
+              {userHabits.length === 0 && (
+                <div className="text-center py-4">
+                  <p className="text-xs text-zinc-500 mb-2">No habits configured yet</p>
+                  <button
+                    onClick={onNavigateToHabits}
+                    className="px-3 py-1 rounded-xl btn-orange text-xs font-bold"
+                  >
+                    + Add Habit
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Next Workout Card */}
+          {nextDay && (
+            <div className="p-3.5 rounded-3xl bg-[#09090b] border border-[#1e202c] flex items-center justify-between">
+              <div className="flex items-center gap-2.5">
+                <div className="w-9 h-9 rounded-2xl bg-[#14151e] border border-[#252736] flex items-center justify-center text-[#ff6b00]">
+                  <CalendarDays className="w-4 h-4" />
+                </div>
+                <div>
+                  <span className="text-[9px] font-mono uppercase tracking-wider text-zinc-400 font-semibold block">
+                    Next Workout
+                  </span>
+                  <h4 className="text-xs font-bold text-white mt-0.5">
+                    {nextDay.dayName}
+                  </h4>
+                  <p className="text-[10px] text-zinc-400 font-numeric">
+                    {nextDay.estimatedMinutes} Mins • {nextDay.targetMuscles.join(', ')}
+                  </p>
+                </div>
+              </div>
+
+              <button
+                onClick={() => setActiveSessionDay(nextDay)}
+                className="px-3 py-1.5 rounded-xl bg-[#161722] hover:bg-[#202230] text-xs font-bold text-zinc-200 hover:text-white border border-[#2a2d3d] transition-all"
+              >
+                Preview
+              </button>
+            </div>
+          )}
+
+        </div>
+      </div>
+
     </div>
   );
 };

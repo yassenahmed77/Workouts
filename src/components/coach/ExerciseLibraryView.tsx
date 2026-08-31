@@ -1,7 +1,8 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useGym } from '@/context/GymContext';
+import { useToast } from '@/context/ToastContext';
 import { Exercise, MuscleGroup, EquipmentType } from '@/types';
 import { 
   BookOpen, 
@@ -10,12 +11,15 @@ import {
   Dumbbell, 
   Filter, 
   CheckCircle2, 
+  X, 
+  Play, 
+  Video, 
+  Trash2,
+  Flame,
+  ChevronRight,
   Sparkles,
-  X,
-  Play,
   ExternalLink,
-  Video,
-  Trash2
+  Repeat
 } from 'lucide-react';
 
 const MUSCLE_GROUPS: MuscleGroup[] = [
@@ -28,6 +32,8 @@ const EQUIPMENT_TYPES: EquipmentType[] = [
 
 export const ExerciseLibraryView: React.FC = () => {
   const { exercises, addExercise, deleteExercise } = useGym();
+  const { showToast } = useToast();
+  
   const [selectedMuscle, setSelectedMuscle] = useState<string>('All');
   const [searchQuery, setSearchQuery] = useState('');
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
@@ -42,14 +48,16 @@ export const ExerciseLibraryView: React.FC = () => {
   const [executionCue, setExecutionCue] = useState('');
   const [tipInput, setTipInput] = useState('');
 
-  const filteredExercises = exercises.filter((ex) => {
-    const matchesMuscle = selectedMuscle === 'All' || ex.targetMuscle === selectedMuscle;
-    const matchesSearch =
-      ex.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      ex.executionCue.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      (ex.alternativeExercise && ex.alternativeExercise.toLowerCase().includes(searchQuery.toLowerCase()));
-    return matchesMuscle && matchesSearch;
-  });
+  const filteredExercises = useMemo(() => {
+    return exercises.filter((ex) => {
+      const matchesMuscle = selectedMuscle === 'All' || ex.targetMuscle === selectedMuscle;
+      const matchesSearch =
+        ex.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        ex.executionCue.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        (ex.alternativeExercise && ex.alternativeExercise.toLowerCase().includes(searchQuery.toLowerCase()));
+      return matchesMuscle && matchesSearch;
+    });
+  }, [exercises, selectedMuscle, searchQuery]);
 
   const handleCreateExercise = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -63,7 +71,7 @@ export const ExerciseLibraryView: React.FC = () => {
       videoUrl: videoUrl.trim() || undefined,
       alternativeExercise: alternativeExercise.trim() || undefined,
       executionCue: executionCue.trim() || 'Execute with controlled tempo and strict form.',
-      tips: tipInput ? tipInput.split(',').map((t) => t.trim()).filter(Boolean) : ['Maintain neutral spine', 'Control eccentric']
+      tips: tipInput ? tipInput.split(',').map((t) => t.trim()).filter(Boolean) : ['Maintain neutral spine', 'Control eccentric descent']
     });
 
     setName('');
@@ -72,68 +80,79 @@ export const ExerciseLibraryView: React.FC = () => {
     setExecutionCue('');
     setTipInput('');
     setIsAddModalOpen(false);
+    showToast(`Added ${name} to Exercise Library! ⚡`, 'success');
   };
 
   return (
-    <div className="space-y-6">
-      {/* Top Banner */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-6 rounded-2xl bg-[#121218] border border-[#22222d]">
-        <div>
-          <h2 className="text-lg font-bold text-white tracking-tight flex items-center gap-2">
-            <BookOpen className="w-5 h-5 text-purple-400" />
-            Exercise Database & Video Guides
-          </h2>
-          <p className="text-xs text-zinc-400 mt-1">
-            Saved exercises with video links and alternatives. Saved exercises will be instantly available when building splits.
-          </p>
-        </div>
+    <div className="space-y-5 max-w-2xl mx-auto pb-10">
+      
+      {/* 1. Hero Card: Cyber Sunset Exercise Directory Header */}
+      <div className="p-5 sm:p-6 rounded-3xl bg-[#111218] border border-[#212330] relative overflow-hidden shadow-xl">
+        <div className="absolute top-0 right-0 w-52 h-52 bg-[#ff6b00]/10 rounded-full blur-3xl pointer-events-none" />
+        
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <div className="flex items-center gap-2">
+              <span className="flex items-center gap-1.5 text-[10px] font-mono uppercase tracking-wider text-[#ff6b00] font-bold px-2.5 py-0.5 rounded-full bg-[#ff6b00]/10 border border-[#ff6b00]/20">
+                <Flame className="w-3.5 h-3.5 fill-current animate-pulse" />
+                EXERCISE DIRECTORY & FORM CUES
+              </span>
+            </div>
+            <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight mt-1.5">
+              Exercise Library ({exercises.length})
+            </h1>
+            <p className="text-xs text-zinc-400 mt-1">
+              Movements database with video guides, execution cues & alternative exercises (Badeel).
+            </p>
+          </div>
 
-        <button
-          onClick={() => setIsAddModalOpen(true)}
-          className="flex items-center gap-2 px-4 py-2 text-xs font-bold text-white bg-purple-600 hover:bg-purple-500 rounded-xl transition-all shadow-[0_0_15px_rgba(168,85,247,0.3)] self-start sm:self-auto"
-        >
-          <Plus className="w-4 h-4 stroke-[2.5]" />
-          <span>Add New Exercise</span>
-        </button>
+          <button
+            onClick={() => setIsAddModalOpen(true)}
+            className="px-4 py-2.5 rounded-xl btn-orange text-xs font-black flex items-center gap-2 cursor-pointer shadow-md active:scale-95 transition-all self-start sm:self-auto flex-shrink-0"
+          >
+            <Plus className="w-4 h-4 stroke-[3]" />
+            <span>Add Movement</span>
+          </button>
+        </div>
       </div>
 
-      {/* Filter & Search Bar */}
-      <div className="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-3">
-        <div className="flex items-center gap-2 flex-1 max-w-md">
-          <div className="relative w-full">
-            <Search className="w-4 h-4 text-zinc-500 absolute left-3.5 top-1/2 -translate-y-1/2" />
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search exercise by name, cue, or alternative..."
-              className="w-full pl-9 pr-3.5 py-2 rounded-lg bg-[#111116] border border-[#23232f] text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-purple-500 transition-colors"
-            />
-          </div>
+      {/* 2. Filter & Search Controls */}
+      <div className="space-y-3">
+        {/* Search Bar */}
+        <div className="relative">
+          <Search className="w-4 h-4 text-zinc-500 absolute left-3.5 top-1/2 -translate-y-1/2" />
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="Search exercise by name, cue, or alternative..."
+            className="w-full pl-10 pr-3.5 py-2.5 rounded-2xl bg-[#111218] border border-[#212330] text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-[#ff6b00]/60 transition-colors shadow-sm"
+          />
         </div>
 
-        {/* Muscle group filter pills */}
-        <div className="flex items-center gap-1.5 overflow-x-auto pb-1 lg:pb-0 scrollbar-none">
+        {/* Muscle Filter Horizontal Scrolling Strip */}
+        <div className="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none">
           <button
             onClick={() => setSelectedMuscle('All')}
-            className={`px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-colors ${
+            className={`px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all cursor-pointer ${
               selectedMuscle === 'All'
-                ? 'bg-purple-600 text-white'
-                : 'bg-[#121218] text-zinc-400 hover:text-white border border-[#22222d]'
+                ? 'bg-[#1e202c] text-white border border-[#2e303d] shadow-sm'
+                : 'bg-[#111218] text-zinc-400 hover:text-white border border-[#212330]'
             }`}
           >
-            All Muscles ({exercises.length})
+            All ({exercises.length})
           </button>
           {MUSCLE_GROUPS.map((muscle) => {
             const count = exercises.filter((e) => e.targetMuscle === muscle).length;
+            if (count === 0) return null;
             return (
               <button
                 key={muscle}
                 onClick={() => setSelectedMuscle(muscle)}
-                className={`px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-colors ${
+                className={`px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all cursor-pointer ${
                   selectedMuscle === muscle
-                    ? 'bg-purple-600 text-white'
-                    : 'bg-[#121218] text-zinc-400 hover:text-white border border-[#22222d]'
+                    ? 'bg-[#1e202c] text-[#ff6b00] border border-[#ff6b00]/30 shadow-sm'
+                    : 'bg-[#111218] text-zinc-400 hover:text-white border border-[#212330]'
                 }`}
               >
                 {muscle} ({count})
@@ -143,89 +162,102 @@ export const ExerciseLibraryView: React.FC = () => {
         </div>
       </div>
 
-      {/* Exercises Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+      {/* 3. Exercises List: Responsive Cards with Zero Overlap */}
+      <div className="space-y-3.5">
         {filteredExercises.map((ex) => (
           <div
             key={ex.id}
-            className="p-5 rounded-2xl bg-[#111117] border border-[#22222e] hover:border-purple-500/40 transition-all flex flex-col justify-between group"
+            className="p-5 rounded-3xl bg-[#111218] border border-[#212330] hover:border-[#35384d] transition-all shadow-md space-y-3.5 group"
           >
-            <div>
-              <div className="flex items-start justify-between gap-3 mb-2.5">
-                <div>
-                  <h3 className="text-sm font-bold text-white tracking-tight group-hover:text-purple-300 transition-colors">
+            {/* Header: Name, Target Badges & Delete */}
+            <div className="flex items-start justify-between gap-3">
+              <div className="flex items-start gap-3 min-w-0">
+                <div className="w-10 h-10 rounded-2xl bg-[#171822] text-[#ff6b00] border border-[#252736] flex items-center justify-center font-mono text-xs font-black flex-shrink-0 mt-0.5">
+                  <Dumbbell className="w-5 h-5" />
+                </div>
+                <div className="min-w-0">
+                  <h3 className="text-base font-extrabold text-white tracking-tight leading-snug">
                     {ex.name}
                   </h3>
-                  <div className="flex items-center gap-2 mt-1">
-                    <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-purple-950/60 text-purple-300 border border-purple-800/50">
+                  
+                  {/* Badges strip */}
+                  <div className="flex flex-wrap items-center gap-1.5 mt-1.5">
+                    <span className="text-[10px] font-mono font-bold px-2.5 py-0.5 rounded-full bg-[#18151f] text-[#ff6b00] border border-[#ff6b00]/20">
                       {ex.targetMuscle}
                     </span>
-                    <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-zinc-800 text-zinc-400">
+                    <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-[#09090b] text-zinc-300 border border-[#1e202c]">
                       {ex.equipment}
+                    </span>
+                    <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-[#09090b] text-zinc-400 border border-[#1e202c]">
+                      {ex.category}
                     </span>
                   </div>
                 </div>
-
-                <div className="flex items-center gap-1.5">
-                  <span className={`text-[10px] font-mono font-semibold px-2 py-0.5 rounded ${
-                    ex.category === 'Compound' 
-                      ? 'bg-purple-950/60 text-purple-300 border border-purple-800/50' 
-                      : 'bg-zinc-800 text-zinc-400'
-                  }`}>
-                    {ex.category}
-                  </span>
-
-                  <button
-                    type="button"
-                    onClick={() => deleteExercise(ex.id)}
-                    className="p-1 rounded-md text-zinc-500 hover:text-red-400 hover:bg-zinc-800/60 transition-colors"
-                    title="Delete exercise from database"
-                  >
-                    <Trash2 className="w-3.5 h-3.5" />
-                  </button>
-                </div>
               </div>
 
-              {/* Alternative Exercise */}
-              {ex.alternativeExercise && (
-                <div className="my-2 px-2.5 py-1.5 rounded-lg bg-purple-950/20 border border-purple-900/40 text-[11px] text-purple-300 flex items-center gap-1.5">
-                  <span className="font-mono text-[10px] uppercase font-bold text-purple-400">Alt:</span>
-                  <span>{ex.alternativeExercise}</span>
-                </div>
-              )}
+              <button
+                type="button"
+                onClick={() => {
+                  deleteExercise(ex.id);
+                  showToast(`Deleted "${ex.name}" from library 🗑️`, 'info');
+                }}
+                className="p-2 rounded-xl text-zinc-500 hover:text-rose-400 hover:bg-[#1e202c] transition-colors cursor-pointer flex-shrink-0"
+                title="Delete exercise"
+              >
+                <Trash2 className="w-4 h-4" />
+              </button>
+            </div>
 
-              {/* Execution Cue */}
-              <p className="text-xs text-zinc-400 line-clamp-3 leading-relaxed mt-2">
-                {ex.executionCue}
-              </p>
+            {/* Alternative Movement (Badeel) */}
+            {ex.alternativeExercise && (
+              <div className="px-3 py-2 rounded-2xl bg-[#09090b] border border-[#1e202a] text-xs flex items-center gap-2">
+                <Repeat className="w-3.5 h-3.5 text-[#ff6b00] flex-shrink-0" />
+                <span className="text-zinc-400 text-[11px] font-mono uppercase font-bold">Badeel:</span>
+                <span className="text-zinc-200 font-bold truncate">{ex.alternativeExercise}</span>
+              </div>
+            )}
 
-              {/* Tips */}
-              {ex.tips && ex.tips.length > 0 && (
-                <div className="mt-3 pt-3 border-t border-zinc-800/60 space-y-1">
-                  <span className="text-[10px] font-mono uppercase tracking-wider text-zinc-500 block">
-                    Checklist Cues
-                  </span>
-                  {ex.tips.slice(0, 2).map((tip, idx) => (
-                    <div key={idx} className="flex items-center gap-1.5 text-[11px] text-zinc-300">
-                      <span className="w-1 h-1 rounded-full bg-purple-400" />
+            {/* Execution Form Cue */}
+            {ex.executionCue && (
+              <div className="p-3 rounded-2xl bg-[#0a0a0d] border border-[#1e202c]">
+                <span className="text-[9px] font-mono uppercase text-[#ff6b00] font-bold block mb-1">
+                  Coaching & Form Cue
+                </span>
+                <p className="text-xs text-zinc-300 leading-relaxed font-medium">
+                  {ex.executionCue}
+                </p>
+              </div>
+            )}
+
+            {/* Tips Checklist */}
+            {ex.tips && ex.tips.length > 0 && (
+              <div className="pt-2 border-t border-[#1e202c] space-y-1">
+                <span className="text-[9px] font-mono uppercase tracking-wider text-zinc-500 font-bold block">
+                  Key Execution Checklist
+                </span>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5">
+                  {ex.tips.map((tip, idx) => (
+                    <div key={idx} className="flex items-center gap-2 text-xs text-zinc-300">
+                      <span className="w-1.5 h-1.5 rounded-full bg-[#ff6b00] flex-shrink-0" />
                       <span className="truncate">{tip}</span>
                     </div>
                   ))}
                 </div>
-              )}
-            </div>
+              </div>
+            )}
 
             {/* Video Guide Link */}
             {ex.videoUrl && (
-              <div className="mt-4 pt-3 border-t border-zinc-800/60 flex items-center justify-between">
+              <div className="pt-3 border-t border-[#1e202c] flex items-center justify-between">
                 <a
                   href={ex.videoUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-[11px] font-semibold text-purple-400 hover:text-purple-300 transition-colors flex items-center gap-1.5"
+                  className="px-3 py-1.5 rounded-xl bg-[#171822] hover:bg-[#202230] border border-[#2e303d] text-xs font-bold text-white transition-all flex items-center gap-1.5 cursor-pointer active:scale-95 group/btn"
                 >
-                  <Video className="w-3.5 h-3.5 text-purple-400" />
-                  <span>Watch Video Guide ↗</span>
+                  <Play className="w-3.5 h-3.5 fill-[#ff6b00] text-[#ff6b00]" />
+                  <span>Watch Video Guide</span>
+                  <ExternalLink className="w-3 h-3 text-zinc-500 group-hover/btn:text-zinc-300" />
                 </a>
               </div>
             )}
@@ -233,48 +265,57 @@ export const ExerciseLibraryView: React.FC = () => {
         ))}
 
         {filteredExercises.length === 0 && (
-          <div className="col-span-full py-16 text-center border border-dashed border-zinc-800 rounded-2xl bg-[#0e0e14]">
-            <Dumbbell className="w-8 h-8 text-zinc-600 mx-auto mb-2" />
-            <h3 className="text-sm font-bold text-white">No Movements Found</h3>
-            <p className="text-xs text-zinc-500 mt-1">
-              Try a different search query or add a new custom exercise
+          <div className="p-10 rounded-3xl bg-[#111218] border border-[#212330] text-center shadow-md space-y-3">
+            <div className="w-12 h-12 rounded-2xl bg-[#171822] text-[#ff6b00] border border-[#282a3a] flex items-center justify-center mx-auto">
+              <Dumbbell className="w-6 h-6 stroke-[2.5]" />
+            </div>
+            <h3 className="text-base font-extrabold text-white">No Movements Found</h3>
+            <p className="text-xs text-zinc-400 max-w-sm mx-auto">
+              Try searching with another keyword or add a new custom movement to the directory.
             </p>
+            <button
+              onClick={() => setIsAddModalOpen(true)}
+              className="px-5 py-2.5 rounded-xl btn-orange text-xs font-black inline-flex items-center gap-2 cursor-pointer shadow-md active:scale-95 mt-2"
+            >
+              <Plus className="w-4 h-4 stroke-[3]" />
+              <span>Add Movement</span>
+            </button>
           </div>
         )}
       </div>
 
-      {/* Add New Exercise Modal */}
+      {/* 4. Add New Exercise Modal */}
       {isAddModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-150">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/85 backdrop-blur-sm animate-in fade-in duration-150">
           <div 
-            className="w-full max-w-lg bg-[#121218] border border-[#272734] rounded-2xl p-6 shadow-2xl relative max-h-[90vh] overflow-y-auto animate-in zoom-in-95 duration-150"
+            className="w-full max-w-lg bg-[#111218] border border-[#212330] rounded-3xl p-5 sm:p-6 shadow-2xl relative max-h-[90vh] overflow-y-auto animate-in zoom-in-95 duration-150"
             onClick={(e) => e.stopPropagation()}
           >
             <button
               onClick={() => setIsAddModalOpen(false)}
-              className="absolute top-5 right-5 text-zinc-500 hover:text-zinc-300 p-1 rounded-lg hover:bg-zinc-800"
+              className="absolute top-5 right-5 text-zinc-500 hover:text-white p-2 rounded-xl hover:bg-[#1c1d27] transition-colors cursor-pointer"
             >
               <X className="w-5 h-5" />
             </button>
 
-            <div className="flex items-center gap-3 mb-5">
-              <div className="w-10 h-10 rounded-xl bg-purple-600/10 border border-purple-500/30 flex items-center justify-center text-purple-400">
+            <div className="flex items-center gap-3 mb-5 pb-4 border-b border-[#1e202c]">
+              <div className="w-10 h-10 rounded-2xl bg-[#171822] text-[#ff6b00] border border-[#282a3a] flex items-center justify-center flex-shrink-0">
                 <Dumbbell className="w-5 h-5" />
               </div>
               <div>
-                <h3 className="text-base font-bold text-white tracking-tight">
-                  Add New Exercise To Database
+                <h3 className="text-base font-extrabold text-white tracking-tight">
+                  Add New Exercise To Library
                 </h3>
                 <p className="text-xs text-zinc-400">
-                  Save exercise once with its video link to use across all workout plans
+                  Save exercise once to use across all custom workout splits.
                 </p>
               </div>
             </div>
 
             <form onSubmit={handleCreateExercise} className="space-y-4">
               <div>
-                <label className="block text-[11px] font-mono uppercase tracking-wider text-zinc-400 mb-1">
-                  Exercise Name
+                <label className="block text-[10px] font-mono uppercase tracking-wider text-zinc-400 mb-1 font-bold">
+                  Exercise Name *
                 </label>
                 <input
                   type="text"
@@ -282,19 +323,19 @@ export const ExerciseLibraryView: React.FC = () => {
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   placeholder="e.g. Incline Dumbbell Bench Press"
-                  className="w-full px-3.5 py-2.5 rounded-lg bg-[#0d0d12] border border-[#262632] text-xs text-white focus:outline-none focus:border-purple-500"
+                  className="w-full px-3.5 py-2.5 rounded-2xl bg-[#09090b] border border-[#1e202c] text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-[#ff6b00]/60 font-bold"
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-[11px] font-mono uppercase tracking-wider text-zinc-400 mb-1">
+                  <label className="block text-[10px] font-mono uppercase tracking-wider text-zinc-400 mb-1 font-bold">
                     Target Muscle
                   </label>
                   <select
                     value={targetMuscle}
                     onChange={(e) => setTargetMuscle(e.target.value as MuscleGroup)}
-                    className="w-full px-3.5 py-2.5 rounded-lg bg-[#0d0d12] border border-[#262632] text-xs text-white focus:outline-none focus:border-purple-500"
+                    className="w-full px-3.5 py-2.5 rounded-2xl bg-[#09090b] border border-[#1e202c] text-xs text-white focus:outline-none focus:border-[#ff6b00]/60"
                   >
                     {MUSCLE_GROUPS.map((m) => (
                       <option key={m} value={m}>{m}</option>
@@ -303,13 +344,13 @@ export const ExerciseLibraryView: React.FC = () => {
                 </div>
 
                 <div>
-                  <label className="block text-[11px] font-mono uppercase tracking-wider text-zinc-400 mb-1">
+                  <label className="block text-[10px] font-mono uppercase tracking-wider text-zinc-400 mb-1 font-bold">
                     Equipment
                   </label>
                   <select
                     value={equipment}
                     onChange={(e) => setEquipment(e.target.value as EquipmentType)}
-                    className="w-full px-3.5 py-2.5 rounded-lg bg-[#0d0d12] border border-[#262632] text-xs text-white focus:outline-none focus:border-purple-500"
+                    className="w-full px-3.5 py-2.5 rounded-2xl bg-[#09090b] border border-[#1e202c] text-xs text-white focus:outline-none focus:border-[#ff6b00]/60"
                   >
                     {EQUIPMENT_TYPES.map((eq) => (
                       <option key={eq} value={eq}>{eq}</option>
@@ -319,63 +360,63 @@ export const ExerciseLibraryView: React.FC = () => {
               </div>
 
               <div>
-                <label className="block text-[11px] font-mono uppercase tracking-wider text-zinc-400 mb-1">
-                  Video Guide Link (YouTube / URL)
-                </label>
-                <input
-                  type="url"
-                  value={videoUrl}
-                  onChange={(e) => setVideoUrl(e.target.value)}
-                  placeholder="https://youtube.com/watch?v=... or search link"
-                  className="w-full px-3.5 py-2.5 rounded-lg bg-[#0d0d12] border border-[#262632] text-xs text-white focus:outline-none focus:border-purple-500 placeholder-zinc-600"
-                />
-              </div>
-
-              <div>
-                <label className="block text-[11px] font-mono uppercase tracking-wider text-zinc-400 mb-1">
-                  Alternative Exercise (Badayel el-tamrena)
-                </label>
-                <input
-                  type="text"
-                  value={alternativeExercise}
-                  onChange={(e) => setAlternativeExercise(e.target.value)}
-                  placeholder="e.g. Incline Smith Machine Press / Chest Press Machine"
-                  className="w-full px-3.5 py-2.5 rounded-lg bg-[#0d0d12] border border-[#262632] text-xs text-white focus:outline-none focus:border-purple-500 placeholder-zinc-600"
-                />
-              </div>
-
-              <div>
-                <label className="block text-[11px] font-mono uppercase tracking-wider text-zinc-400 mb-1">
+                <label className="block text-[10px] font-mono uppercase tracking-wider text-zinc-400 mb-1 font-bold">
                   Movement Category
                 </label>
                 <div className="grid grid-cols-2 gap-2">
                   <button
                     type="button"
                     onClick={() => setCategory('Compound')}
-                    className={`py-2 rounded-lg text-xs font-bold border transition-colors ${
+                    className={`py-2 rounded-2xl text-xs font-bold border transition-all cursor-pointer ${
                       category === 'Compound' 
-                        ? 'bg-purple-600 text-white border-purple-500' 
-                        : 'bg-[#0d0d12] text-zinc-400 border-[#262632]'
+                        ? 'bg-[#18151f] text-[#ff6b00] border-[#ff6b00]/50 shadow-md shadow-[#ff6b00]/10' 
+                        : 'bg-[#09090b] text-zinc-400 border-[#1e202c]'
                     }`}
                   >
-                    Compound
+                    Compound Lift
                   </button>
                   <button
                     type="button"
                     onClick={() => setCategory('Isolation')}
-                    className={`py-2 rounded-lg text-xs font-bold border transition-colors ${
+                    className={`py-2 rounded-2xl text-xs font-bold border transition-all cursor-pointer ${
                       category === 'Isolation' 
-                        ? 'bg-purple-600 text-white border-purple-500' 
-                        : 'bg-[#0d0d12] text-zinc-400 border-[#262632]'
+                        ? 'bg-[#18151f] text-[#ff6b00] border-[#ff6b00]/50 shadow-md shadow-[#ff6b00]/10' 
+                        : 'bg-[#09090b] text-zinc-400 border-[#1e202c]'
                     }`}
                   >
-                    Isolation
+                    Isolation Movement
                   </button>
                 </div>
               </div>
 
               <div>
-                <label className="block text-[11px] font-mono uppercase tracking-wider text-zinc-400 mb-1">
+                <label className="block text-[10px] font-mono uppercase tracking-wider text-zinc-400 mb-1 font-bold">
+                  Alternative Exercise (Badeel)
+                </label>
+                <input
+                  type="text"
+                  value={alternativeExercise}
+                  onChange={(e) => setAlternativeExercise(e.target.value)}
+                  placeholder="e.g. Incline Smith Machine Press / Chest Press Machine"
+                  className="w-full px-3.5 py-2.5 rounded-2xl bg-[#09090b] border border-[#1e202c] text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-[#ff6b00]/60"
+                />
+              </div>
+
+              <div>
+                <label className="block text-[10px] font-mono uppercase tracking-wider text-zinc-400 mb-1 font-bold">
+                  Video Guide Link (YouTube / URL)
+                </label>
+                <input
+                  type="url"
+                  value={videoUrl}
+                  onChange={(e) => setVideoUrl(e.target.value)}
+                  placeholder="https://youtube.com/watch?v=..."
+                  className="w-full px-3.5 py-2.5 rounded-2xl bg-[#09090b] border border-[#1e202c] text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-[#ff6b00]/60"
+                />
+              </div>
+
+              <div>
+                <label className="block text-[10px] font-mono uppercase tracking-wider text-zinc-400 mb-1 font-bold">
                   Technique & Form Cue
                 </label>
                 <input
@@ -383,36 +424,36 @@ export const ExerciseLibraryView: React.FC = () => {
                   value={executionCue}
                   onChange={(e) => setExecutionCue(e.target.value)}
                   placeholder="e.g. Retract scapulae, touch lower sternum, 3s eccentric descent..."
-                  className="w-full px-3.5 py-2.5 rounded-lg bg-[#0d0d12] border border-[#262632] text-xs text-white focus:outline-none focus:border-purple-500"
+                  className="w-full px-3.5 py-2.5 rounded-2xl bg-[#09090b] border border-[#1e202c] text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-[#ff6b00]/60"
                 />
               </div>
 
               <div>
-                <label className="block text-[11px] font-mono uppercase tracking-wider text-zinc-400 mb-1">
-                  Checklist Tips (Comma Separated)
+                <label className="block text-[10px] font-mono uppercase tracking-wider text-zinc-400 mb-1 font-bold">
+                  Execution Checklist (Comma Separated)
                 </label>
                 <input
                   type="text"
                   value={tipInput}
                   onChange={(e) => setTipInput(e.target.value)}
                   placeholder="e.g. Keep wrists neutral, Drive feet firmly into floor"
-                  className="w-full px-3.5 py-2.5 rounded-lg bg-[#0d0d12] border border-[#262632] text-xs text-white focus:outline-none focus:border-purple-500"
+                  className="w-full px-3.5 py-2.5 rounded-2xl bg-[#09090b] border border-[#1e202c] text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-[#ff6b00]/60"
                 />
               </div>
 
-              <div className="pt-3 flex items-center justify-end gap-2.5">
+              <div className="pt-3 border-t border-[#1e202c] flex items-center justify-end gap-2.5">
                 <button
                   type="button"
                   onClick={() => setIsAddModalOpen(false)}
-                  className="px-4 py-2 text-xs font-semibold text-zinc-400 hover:text-white rounded-lg hover:bg-zinc-800"
+                  className="px-4 py-2 text-xs font-bold text-zinc-400 hover:text-white rounded-xl hover:bg-[#1e202c] transition-colors cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2 text-xs font-bold text-white bg-purple-600 hover:bg-purple-500 rounded-lg transition-all shadow-[0_0_15px_rgba(168,85,247,0.3)]"
+                  className="px-5 py-2.5 rounded-xl btn-orange text-xs font-black cursor-pointer shadow-md active:scale-95 transition-all"
                 >
-                  Save Exercise to Database
+                  Save Movement
                 </button>
               </div>
             </form>

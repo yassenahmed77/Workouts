@@ -46,11 +46,11 @@ interface GymContextType {
 
 const GymContext = createContext<GymContextType | undefined>(undefined);
 
-const STORAGE_KEY_USERS = 'pro_gym_users_v5';
-const STORAGE_KEY_PLANS = 'pro_gym_plans_v5';
-const STORAGE_KEY_EXERCISES = 'pro_gym_exercises_v5';
-const STORAGE_KEY_LOGS = 'pro_gym_logs_v5';
-const STORAGE_KEY_CURRENT_USER_ID = 'pro_gym_active_user_id_v5';
+const STORAGE_KEY_USERS = 'pro_gym_users_v9';
+const STORAGE_KEY_PLANS = 'pro_gym_plans_v9';
+const STORAGE_KEY_EXERCISES = 'pro_gym_exercises_v9';
+const STORAGE_KEY_LOGS = 'pro_gym_logs_v9';
+const STORAGE_KEY_CURRENT_USER_ID = 'pro_gym_active_user_id_v9';
 
 export function GymProvider({ children }: { children: React.ReactNode }) {
   const [users, setUsers] = useState<User[]>(INITIAL_USERS);
@@ -75,7 +75,7 @@ export function GymProvider({ children }: { children: React.ReactNode }) {
         if (usersRes.data && usersRes.data.length > 0) {
           setUsers(usersRes.data.map(mapDbUserToUser));
         }
-        if (plansRes.data && plansRes.data.length > 0) {
+        if (plansRes.data) {
           setPlans(plansRes.data.map(mapDbPlanToPlan));
         }
         if (exercisesRes.data && exercisesRes.data.length > 0) {
@@ -104,11 +104,35 @@ export function GymProvider({ children }: { children: React.ReactNode }) {
         const storedLogs = localStorage.getItem(STORAGE_KEY_LOGS);
         const storedActiveId = localStorage.getItem(STORAGE_KEY_CURRENT_USER_ID);
 
-        if (storedUsers) setUsers(JSON.parse(storedUsers));
-        if (storedPlans) setPlans(JSON.parse(storedPlans));
-        if (storedExercises) setExercises(JSON.parse(storedExercises));
-        if (storedLogs) setLogs(JSON.parse(storedLogs));
-        if (storedActiveId) setCurrentUserId(storedActiveId);
+        if (storedUsers !== null) {
+          setUsers(JSON.parse(storedUsers));
+        } else {
+          setUsers(INITIAL_USERS);
+        }
+
+        if (storedPlans !== null) {
+          setPlans(JSON.parse(storedPlans));
+        } else {
+          setPlans(INITIAL_PLANS);
+        }
+
+        if (storedExercises !== null) {
+          setExercises(JSON.parse(storedExercises));
+        } else {
+          setExercises(INITIAL_EXERCISES);
+        }
+
+        if (storedLogs !== null) {
+          setLogs(JSON.parse(storedLogs));
+        } else {
+          setLogs(INITIAL_LOGS);
+        }
+
+        if (storedActiveId) {
+          setCurrentUserId(storedActiveId);
+        } else {
+          setCurrentUserId('user-rawan-1');
+        }
 
         // 2. Fetch fresh data from Supabase if connected
         await refreshData();

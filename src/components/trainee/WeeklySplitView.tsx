@@ -1,156 +1,183 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import { useGym } from '@/context/GymContext';
-import { Calendar, Clock, Dumbbell, Flame, CheckCircle2, ShieldAlert } from 'lucide-react';
+import { WorkoutDay } from '@/types';
+import { LiveWorkoutSession } from './LiveWorkoutSession';
+import { Calendar, Clock, Dumbbell, ShieldAlert, Play, Layers, Sparkles, ChevronRight } from 'lucide-react';
 
 export const WeeklySplitView: React.FC = () => {
   const { currentUser, getPlanForUser } = useGym();
+  const [activeLiveDay, setActiveLiveDay] = useState<WorkoutDay | null>(null);
 
   if (!currentUser) return null;
 
   const plan = getPlanForUser(currentUser.id);
 
+  // If currently tracking a live workout session
+  if (activeLiveDay && plan) {
+    return (
+      <LiveWorkoutSession
+        plan={plan}
+        day={activeLiveDay}
+        onExit={() => setActiveLiveDay(null)}
+        onSessionCompleted={() => setActiveLiveDay(null)}
+      />
+    );
+  }
+
   if (!plan) {
     return (
-      <div className="p-12 text-center rounded-2xl bg-[#111116] border border-zinc-800">
+      <div className="p-12 text-center rounded-3xl bg-[#12131a] border border-[#232530] max-w-2xl mx-auto">
         <ShieldAlert className="w-10 h-10 mx-auto text-amber-400 mb-3" />
         <h3 className="text-base font-bold text-white">No Program Assigned</h3>
         <p className="text-xs text-zinc-400 mt-1">
-          A customized workout split has not been assigned yet. Yassen Ahmed will assign your training split shortly.
+          A customized workout split has not been assigned yet. Coach Yassen Ahmed will assign your training split shortly.
         </p>
       </div>
     );
   }
 
   return (
-    <div className="space-y-6">
-      {/* Top Banner */}
-      <div className="p-6 rounded-2xl bg-[#111116] border border-[#22222d] flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+    <div className="space-y-4 max-w-md mx-auto pb-28">
+      {/* Top Program Banner */}
+      <div className="p-5 rounded-3xl bg-[#111218] border border-[#212330] flex flex-col justify-between gap-3 shadow-xl relative overflow-hidden">
+        <div className="absolute top-0 right-0 w-48 h-48 bg-[#ff6b00]/10 rounded-full blur-3xl pointer-events-none" />
+        
         <div>
-          <span className="text-[10px] font-mono uppercase tracking-wider text-purple-400 font-bold">
-            Program Architecture
+          <span className="text-[10px] font-mono uppercase tracking-wider text-[#ff6b00] font-bold px-2.5 py-0.5 rounded-full bg-[#ff6b00]/10 border border-[#ff6b00]/20">
+            Training Routine
           </span>
-          <h1 className="text-2xl font-black text-white tracking-tight mt-1">
+          <h1 className="text-2xl font-extrabold text-white tracking-tight mt-1.5">
             {plan.title}
           </h1>
-          <p className="text-xs text-zinc-400 mt-1 max-w-xl">
+          <p className="text-xs text-zinc-400 mt-1">
             {plan.description || 'Targeted hypertrophy & progressive overload protocol.'}
           </p>
         </div>
 
-        <div className="flex items-center gap-3 text-xs font-numeric text-zinc-300">
-          <div className="px-3.5 py-2 rounded-xl bg-[#09090c] border border-zinc-800 text-center">
-            <span className="block text-[9px] font-mono uppercase text-zinc-500">Days / Wk</span>
-            <span className="text-sm font-bold text-white">{plan.daysPerWeek}</span>
+        <div className="flex items-center gap-2.5 text-xs font-numeric text-zinc-300 pt-2 border-t border-[#1e202c]">
+          <div className="flex-1 px-3 py-2 rounded-2xl bg-[#09090b] border border-[#212330] text-center">
+            <span className="block text-[9px] font-mono uppercase text-zinc-500 font-bold">Days / Wk</span>
+            <span className="text-sm font-extrabold text-white">{plan.daysPerWeek}</span>
           </div>
-          <div className="px-3.5 py-2 rounded-xl bg-[#09090c] border border-zinc-800 text-center">
-            <span className="block text-[9px] font-mono uppercase text-zinc-500">Weeks</span>
-            <span className="text-sm font-bold text-purple-400">{plan.durationWeeks}</span>
+          <div className="flex-1 px-3 py-2 rounded-2xl bg-[#09090b] border border-[#212330] text-center">
+            <span className="block text-[9px] font-mono uppercase text-zinc-500 font-bold">Duration</span>
+            <span className="text-sm font-extrabold text-[#ff6b00]">{plan.durationWeeks} Wks</span>
           </div>
         </div>
       </div>
 
-      {/* Days Stack */}
-      <div className="space-y-4">
+      {/* Days Stack with Direct Start Workout CTAs */}
+      <div className="space-y-5">
         {plan.days.map((day, idx) => (
           <div
             key={day.id}
-            className={`rounded-2xl border transition-all overflow-hidden ${
-              day.isRestDay ? 'bg-[#0b0b0f] border-zinc-900' : 'bg-[#111117] border-[#22222f]'
+            className={`rounded-3xl border transition-all overflow-hidden shadow-xl ${
+              day.isRestDay ? 'bg-[#0a0a0d] border-[#1e202a]' : 'bg-[#111218] border-[#212330]'
             }`}
           >
-            {/* Day Header */}
-            <div className="p-4 sm:p-5 flex items-center justify-between border-b border-zinc-800/60">
-              <div className="flex items-center gap-3">
-                <span className="w-7 h-7 rounded-lg bg-purple-950/80 border border-purple-800/60 text-purple-300 font-mono text-xs font-bold flex items-center justify-center">
+            {/* Day Header with generous spacing before Start button */}
+            <div className="p-4 sm:p-5 flex items-center justify-between gap-6 border-b border-[#1e202a]">
+              <div className="flex items-center gap-3.5 min-w-0">
+                <span className="w-10 h-10 rounded-2xl bg-[#1c1d27] border border-[#2e303d] text-[#ff6b00] font-mono text-sm font-black flex items-center justify-center flex-shrink-0 shadow-inner self-center">
                   {idx + 1}
                 </span>
-                <div>
-                  <h3 className="text-sm font-bold text-white tracking-tight">
+                <div className="min-w-0 flex flex-col justify-center">
+                  <h3 className="text-base font-extrabold text-white tracking-tight leading-tight truncate">
                     {day.dayName}
                   </h3>
                   {!day.isRestDay && (
-                    <div className="flex items-center gap-2 text-[11px] text-zinc-400 font-numeric mt-0.5">
-                      <span>{day.estimatedMinutes} Mins</span>
-                      <span>•</span>
-                      <span className="text-purple-400 font-mono">{day.targetMuscles.join(' / ')}</span>
+                    <div className="flex items-center gap-3 font-numeric mt-1.5">
+                      {/* 60 centered over Mins */}
+                      <div className="flex flex-col items-center text-center">
+                        <span className="font-black text-zinc-200 text-xs leading-none">
+                          {day.estimatedMinutes}
+                        </span>
+                        <span className="text-[9px] font-mono uppercase text-zinc-500 font-bold leading-none mt-0.5">
+                          Mins
+                        </span>
+                      </div>
+
+                      <span className="text-zinc-600 font-bold text-xs self-center">•</span>
+
+                      {/* 10 centered directly over Movements */}
+                      <div className="flex flex-col items-center text-center">
+                        <span className="font-black text-[#ff6b00] text-xs leading-none font-mono">
+                          {day.exercises.length}
+                        </span>
+                        <span className="text-[9px] font-mono uppercase text-[#ff6b00]/90 font-bold leading-none mt-0.5">
+                          Movements
+                        </span>
+                      </div>
                     </div>
                   )}
                 </div>
               </div>
 
               {day.isRestDay ? (
-                <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-zinc-800 text-zinc-400">
+                <span className="text-[10px] font-mono px-3 py-1 rounded-full bg-[#1c1d27] text-zinc-400 border border-[#2e303d] flex-shrink-0">
                   REST DAY
                 </span>
               ) : (
-                <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-purple-950/60 text-purple-300 border border-purple-800/60">
-                  {day.exercises.length} MOVEMENTS
-                </span>
+                <button
+                  onClick={() => setActiveLiveDay(day)}
+                  className="px-3.5 py-1.5 rounded-xl btn-orange text-[11px] font-black flex items-center gap-1.5 cursor-pointer shadow-md active:scale-95 transition-all flex-shrink-0 ml-auto self-center"
+                >
+                  <Play className="w-3 h-3 fill-current" />
+                  <span>Start</span>
+                </button>
               )}
             </div>
 
-            {!day.isRestDay && day.exercises.length > 0 && (
-              <div className="mt-4 space-y-2">
-                {day.exercises.map((ex, exIdx) => (
-                  <div
-                    key={ex.id}
-                    className="p-3.5 rounded-xl bg-[#0e0e14] border border-zinc-900 flex flex-col gap-2 text-xs"
-                  >
-                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                      <div className="flex items-start gap-2.5">
-                        <span className="w-5 h-5 rounded bg-zinc-800 text-zinc-400 font-mono text-[10px] flex items-center justify-center font-bold mt-0.5">
-                          {exIdx + 1}
+            {!day.isRestDay && day.exercises.length > 0 && (() => {
+              // Group exercises by target muscle group and aggregate total sets
+              const muscleSummary = day.exercises.reduce((acc, ex) => {
+                const muscle = ex.targetMuscle || 'General';
+                if (!acc[muscle]) {
+                  acc[muscle] = {
+                    muscleName: muscle,
+                    totalSets: 0,
+                    exerciseCount: 0
+                  };
+                }
+                acc[muscle].totalSets += (ex.sets || 3);
+                acc[muscle].exerciseCount += 1;
+                return acc;
+              }, {} as Record<string, { muscleName: string; totalSets: number; exerciseCount: number }>);
+
+              const muscleGroupsList = Object.values(muscleSummary);
+
+              return (
+                <div className="p-4 sm:p-5 space-y-2.5">
+                  {muscleGroupsList.map((mg, mgIdx) => (
+                    <div
+                      key={mg.muscleName}
+                      onClick={() => setActiveLiveDay(day)}
+                      className="p-3.5 sm:p-4 px-4 sm:px-5 rounded-2xl bg-[#09090b] border border-[#1e202c] hover:border-[#ff6b00]/40 hover:bg-[#14151e] transition-all cursor-pointer flex items-center justify-between gap-4 text-xs group shadow-sm"
+                    >
+                      {/* Left: Fixed-width Badge + Consistent Muscle Name alignment */}
+                      <div className="flex items-center gap-3.5 min-w-0">
+                        <span className="w-8 h-8 rounded-xl bg-[#171822] border border-[#252736] text-[#ff6b00] font-mono text-xs font-black flex items-center justify-center flex-shrink-0 shadow-inner">
+                          {mgIdx + 1}
                         </span>
-                        <div>
-                          <div className="flex flex-wrap items-center gap-2">
-                            <span className="font-bold text-white">
-                              {ex.exerciseName}
-                            </span>
-                            {ex.alternativeExercise && (
-                              <span className="text-[10px] px-2 py-0.2 rounded bg-purple-950/60 text-purple-300 border border-purple-900 font-medium">
-                                Badeel: {ex.alternativeExercise}
-                              </span>
-                            )}
-                          </div>
-                          <span className="text-[10px] text-zinc-500 font-mono mt-0.5 block">
-                            {ex.targetMuscle} • {ex.equipment}
-                          </span>
-                        </div>
+                        <span className="font-extrabold text-white text-sm sm:text-base leading-none truncate group-hover:text-[#ff6b00] transition-colors">
+                          {mg.muscleName}
+                        </span>
                       </div>
 
-                      <div className="flex flex-wrap items-center gap-3 text-zinc-400 font-numeric text-[11px] self-start sm:self-auto">
-                        {ex.videoUrl && (
-                          <a
-                            href={ex.videoUrl}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="px-2 py-0.5 rounded text-[10px] font-semibold text-blue-300 bg-blue-950/60 hover:bg-blue-900 border border-blue-800/50 transition-colors inline-flex items-center gap-1"
-                          >
-                            <span>Video Guide ↗</span>
-                          </a>
-                        )}
-                        <span>{ex.sets} Sets</span>
-                        <span>•</span>
-                        <span>{ex.targetReps} Reps</span>
-                        <span>•</span>
-                        <span>RPE {ex.targetRpe || '1-2'}</span>
-                        <span>•</span>
-                        <span className="text-purple-400">{ex.restSeconds}s Rest</span>
+                      {/* Right: Centered Sets Badge & Chevron */}
+                      <div className="flex items-center gap-2.5 text-zinc-300 font-numeric text-xs flex-shrink-0">
+                        <span className="px-3 py-1.5 rounded-xl bg-[#161722] border border-[#252736] font-mono font-bold text-[#ff6b00] text-xs leading-none flex items-center justify-center">
+                          {mg.totalSets} Sets
+                        </span>
+                        <ChevronRight className="w-4 h-4 text-zinc-600 group-hover:text-[#ff6b00] transition-colors" />
                       </div>
                     </div>
-
-                    {ex.notes && (
-                      <div className="mt-1 pl-7 text-[11px] text-zinc-400 italic">
-                        <span className="text-purple-400 font-semibold not-italic">Form Cue: </span>
-                        {ex.notes}
-                      </div>
-                    )}
-                  </div>
-                ))}
-              </div>
-            )}
+                  ))}
+                </div>
+              );
+            })()}
           </div>
         ))}
       </div>

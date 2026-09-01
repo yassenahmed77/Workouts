@@ -12,7 +12,8 @@ import {
   getUserHabits,
   getTodayRecordForHabit,
   setHabitRecord,
-  calculateHabitStreak
+  calculateHabitStreak,
+  calculateQuitLiveStats
 } from '@/lib/habitsEngine';
 import { RenderHabitIcon } from './TraineeHabitsView';
 import { 
@@ -476,8 +477,14 @@ export const TraineeDashboard: React.FC<TraineeDashboardProps> = ({
           {/* Big Orange Gradient CTA Button */}
           {activeDay && (
             <button
-              onClick={() => setActiveSessionDay(activeDay)}
-              className="w-full py-3.5 px-5 rounded-2xl btn-orange text-xs sm:text-sm font-black flex items-center justify-center gap-2 cursor-pointer"
+              onClick={() => {
+                if (activeDay && plan) {
+                  setActiveSessionDay(activeDay);
+                } else {
+                  onNavigateToSplit();
+                }
+              }}
+              className="w-full py-3.5 px-5 rounded-2xl btn-orange text-xs sm:text-sm font-black flex items-center justify-center gap-2 cursor-pointer shadow-lg shadow-[#ff6b00]/20 active:scale-98 transition-all"
             >
               <Play className="w-4 h-4 fill-current" />
               <span>START WORKOUT</span>
@@ -508,6 +515,46 @@ export const TraineeDashboard: React.FC<TraineeDashboardProps> = ({
 
             <div className="space-y-2">
               {userHabits.slice(0, 4).map((habit) => {
+                if (habit.type === 'quit') {
+                  const qStats = calculateQuitLiveStats(habit);
+                  return (
+                    <div 
+                      key={habit.id}
+                      onClick={onNavigateToHabits}
+                      className="flex items-center justify-between p-2.5 rounded-2xl border transition-all bg-[#09090b] border-[#1e202c] hover:border-[#35384d] cursor-pointer"
+                    >
+                      <div className="flex items-center gap-2.5 min-w-0 flex-1">
+                        <div 
+                          className="w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0"
+                          style={{
+                            backgroundColor: `${habit.color || '#ff6b00'}18`,
+                            borderColor: `${habit.color || '#ff6b00'}40`,
+                            borderWidth: '1px',
+                            color: habit.color || '#ff6b00'
+                          }}
+                        >
+                          <RenderHabitIcon iconKey={habit.iconKey} className="w-4 h-4" />
+                        </div>
+                        <div className="min-w-0 flex-1">
+                          <div className="flex items-center gap-1.5">
+                            <h4 className="text-xs font-extrabold text-white truncate">{habit.title}</h4>
+                            <span className="text-[9px] font-mono font-bold px-1.5 py-0.2 rounded bg-cyan-500/10 text-cyan-400 border border-cyan-500/20">
+                              {qStats.days}d Clean
+                            </span>
+                          </div>
+                          <p className="text-[10px] text-zinc-400 truncate">
+                            {qStats.currentStage.name} • {qStats.progressPercentage}% of {qStats.targetDays}d
+                          </p>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center gap-1 flex-shrink-0 text-zinc-500">
+                        <ChevronRight className="w-4 h-4 text-[#ff6b00]" />
+                      </div>
+                    </div>
+                  );
+                }
+
                 const record = getTodayRecordForHabit(currentUser.id, habit);
                 const streak = calculateHabitStreak(currentUser.id, habit.id);
 

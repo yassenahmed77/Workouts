@@ -50,7 +50,7 @@ export const LiveWorkoutSession: React.FC<LiveWorkoutSessionProps> = ({
   const { showToast } = useToast();
 
   // Elapsed workout timer
-  const [elapsedSeconds, setElapsedSeconds] = useState(31);
+  const [elapsedSeconds, setElapsedSeconds] = useState(0);
   const [isTimerRunning, setIsTimerRunning] = useState(true);
 
   if (!currentUser) return null;
@@ -72,14 +72,18 @@ export const LiveWorkoutSession: React.FC<LiveWorkoutSessionProps> = ({
   const pastLogs = getUserLogs(currentUser.id);
   const previousExerciseData = useMemo(() => {
     const memory: Record<string, { weightKg: number; reps: number }[]> = {};
+    if (!pastLogs || !Array.isArray(pastLogs)) return memory;
     for (const log of pastLogs) {
+      if (!log || !log.completedExercises || !Array.isArray(log.completedExercises)) continue;
       for (const ex of log.completedExercises) {
+        if (!ex || !ex.exerciseName) continue;
         if (!memory[ex.exerciseName] || memory[ex.exerciseName].length === 0) {
-          const completedSets = ex.sets.filter((s) => s.completed);
+          if (!ex.sets || !Array.isArray(ex.sets)) continue;
+          const completedSets = ex.sets.filter((s) => s && s.completed);
           if (completedSets.length > 0) {
             memory[ex.exerciseName] = completedSets.map((s) => ({
-              weightKg: s.weightKg,
-              reps: s.reps
+              weightKg: Number(s.weightKg) || 0,
+              reps: Number(s.reps) || 0
             }));
           }
         }
@@ -90,16 +94,20 @@ export const LiveWorkoutSession: React.FC<LiveWorkoutSessionProps> = ({
 
   // Exercise log entries
   const [exerciseLogs, setExerciseLogs] = useState<LoggedExercise[]>(() => {
-    return day.exercises.map((ex) => {
-      const prevData = previousExerciseData[ex.exerciseName];
+    const exercises = day?.exercises && Array.isArray(day.exercises) ? day.exercises : [];
+    return exercises.map((ex, idx) => {
+      const exName = ex?.exerciseName || `Exercise ${idx + 1}`;
+      const prevData = previousExerciseData[exName];
+      const targetRepsNum = parseInt(String(ex?.targetReps || '8'), 10) || 8;
+      const setsCount = Math.max(1, ex?.sets || 3);
       return {
-        exerciseId: ex.exerciseId,
-        exerciseName: ex.exerciseName,
-        targetMuscle: ex.targetMuscle,
-        sets: Array.from({ length: ex.sets || 3 }, (_, i) => ({
+        exerciseId: ex?.exerciseId || ex?.id || `ex-${idx}`,
+        exerciseName: exName,
+        targetMuscle: ex?.targetMuscle || 'Full Body',
+        sets: Array.from({ length: setsCount }, (_, i) => ({
           setNumber: i + 1,
           weightKg: prevData && prevData[i] ? prevData[i].weightKg : 0,
-          reps: parseInt(ex.targetReps) || (prevData && prevData[i] ? prevData[i].reps : 8),
+          reps: prevData && prevData[i] ? prevData[i].reps : targetRepsNum,
           completed: false // default false for all sets
         }))
       };
@@ -167,7 +175,7 @@ export const LiveWorkoutSession: React.FC<LiveWorkoutSessionProps> = ({
 
   // Toggle set complete: checks/unchecks and auto-advances to next set
   const handleToggleSetComplete = (exerciseIndex: number, setIndex: number) => {
-    const routineEx = day.exercises[exerciseIndex];
+    const routineEx = day?.exercises?.[exerciseIndex];
     
     setExerciseLogs((prev) => {
       const next = [...prev];
@@ -426,7 +434,7 @@ export const LiveWorkoutSession: React.FC<LiveWorkoutSessionProps> = ({
               EXERCISES
             </span>
             <span className="font-mono text-xs font-extrabold text-white">
-              <span className="text-[#ff6b00]">{completedExercisesCount || 4}</span> / {day.exercises.length || 10}
+              <span className="text-[#ff6b00]">{completedExercisesCount}</span> / {day.exercises?.length || 0}
             </span>
           </div>
         </div>
@@ -435,14 +443,14 @@ export const LiveWorkoutSession: React.FC<LiveWorkoutSessionProps> = ({
         <div className="w-full h-1 bg-[#181a24] rounded-full overflow-hidden">
           <div 
             className="h-full bg-[#ff6b00] rounded-full transition-all duration-300 shadow-[0_0_8px_#ff6b00]"
-            style={{ width: `${Math.max(15, progressPercent || 40)}%` }}
+            style={{ width: `${progressPercent}%` }}
           />
         </div>
       </div>
 
       {/* 3. Main Routine Exercise Cards Stack (All Exercises with Full Set Logging Logic) */}
       <div className="space-y-4">
-        {day.exercises.map((routineEx, exIdx) => {
+        {(day.exercises || []).map((routineEx, exIdx) => {
           const logEntry = exerciseLogs[exIdx];
           const prevSets = previousExerciseData[routineEx.exerciseName];
 

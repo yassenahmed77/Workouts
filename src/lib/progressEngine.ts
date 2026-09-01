@@ -356,21 +356,27 @@ export function checkLiveSetPR(
   reps: number,
   pastLogs: WorkoutLog[]
 ): { isNewPR: boolean; label?: string; diffKg?: number } {
-  if (weightKg <= 0) return { isNewPR: false };
+  if (weightKg <= 0 || !pastLogs || !Array.isArray(pastLogs) || !exerciseName) return { isNewPR: false };
 
   let historicalMaxWeight = 0;
   let historicalMaxRepsAtWeight = 0;
+  const targetName = exerciseName.trim().toLowerCase();
 
   for (const log of pastLogs) {
+    if (!log || !log.completedExercises || !Array.isArray(log.completedExercises)) continue;
     for (const ex of log.completedExercises) {
-      if (ex.exerciseName.trim().toLowerCase() === exerciseName.trim().toLowerCase()) {
+      if (!ex || !ex.exerciseName) continue;
+      if (ex.exerciseName.trim().toLowerCase() === targetName) {
+        if (!ex.sets || !Array.isArray(ex.sets)) continue;
         for (const set of ex.sets) {
-          if (set.completed) {
-            if (set.weightKg > historicalMaxWeight) {
-              historicalMaxWeight = set.weightKg;
+          if (set && set.completed) {
+            const w = Number(set.weightKg) || 0;
+            const r = Number(set.reps) || 0;
+            if (w > historicalMaxWeight) {
+              historicalMaxWeight = w;
             }
-            if (set.weightKg === weightKg && set.reps > historicalMaxRepsAtWeight) {
-              historicalMaxRepsAtWeight = set.reps;
+            if (w === weightKg && r > historicalMaxRepsAtWeight) {
+              historicalMaxRepsAtWeight = r;
             }
           }
         }
@@ -379,7 +385,7 @@ export function checkLiveSetPR(
   }
 
   if (historicalMaxWeight > 0 && weightKg > historicalMaxWeight) {
-    const diff = weightKg - historicalMaxWeight;
+    const diff = Math.round((weightKg - historicalMaxWeight) * 10) / 10;
     return {
       isNewPR: true,
       label: `+${diff}kg PR 🔥`,

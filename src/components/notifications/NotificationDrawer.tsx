@@ -112,8 +112,8 @@ export const NotificationDrawer: React.FC<NotificationDrawerProps> = ({
         {/* Glowing Background Blur */}
         <div className="absolute top-0 right-0 w-64 h-64 bg-[#ff6b00]/10 rounded-full blur-3xl pointer-events-none" />
 
-        {/* Drawer Header */}
-        <div className="p-4 sm:p-5 border-b border-[#1e202c] flex items-center justify-between gap-3 relative z-10">
+        {/* Drawer Header (Dynamic Island & Notch Safe) */}
+        <div className="p-4 sm:p-5 pt-[max(18px,env(safe-area-inset-top))] border-b border-[#1e202c] flex items-center justify-between gap-3 relative z-10">
           <div className="flex items-center gap-2.5">
             <div className="w-9 h-9 rounded-2xl bg-[#171822] text-[#ff6b00] border border-[#2e303d] flex items-center justify-center relative">
               <Bell className="w-4 h-4" />

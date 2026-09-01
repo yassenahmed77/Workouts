@@ -46,14 +46,14 @@ export const AuthScreen: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#08080b] text-[#f4f4f6] flex flex-col justify-center items-center p-3.5 sm:p-6 relative overflow-hidden selection:bg-[#ff6b00]/30 selection:text-white">
+    <div className="min-h-screen bg-[#08080b] text-[#f4f4f6] flex flex-col justify-center items-center p-3.5 sm:p-6 pt-[max(20px,env(safe-area-inset-top))] pb-[max(20px,env(safe-area-inset-bottom))] relative overflow-hidden selection:bg-[#ff6b00]/30 selection:text-white">
       
       {/* Glowing Cyber Sunset Radial Background Glows */}
       <div className="absolute top-10 left-1/2 -translate-x-1/2 w-80 sm:w-96 h-80 sm:h-96 bg-[#ff6b00]/10 rounded-full blur-3xl pointer-events-none" />
       <div className="absolute bottom-10 right-10 w-72 h-72 bg-purple-600/10 rounded-full blur-3xl pointer-events-none" />
 
       {/* Main Centered Mobile Frame Card */}
-      <div className="w-full max-w-md space-y-5 relative z-10 py-6">
+      <div className="w-full max-w-md space-y-5 relative z-10 py-4">
         
         {/* Brand Header */}
         <div className="text-center space-y-3">

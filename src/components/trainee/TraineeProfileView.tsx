@@ -40,40 +40,23 @@ export const TraineeProfileView: React.FC = () => {
   const { currentUser, updateUserProfile, getPlanForUser, getUserLogs } = useGym();
   const { showToast } = useToast();
 
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [weightKg, setWeightKg] = useState(70);
-  const [targetWeightKg, setTargetWeightKg] = useState(70);
-  const [heightCm, setHeightCm] = useState(175);
-  const [goal, setGoal] = useState<UserGoal>('Hypertrophy / Muscle Gain');
-  const [notes, setNotes] = useState('');
+  const [name, setName] = useState(() => currentUser?.name || '');
+  const [email, setEmail] = useState(() => currentUser?.email || '');
+  const [weightKg, setWeightKg] = useState(() => currentUser?.weightKg || 70);
+  const [targetWeightKg, setTargetWeightKg] = useState(() => currentUser?.targetWeightKg || currentUser?.weightKg || 70);
+  const [heightCm, setHeightCm] = useState(() => currentUser?.heightCm || 175);
+  const [goal, setGoal] = useState<UserGoal>(() => currentUser?.goal || 'Hypertrophy / Muscle Gain');
+  const [notes, setNotes] = useState(() => currentUser?.notes || '');
   const [isSaving, setIsSaving] = useState(false);
 
   // Weekly Weight Logging State
-  const [weightLogs, setWeightLogs] = useState<BodyWeightLog[]>([]);
-  const [newCheckInWeight, setNewCheckInWeight] = useState<string>('');
+  const [weightLogs, setWeightLogs] = useState<BodyWeightLog[]>(() => (currentUser ? getSavedWeightLogs(currentUser.id) : []));
+  const [newCheckInWeight, setNewCheckInWeight] = useState<string>(() => {
+    if (!currentUser) return '70';
+    const logs = getSavedWeightLogs(currentUser.id);
+    return (logs.length > 0 ? logs[logs.length - 1].weightKg : (currentUser.weightKg || 70)).toString();
+  });
   const [newCheckInDate, setNewCheckInDate] = useState<string>(() => new Date().toISOString().split('T')[0]);
-
-  useEffect(() => {
-    if (currentUser) {
-      setName(currentUser.name || '');
-      setEmail(currentUser.email || '');
-      setWeightKg(currentUser.weightKg || 70);
-      setTargetWeightKg(currentUser.targetWeightKg || currentUser.weightKg || 70);
-      setHeightCm(currentUser.heightCm || 175);
-      setGoal(currentUser.goal || 'Hypertrophy / Muscle Gain');
-      setNotes(currentUser.notes || '');
-
-      const logs = getSavedWeightLogs(currentUser.id);
-      setWeightLogs(logs);
-      if (logs.length > 0) {
-        const latest = logs[logs.length - 1].weightKg;
-        setNewCheckInWeight(latest.toString());
-      } else {
-        setNewCheckInWeight((currentUser.weightKg || 70).toString());
-      }
-    }
-  }, [currentUser]);
 
   if (!currentUser) return null;
 

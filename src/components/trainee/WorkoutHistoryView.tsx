@@ -14,23 +14,14 @@ import {
 } from '@/lib/habitsEngine';
 import { 
   History, 
-  Calendar, 
-  Clock, 
   Dumbbell, 
   TrendingUp, 
-  CheckCircle2, 
   MessageSquare, 
-  Award, 
   Search, 
-  Filter, 
   ChevronDown, 
   ChevronUp, 
-  Zap, 
   Flame, 
-  ArrowUpRight, 
-  Layers,
-  Sparkles,
-  ChevronRight
+  Sparkles
 } from 'lucide-react';
 
 const CATEGORY_TABS = [
@@ -50,14 +41,12 @@ const ProgressRing: React.FC<{
   size?: number;
   strokeWidth?: number;
   color?: string;
-  glow?: boolean;
   children?: React.ReactNode;
 }> = ({
   percentage,
   size = 48,
   strokeWidth = 3.5,
   color = '#ff6b00',
-  glow = true,
   children
 }) => {
   const clamped = Math.min(100, Math.max(0, percentage));
@@ -106,10 +95,8 @@ export const WorkoutHistoryView: React.FC = () => {
   // Expanded exercise cards tracking
   const [expandedExercises, setExpandedExercises] = useState<Record<string, boolean>>({});
 
-  if (!currentUser) return null;
-
-  const logs = getUserLogs(currentUser.id);
-  const userPlan = getPlanForUser(currentUser.id);
+  const logs = useMemo(() => (currentUser ? getUserLogs(currentUser.id) : []), [currentUser, getUserLogs]);
+  const userPlan = useMemo(() => (currentUser ? getPlanForUser(currentUser.id) : undefined), [currentUser, getPlanForUser]);
 
   // 1. 100% Dynamic Exercise Progression Analysis across ALL exercises & plan movements
   const exerciseSummaries = useMemo(() => {
@@ -141,9 +128,10 @@ export const WorkoutHistoryView: React.FC = () => {
 
   // 5. 100% Dynamic Habits Adherence & Streak
   const habitsMetrics = useMemo(() => {
+    if (!currentUser) return { activeStreak: 0, adherencePercentage: 0 };
     const userHabitsList = getUserHabits(currentUser.id);
     return calculateOverallHabitsSummary(currentUser.id, userHabitsList);
-  }, [currentUser.id]);
+  }, [currentUser]);
 
   const toggleExpand = (name: string) => {
     setExpandedExercises((prev) => ({
@@ -151,6 +139,8 @@ export const WorkoutHistoryView: React.FC = () => {
       [name]: !prev[name]
     }));
   };
+
+  if (!currentUser) return null;
 
   return (
     <div className="space-y-4 max-w-md mx-auto pb-28">
@@ -193,11 +183,11 @@ export const WorkoutHistoryView: React.FC = () => {
             {/* Dynamic Circular Progress Ring for Weekly Commitment */}
             <ProgressRing
               percentage={workoutStreak.completionPercentage}
-              size={50}
-              strokeWidth={3.8}
+              size={44}
+              strokeWidth={3.5}
               color="#ff6b00"
             >
-              <span className="text-xs font-black font-numeric text-white leading-none">
+              <span className="text-[11px] font-black font-numeric text-white leading-none">
                 {workoutStreak.completionPercentage}%
               </span>
             </ProgressRing>
@@ -223,53 +213,55 @@ export const WorkoutHistoryView: React.FC = () => {
           </div>
         </div>
 
-        {/* Row 2: Two Balanced Analytical Panels with Dynamic Percentage Circles (Zero Text Clipping) */}
+        {/* Row 2: Two Analytical Panels with Achieved Numbers Inside Dynamic Circles */}
         <div className="grid grid-cols-2 gap-2 pt-0.5">
-          {/* Panel 1: Strength Progression Rate with Dynamic Circle Ring */}
-          <div className="p-2.5 sm:p-3 rounded-2xl bg-[#09090b] border border-[#1e202c] flex items-center justify-between gap-1.5 overflow-hidden">
-            <div className="space-y-0.5 min-w-0">
-              <span className="text-[8.5px] font-mono uppercase tracking-wider text-zinc-500 font-bold block whitespace-nowrap">
+          {/* Panel 1: Strength Progression Rate */}
+          <div className="p-3 rounded-2xl bg-[#09090b] border border-[#1e202c] flex items-center justify-between gap-2">
+            <div className="min-w-0">
+              <span className="text-[9px] font-mono uppercase tracking-wider text-zinc-500 font-bold block">
                 STRENGTH PACE
               </span>
-              <p className="text-base font-black font-numeric text-white leading-tight">
-                +{strengthPace.avgPercentageGain}%
-              </p>
-              <span className="text-[9.5px] text-zinc-400 font-medium block whitespace-nowrap">
+              <span className="text-xs font-extrabold text-white block mt-0.5">
                 {strengthPace.overloadingCount}/{strengthPace.totalTracked} Gaining
+              </span>
+              <span className="text-[10px] text-zinc-500 block">
+                Overload Rate
               </span>
             </div>
 
             <ProgressRing
               percentage={Math.min(100, Math.max(0, strengthPace.avgPercentageGain))}
-              size={38}
+              size={40}
               strokeWidth={3.5}
               color="#ff6b00"
             >
-              <TrendingUp className="w-3.5 h-3.5 text-[#ff6b00]" />
+              <span className="text-[10px] font-black font-numeric text-white leading-none">
+                +{strengthPace.avgPercentageGain}%
+              </span>
             </ProgressRing>
           </div>
 
-          {/* Panel 2: Habits Discipline Streak with Dynamic Circle Ring */}
-          <div className="p-2.5 sm:p-3 rounded-2xl bg-[#09090b] border border-[#1e202c] flex items-center justify-between gap-1.5 overflow-hidden">
-            <div className="space-y-0.5 min-w-0">
-              <span className="text-[8.5px] font-mono uppercase tracking-wider text-zinc-500 font-bold block whitespace-nowrap">
+          {/* Panel 2: Habits Discipline Streak */}
+          <div className="p-3 rounded-2xl bg-[#09090b] border border-[#1e202c] flex items-center justify-between gap-2">
+            <div className="min-w-0">
+              <span className="text-[9px] font-mono uppercase tracking-wider text-zinc-500 font-bold block">
                 HABITS ROUTINE
               </span>
-              <p className="text-base font-black font-numeric text-white leading-tight">
-                {habitsMetrics.activeStreak} Days
-              </p>
-              <span className="text-[9.5px] text-zinc-400 font-medium block whitespace-nowrap">
-                {habitsMetrics.adherencePercentage}% Consistency
+              <span className="text-xs font-extrabold text-white block mt-0.5">
+                {habitsMetrics.activeStreak} Days Streak
+              </span>
+              <span className="text-[10px] text-purple-400 font-medium block">
+                Daily Routine
               </span>
             </div>
 
             <ProgressRing
               percentage={Math.min(100, Math.max(0, habitsMetrics.adherencePercentage))}
-              size={38}
+              size={40}
               strokeWidth={3.5}
               color="#a855f7"
             >
-              <span className="text-[9px] font-mono font-bold text-purple-300">
+              <span className="text-[10px] font-black font-numeric text-purple-300 leading-none">
                 {habitsMetrics.adherencePercentage}%
               </span>
             </ProgressRing>
@@ -530,7 +522,7 @@ export const WorkoutHistoryView: React.FC = () => {
               <History className="w-8 h-8 mx-auto text-zinc-600 mb-2" />
               <h4 className="text-xs font-bold text-zinc-300">No workout sessions logged yet</h4>
               <p className="text-[11px] text-zinc-500 mt-1">
-                Start a workout from Today's Session to log your weights, reps, and volume.
+                Start a workout from Today&apos;s Session to log your weights, reps, and volume.
               </p>
             </div>
           ) : (

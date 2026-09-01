@@ -5,10 +5,16 @@ export interface QuitHabitConfig {
   startedAt: string; // ISO timestamp with exact start time e.g. "2026-09-01T04:30:00.000Z"
   targetDays: number; // Standard e.g. 90, 30, 21, 365, etc.
   quitCategory?: 'smoking' | 'sugar' | 'caffeine' | 'screens' | 'vape' | 'alcohol' | 'sleep' | 'custom';
-  savingsPerDay?: number; // e.g. 50 EGP/USD saved per day
-  currency?: string; // e.g. 'EGP', '$', 'SAR', 'AED'
+  
+  // Specific Smoking / Nicotine Consumption Calculator
+  cigarettesPerDay?: number; // How many cigarettes smoked per day (e.g. 20 for 1 pack, 10 for half pack, 30, 40)
+  pricePerPack?: number; // Cost of 1 pack (e.g. 85 EGP, 100 EGP, $10)
+  cigarettesPerPack?: number; // Cigarettes in a pack (standard 20)
+  
+  savingsPerDay?: number; // Auto-calculated or manual (e.g. 85 EGP saved/day)
+  currency?: string; // e.g. 'EGP', '$', 'SAR', 'AED', 'EUR'
   avoidedUnitsPerDay?: number; // e.g. 20 (cigarettes/day) or 2 (energy drinks/day)
-  avoidedUnitLabel?: string; // e.g. 'Cigarettes', 'Cans', 'Hours'
+  avoidedUnitLabel?: string; // e.g. 'Cigarettes', 'Packs', 'Cans', 'Hours'
   motivationReason?: string; // Personal why
   relapseHistory?: { timestamp: string; note?: string; durationDays?: number }[];
 }
@@ -46,8 +52,18 @@ export interface QuitLiveStats {
   targetDays: number;
   progressPercentage: number;
   isTargetAchieved: boolean;
+  
+  // Financial & Physical Avoided metrics
   moneySaved: number;
+  projectedMonthlySavings: number;
+  projectedYearlySavings: number;
+  dailySavings: number;
+  
   unitsAvoided: number;
+  exactCigarettesAvoided: number;
+  packsAvoided: number;
+  lifeHoursRegained: number;
+  
   currency: string;
   unitLabel: string;
   currentStage: {
@@ -129,11 +145,14 @@ export const QUIT_HABIT_PRESETS: {
       startedAt: new Date().toISOString(),
       targetDays: 90,
       quitCategory: 'smoking',
-      savingsPerDay: 50,
+      cigarettesPerDay: 20,
+      pricePerPack: 85,
+      cigarettesPerPack: 20,
+      savingsPerDay: 85,
       currency: 'EGP',
       avoidedUnitsPerDay: 20,
       avoidedUnitLabel: 'Cigarettes',
-      motivationReason: 'Clean lungs, max cardiovascular stamina & athletic longevity.'
+      motivationReason: 'Clean lungs, max cardiovascular stamina, save money & live longer.'
     }
   },
   {
@@ -197,7 +216,7 @@ export const QUIT_HABIT_PRESETS: {
       startedAt: new Date().toISOString(),
       targetDays: 90,
       quitCategory: 'vape',
-      savingsPerDay: 35,
+      savingsPerDay: 40,
       currency: 'EGP',
       avoidedUnitsPerDay: 150,
       avoidedUnitLabel: 'Puffs Avoided',
@@ -225,7 +244,7 @@ export const QUIT_HABIT_PRESETS: {
 
 export const DEFAULT_STARTER_HABITS: Omit<UserHabit, 'id' | 'userId' | 'createdAt'>[] = [
   {
-    title: 'Smoke-Free Protocol',
+    title: 'Smoke-Free',
     category: 'Quit / Break',
     type: 'quit',
     targetValue: 90,
@@ -236,7 +255,10 @@ export const DEFAULT_STARTER_HABITS: Omit<UserHabit, 'id' | 'userId' | 'createdA
       startedAt: new Date(Date.now() - 1000 * 60 * 60 * 28).toISOString(), // started 28 hours ago for demo
       targetDays: 90,
       quitCategory: 'smoking',
-      savingsPerDay: 60,
+      cigarettesPerDay: 20,
+      pricePerPack: 85,
+      cigarettesPerPack: 20,
+      savingsPerDay: 85,
       currency: 'EGP',
       avoidedUnitsPerDay: 20,
       avoidedUnitLabel: 'Cigarettes',
@@ -253,7 +275,7 @@ export const DEFAULT_STARTER_HABITS: Omit<UserHabit, 'id' | 'userId' | 'createdA
     color: '#ff6b00'
   },
   {
-    title: 'Water Hydration',
+    title: 'Hydration Target',
     category: 'Nutrition',
     type: 'numeric',
     targetValue: 3.0,
@@ -283,8 +305,17 @@ export function getUserHabits(userId: string): UserHabit[] {
   try {
     const raw = localStorage.getItem(`${STORAGE_KEY_CUSTOM_HABITS}_${userId}`);
     if (raw) {
-      const parsed = JSON.parse(raw);
-      if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+      const parsed: UserHabit[] = JSON.parse(raw);
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        // Auto-normalize any old "Smoke-Free Protocol" text to "Smoke-Free"
+        const cleaned = parsed.map((h) => {
+          if (h.title === 'Smoke-Free Protocol') {
+            return { ...h, title: 'Smoke-Free' };
+          }
+          return h;
+        });
+        return cleaned;
+      }
     }
   } catch (e) {
     console.warn('Failed to load user habits:', e);
@@ -422,15 +453,31 @@ export function calculateQuitLiveStats(habit: UserHabit): QuitLiveStats {
   const progressPercentage = Math.min(100, Math.round((exactDaysDecimal / targetDays) * 100));
   const isTargetAchieved = exactDaysDecimal >= targetDays;
 
-  // Money & units saved
-  const savingsPerDay = config.savingsPerDay || 0;
-  const moneySaved = Math.round(exactDaysDecimal * savingsPerDay);
-  const avoidedPerDay = config.avoidedUnitsPerDay || 0;
+  // Smoking / Financial & Physical Avoided metrics
+  const cigsPerPack = config.cigarettesPerPack || 20;
+  const cigsPerDay = config.cigarettesPerDay !== undefined 
+    ? config.cigarettesPerDay 
+    : (config.quitCategory === 'smoking' ? (config.avoidedUnitsPerDay || 20) : 0);
+  const pricePerPack = config.pricePerPack !== undefined ? config.pricePerPack : 0;
+
+  let dailySavings = config.savingsPerDay || 0;
+  if (pricePerPack > 0 && cigsPerDay > 0) {
+    dailySavings = (cigsPerDay / cigsPerPack) * pricePerPack;
+  }
+
+  const moneySaved = Math.round(exactDaysDecimal * dailySavings);
+  const projectedMonthlySavings = Math.round(dailySavings * 30);
+  const projectedYearlySavings = Math.round(dailySavings * 365);
+
+  const avoidedPerDay = config.avoidedUnitsPerDay || (cigsPerDay > 0 ? cigsPerDay : 0);
   const unitsAvoided = Math.floor(exactDaysDecimal * avoidedPerDay);
+  const exactCigarettesAvoided = Math.floor(exactDaysDecimal * (cigsPerDay || avoidedPerDay));
+  const packsAvoided = Math.round((exactCigarettesAvoided / cigsPerPack) * 10) / 10;
+  const lifeHoursRegained = Math.round((exactCigarettesAvoided * 11) / 60); // 11 mins life gained back per cigarette avoided
 
   // Dynamic visual evolution stage
   let stageLevel = 1;
-  let stageName = 'Awakening 🌱';
+  let stageName = 'Awakening';
   let stageTitle = 'First 24 Hours';
   let description = 'Peak withdrawal & cravings. Winning the mental battle second by second!';
   let stageColor = '#ff6b00';
@@ -438,42 +485,42 @@ export function calculateQuitLiveStats(habit: UserHabit): QuitLiveStats {
 
   if (exactDaysDecimal >= 90) {
     stageLevel = 7;
-    stageName = 'Unbreakable Legend 🏆';
+    stageName = 'Unbreakable Legend';
     stageTitle = '90+ Days Mastered';
     description = 'Permanent freedom achieved! Neural pathways rewired & ultimate discipline unlocked!';
     stageColor = '#06b6d4';
     stageIcon = '🏆';
   } else if (exactDaysDecimal >= 60) {
     stageLevel = 6;
-    stageName = 'Freedom Mastery 👑';
+    stageName = 'Freedom Mastery';
     stageTitle = '2 Months Protocol';
     description = 'Dopamine baseline completely stabilized. The old identity has dissolved.';
     stageColor = '#f59e0b';
     stageIcon = '👑';
   } else if (exactDaysDecimal >= 21) {
     stageLevel = 5;
-    stageName = 'Identity Shift 🦾';
+    stageName = 'Identity Shift';
     stageTitle = '3 Weeks Clean';
     description = 'Habit loops rewritten. You are now someone who has conquered this urge.';
     stageColor = '#ec4899';
     stageIcon = '🦾';
   } else if (exactDaysDecimal >= 7) {
     stageLevel = 4;
-    stageName = 'Neuro-Rewiring 🛡️';
+    stageName = 'Neuro-Rewiring';
     stageTitle = '1 Week Strong';
     description = 'Physical withdrawal symptoms gone. Psychological momentum building!';
     stageColor = '#8b5cf6';
     stageIcon = '🛡️';
   } else if (exactDaysDecimal >= 3) {
     stageLevel = 3;
-    stageName = 'Momentum ⚡';
+    stageName = 'Momentum';
     stageTitle = '72 Hours Clean';
     description = 'Toxins leaving system. Oxygen levels surging and sensory recovery begins.';
     stageColor = '#3b82f6';
     stageIcon = '⚡';
   } else if (exactDaysDecimal >= 1) {
     stageLevel = 2;
-    stageName = 'Detoxification 🌿';
+    stageName = 'Detoxification';
     stageTitle = 'Day 2 Detox';
     description = 'First full day conquered! Blood carbon monoxide levels normalising.';
     stageColor = '#10b981';
@@ -507,22 +554,22 @@ export function calculateQuitLiveStats(habit: UserHabit): QuitLiveStats {
   let healthBenefitCue = 'Your body and nervous system are continuously recovering and rebuilding.';
   const qCat = config.quitCategory || 'smoking';
   if (qCat === 'smoking' || qCat === 'vape') {
-    if (exactDaysDecimal < 1) healthBenefitCue = '🫀 Blood pressure and heart rate starting to normalize to healthy levels.';
-    else if (exactDaysDecimal < 3) healthBenefitCue = '🌬️ Carbon monoxide in blood dropped to normal. Oxygen supply to muscles surging!';
-    else if (exactDaysDecimal < 7) healthBenefitCue = '⚡ Nerve endings regrowing, taste and smell sharpening significantly.';
-    else if (exactDaysDecimal < 30) healthBenefitCue = '🏃 Lung capacity & cardiovascular endurance in gym increased by up to 30%!';
-    else if (exactDaysDecimal < 90) healthBenefitCue = '🛡️ Bronchial tubes relaxed, coughing and shortness of breath completely eliminated.';
-    else healthBenefitCue = '👑 Risk of coronary heart disease cut in half. Peak athletic conditioning restored!';
+    if (exactDaysDecimal < 1) healthBenefitCue = 'Blood pressure and heart rate starting to normalize to healthy levels.';
+    else if (exactDaysDecimal < 3) healthBenefitCue = 'Carbon monoxide in blood dropped to normal. Oxygen supply to muscles surging!';
+    else if (exactDaysDecimal < 7) healthBenefitCue = 'Nerve endings regrowing, taste and smell sharpening significantly.';
+    else if (exactDaysDecimal < 30) healthBenefitCue = 'Lung capacity & cardiovascular endurance in gym increased by up to 30%!';
+    else if (exactDaysDecimal < 90) healthBenefitCue = 'Bronchial tubes relaxed, coughing and shortness of breath completely eliminated.';
+    else healthBenefitCue = 'Risk of coronary heart disease cut in half. Peak athletic conditioning restored!';
   } else if (qCat === 'sugar') {
-    if (exactDaysDecimal < 3) healthBenefitCue = '📉 Blood sugar spikes stabilized; cravings shifting from glucose to natural fat fuel.';
-    else if (exactDaysDecimal < 14) healthBenefitCue = '🧠 Brain fog vanished, constant sustained energy without afternoon crashes.';
-    else healthBenefitCue = '🔥 Deep abdominal visceral fat burning accelerated; high insulin sensitivity restored.';
+    if (exactDaysDecimal < 3) healthBenefitCue = 'Blood sugar spikes stabilized; cravings shifting from glucose to natural fat fuel.';
+    else if (exactDaysDecimal < 14) healthBenefitCue = 'Brain fog vanished, constant sustained energy without afternoon crashes.';
+    else healthBenefitCue = 'Deep abdominal visceral fat burning accelerated; high insulin sensitivity restored.';
   } else if (qCat === 'screens') {
-    if (exactDaysDecimal < 7) healthBenefitCue = '🧘 Attention span improving; baseline dopamine levels resetting to reward real effort.';
-    else healthBenefitCue = '⚡ Deep focus restored; sleep architecture and REM recovery improved by 40%.';
+    if (exactDaysDecimal < 7) healthBenefitCue = 'Attention span improving; baseline dopamine levels resetting to reward real effort.';
+    else healthBenefitCue = 'Deep focus restored; sleep architecture and REM recovery improved by 40%.';
   } else if (qCat === 'caffeine') {
-    if (exactDaysDecimal < 7) healthBenefitCue = '🌙 Adrenal glands resting, natural cortisol rhythm taking over morning alertness.';
-    else healthBenefitCue = '💤 Natural non-jittery energy all day and restorative deep delta sleep at night.';
+    if (exactDaysDecimal < 7) healthBenefitCue = 'Adrenal glands resting, natural cortisol rhythm taking over morning alertness.';
+    else healthBenefitCue = 'Natural non-jittery energy all day and restorative deep delta sleep at night.';
   }
 
   return {
@@ -537,9 +584,15 @@ export function calculateQuitLiveStats(habit: UserHabit): QuitLiveStats {
     progressPercentage,
     isTargetAchieved,
     moneySaved,
+    projectedMonthlySavings,
+    projectedYearlySavings,
+    dailySavings: Math.round(dailySavings * 10) / 10,
     unitsAvoided,
+    exactCigarettesAvoided,
+    packsAvoided,
+    lifeHoursRegained,
     currency: config.currency || 'EGP',
-    unitLabel: config.avoidedUnitLabel || 'Units',
+    unitLabel: config.avoidedUnitLabel || (qCat === 'smoking' ? 'Cigarettes' : 'Units'),
     currentStage: {
       level: stageLevel,
       name: stageName,

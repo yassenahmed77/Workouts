@@ -359,8 +359,8 @@ export const LiveWorkoutSession: React.FC<LiveWorkoutSessionProps> = ({
   return (
     <div className="max-w-md mx-auto space-y-4 pb-36 px-2 sm:px-0">
       
-      {/* 1. Top HUD Control Bar (Spacious Mobile Header) */}
-      <div className="sticky top-0 z-30 pt-1 pb-1 bg-[#09090b]/95 backdrop-blur-md w-full">
+      {/* 1. Top HUD Control Bar (Dynamic Island & Notch Safe) */}
+      <div className="sticky top-0 z-30 pt-[max(6px,env(safe-area-inset-top))] pb-2 bg-[#09090b]/95 backdrop-blur-md w-full">
         <div className="flex items-center justify-between gap-2 w-full">
           
           {/* Left Controls: Exit, Sound, Plate Calc */}

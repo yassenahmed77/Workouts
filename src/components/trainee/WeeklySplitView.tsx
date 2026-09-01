@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { useGym } from '@/context/GymContext';
 import { WorkoutDay } from '@/types';
 import { LiveWorkoutSession } from './LiveWorkoutSession';
-import { Calendar, Clock, Dumbbell, ShieldAlert, Play, Layers, Sparkles, ChevronRight } from 'lucide-react';
+import { ShieldAlert, Play, ChevronRight } from 'lucide-react';
 
 export const WeeklySplitView: React.FC = () => {
   const { currentUser, getPlanForUser } = useGym();

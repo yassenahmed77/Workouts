@@ -1,5 +1,5 @@
 import { WorkoutLog, WorkoutPlan, User } from '@/types';
-import { UserHabit, getHabitRecords, calculateHabitStreak, calculateOverallHabitsSummary } from './habitsEngine';
+import { UserHabit, getHabitRecords, calculateOverallHabitsSummary } from './habitsEngine';
 import { getISOWeekKey } from './progressEngine';
 
 export interface SmartNotification {
@@ -56,19 +56,35 @@ export async function requestPushPermission(): Promise<boolean> {
 }
 
 /**
- * Trigger Web Notification if permission granted
+ * Trigger Native Web Push / System Notification (Lock screen banner & vibration)
  */
-export function triggerWebNotification(title: string, body: string, icon = '/icon.svg') {
+export async function triggerWebNotification(title: string, body: string, url = '/', icon = '/icon.svg') {
   if (typeof window === 'undefined' || !('Notification' in window)) return;
   if (Notification.permission === 'granted') {
     try {
+      // 1. Try Service Worker showNotification (Supports system lockscreen, vibration, sound on mobile)
+      if ('serviceWorker' in navigator) {
+        const reg = await navigator.serviceWorker.ready;
+        if (reg && reg.showNotification) {
+          await reg.showNotification(title, {
+            body,
+            icon,
+            badge: icon,
+            vibrate: [200, 100, 200],
+            data: { url }
+          } as NotificationOptions);
+          return;
+        }
+      }
+
+      // 2. Fallback to standard window Notification constructor
       new Notification(title, {
         body,
         icon,
         badge: icon
       });
     } catch (e) {
-      console.warn('Web notification trigger error:', e);
+      console.warn('Native notification trigger error:', e);
     }
   }
 }

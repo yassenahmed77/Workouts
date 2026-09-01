@@ -25,11 +25,20 @@
   --accent-amber: #f59e0b;
   --accent-red: #ef4444;
 
-  /* iOS Safe Area Insets */
-  --sat: env(safe-area-inset-top, 0px);
-  --sab: env(safe-area-inset-bottom, 0px);
-  --sal: env(safe-area-inset-left, 0px);
-  --sar: env(safe-area-inset-right, 0px);
+  /* iOS Safe Area Insets (Dynamic Island & Notch Safe) */
+  --sat: max(env(safe-area-inset-top, 0px), 0px);
+  --sab: max(env(safe-area-inset-bottom, 0px), 0px);
+  --sal: max(env(safe-area-inset-left, 0px), 0px);
+  --sar: max(env(safe-area-inset-right, 0px), 0px);
+}
+
+/* Header Dynamic Island & Notch Safe Padding */
+.safe-header-top {
+  padding-top: max(env(safe-area-inset-top, 0px), 14px);
+}
+
+.safe-drawer-top {
+  padding-top: max(env(safe-area-inset-top, 0px), 16px);
 }
 
 body {

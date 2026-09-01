@@ -59,8 +59,19 @@ export const TraineeDashboard: React.FC<TraineeDashboardProps> = ({
   const [activeSessionDay, setActiveSessionDay] = useState<WorkoutDay | null>(null);
 
   // Dynamic Habits state from persistent habitsEngine
-  const [userHabits, setUserHabits] = useState<UserHabit[]>(() => currentUser ? getUserHabits(currentUser.id) : []);
+  const [userHabits, setUserHabits] = useState<UserHabit[]>(() => (currentUser ? getUserHabits(currentUser.id) : []));
   const [habitRefreshKey, setHabitRefreshKey] = useState(0);
+
+  // Live 1-second ticking timer for Quit / Sobriety live counters
+  const [, setLiveTick] = useState(0);
+  useEffect(() => {
+    const hasQuitHabit = userHabits.some((h) => h.type === 'quit');
+    if (!hasQuitHabit) return;
+    const interval = setInterval(() => {
+      setLiveTick((t) => t + 1);
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [userHabits]);
 
   useEffect(() => {
     if (currentUser) {
@@ -68,29 +79,12 @@ export const TraineeDashboard: React.FC<TraineeDashboardProps> = ({
     }
   }, [currentUser, habitRefreshKey]);
 
-  if (!currentUser) return null;
-
-  const plan = getPlanForUser(currentUser.id);
-  const userLogs = getUserLogs(currentUser.id);
-
-  // If live workout mode is active
-  if (activeSessionDay && plan) {
-    return (
-      <LiveWorkoutSession
-        plan={plan}
-        day={activeSessionDay}
-        onExit={() => setActiveSessionDay(null)}
-        onSessionCompleted={() => {
-          setActiveSessionDay(null);
-          onNavigateToHistory();
-        }}
-      />
-    );
-  }
+  const plan = currentUser ? getPlanForUser(currentUser.id) : null;
+  const userLogs = currentUser ? getUserLogs(currentUser.id) : [];
 
   // Active workout day
-  const activeDay = plan?.days.find(d => !d.isRestDay) || plan?.days[0];
-  const nextDay = plan?.days.find(d => d.id !== activeDay?.id && !d.isRestDay) || activeDay;
+  const activeDay = plan?.days.find((d) => !d.isRestDay) || plan?.days[0];
+  const nextDay = plan?.days.find((d) => d.id !== activeDay?.id && !d.isRestDay) || activeDay;
 
   // Exercise category icon mapper
   const getExerciseIcon = (name: string) => {
@@ -204,10 +198,10 @@ export const TraineeDashboard: React.FC<TraineeDashboardProps> = ({
   const completedExercisesThisWeek = thisWeekLogs.reduce((acc, l) => acc + l.completedExercises.length, 0);
 
   // 5. Dynamic Weight Change Analysis
-  const weightLogs = useMemo(() => getSavedWeightLogs(currentUser.id), [currentUser.id]);
+  const weightLogs = useMemo(() => (currentUser ? getSavedWeightLogs(currentUser.id) : []), [currentUser?.id]);
   const weightAnalysis = useMemo(
-    () => calculateDynamicWeightChange(weightLogs, currentUser.weightKg || 70),
-    [weightLogs, currentUser.weightKg]
+    () => calculateDynamicWeightChange(weightLogs, currentUser?.weightKg || 70),
+    [weightLogs, currentUser?.weightKg]
   );
 
   // 6. Dynamic Calendar Strip (Current Week Monday-Sunday with real logged dates)
@@ -244,6 +238,23 @@ export const TraineeDashboard: React.FC<TraineeDashboardProps> = ({
       };
     });
   }, [userLogs]);
+
+  if (!currentUser) return null;
+
+  // If live workout mode is active
+  if (activeSessionDay && plan) {
+    return (
+      <LiveWorkoutSession
+        plan={plan}
+        day={activeSessionDay}
+        onExit={() => setActiveSessionDay(null)}
+        onSessionCompleted={() => {
+          setActiveSessionDay(null);
+          onNavigateToHistory();
+        }}
+      />
+    );
+  }
 
   return (
     <div className="max-w-md mx-auto space-y-4 pb-28 px-0">
@@ -521,35 +532,67 @@ export const TraineeDashboard: React.FC<TraineeDashboardProps> = ({
                     <div 
                       key={habit.id}
                       onClick={onNavigateToHabits}
-                      className="flex items-center justify-between p-2.5 rounded-2xl border transition-all bg-[#09090b] border-[#1e202c] hover:border-[#35384d] cursor-pointer"
+                      className="p-3.5 rounded-2xl border transition-all bg-[#09090b] border-[#1e202c] hover:border-[#35384d] cursor-pointer space-y-2.5 shadow-sm group"
                     >
-                      <div className="flex items-center gap-2.5 min-w-0 flex-1">
-                        <div 
-                          className="w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0"
-                          style={{
-                            backgroundColor: `${habit.color || '#ff6b00'}18`,
-                            borderColor: `${habit.color || '#ff6b00'}40`,
-                            borderWidth: '1px',
-                            color: habit.color || '#ff6b00'
-                          }}
-                        >
-                          <RenderHabitIcon iconKey={habit.iconKey} className="w-4 h-4" />
-                        </div>
-                        <div className="min-w-0 flex-1">
-                          <div className="flex items-center gap-1.5">
-                            <h4 className="text-xs font-extrabold text-white truncate">{habit.title}</h4>
-                            <span className="text-[9px] font-mono font-bold px-1.5 py-0.2 rounded bg-cyan-500/10 text-cyan-400 border border-cyan-500/20">
-                              {qStats.days}d Clean
+                      {/* Header: Icon + Title + Stage Badge */}
+                      <div className="flex items-center justify-between gap-2">
+                        <div className="flex items-center gap-2.5 min-w-0">
+                          <div 
+                            className="w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0"
+                            style={{
+                              backgroundColor: `${habit.color || '#ff6b00'}18`,
+                              borderColor: `${habit.color || '#ff6b00'}40`,
+                              borderWidth: '1px',
+                              color: habit.color || '#ff6b00'
+                            }}
+                          >
+                            <RenderHabitIcon iconKey={habit.iconKey} className="w-4 h-4" />
+                          </div>
+                          <div className="min-w-0">
+                            <h4 className="text-xs font-extrabold text-white truncate group-hover:text-[#ff6b00] transition-colors">
+                              {habit.title}
+                            </h4>
+                            <span className="text-[10px] text-emerald-400 font-bold flex items-center gap-1">
+                              <span>🎯</span>
+                              <span className="truncate">{habit.quitConfig?.targetDays || 90} Days Goal • {qStats.progressPercentage}%</span>
                             </span>
                           </div>
-                          <p className="text-[10px] text-zinc-400 truncate">
-                            {qStats.currentStage.name} • {qStats.progressPercentage}% of {qStats.targetDays}d
-                          </p>
+                        </div>
+
+                        <div className="flex items-center gap-1 flex-shrink-0 text-zinc-500">
+                          <span className="text-[10px] font-mono font-bold text-[#ff6b00]">Live</span>
+                          <ChevronRight className="w-3.5 h-3.5 text-[#ff6b00] group-hover:translate-x-0.5 transition-transform" />
                         </div>
                       </div>
 
-                      <div className="flex items-center gap-1 flex-shrink-0 text-zinc-500">
-                        <ChevronRight className="w-4 h-4 text-[#ff6b00]" />
+                      {/* Live 4-Unit Counter Grid (Exact match to inside habits tab with live ticking) */}
+                      <div className="grid grid-cols-4 gap-1.5 text-center font-numeric">
+                        <div className="p-1.5 rounded-xl bg-[#14151f] border border-[#212330]">
+                          <span className="text-sm font-extrabold text-white block">{qStats.days}</span>
+                          <span className="text-[8px] font-mono uppercase text-zinc-400 block font-bold">Days</span>
+                        </div>
+                        <div className="p-1.5 rounded-xl bg-[#14151f] border border-[#212330]">
+                          <span className="text-sm font-extrabold text-white block">{String(qStats.hours).padStart(2, '0')}</span>
+                          <span className="text-[8px] font-mono uppercase text-zinc-400 block font-bold">Hours</span>
+                        </div>
+                        <div className="p-1.5 rounded-xl bg-[#14151f] border border-[#212330]">
+                          <span className="text-sm font-extrabold text-white block">{String(qStats.minutes).padStart(2, '0')}</span>
+                          <span className="text-[8px] font-mono uppercase text-zinc-400 block font-bold">Mins</span>
+                        </div>
+                        <div className="p-1.5 rounded-xl bg-[#14151f] border border-[#212330]">
+                          <span className="text-sm font-extrabold text-[#ff6b00] block animate-pulse">{String(qStats.seconds).padStart(2, '0')}</span>
+                          <span className="text-[8px] font-mono uppercase text-[#ff6b00] block font-bold">Secs</span>
+                        </div>
+                      </div>
+
+                      {/* Progress Bar & Impact Footer */}
+                      <div className="pt-1.5 border-t border-[#1e202c] flex items-center justify-between text-[10px] text-zinc-400 font-medium">
+                        <span className="text-emerald-400 font-bold truncate mr-2">
+                          🚫 {qStats.unitsAvoided} {qStats.unitLabel} avoided
+                        </span>
+                        <span className="text-[#ff6b00] font-mono font-bold flex-shrink-0">
+                          💰 {qStats.moneySaved} {qStats.currency} saved
+                        </span>
                       </div>
                     </div>
                   );

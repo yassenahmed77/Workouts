@@ -89,7 +89,12 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, onOpenN
   return (
     <>
       {/* 1. Top Header App Bar (Dynamic Island & Notch Safe) */}
-      <header className="sticky top-0 z-40 border-b border-[#212330] bg-[#09090b]/95 backdrop-blur-md pt-[env(safe-area-inset-top,0px)]">
+      <header 
+        className="sticky top-0 z-40 border-b border-[#212330] bg-[#09090b]/95 backdrop-blur-md safe-header-top"
+        style={{
+          paddingTop: 'max(env(safe-area-inset-top, 0px), 14px)'
+        }}
+      >
         <div className="max-w-md md:max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-14 sm:h-16 gap-2">
             

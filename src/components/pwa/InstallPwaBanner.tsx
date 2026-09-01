@@ -18,6 +18,12 @@ export const InstallPwaBanner: React.FC = () => {
       return;
     }
 
+    // Check if user already saw or dismissed the banner once
+    const alreadySeen = localStorage.getItem('pwa_install_banner_seen');
+    if (alreadySeen) {
+      return;
+    }
+
     // Check if iOS
     const userAgent = window.navigator.userAgent.toLowerCase();
     const isIosDevice = /iphone|ipad|ipod/.test(userAgent);
@@ -27,17 +33,18 @@ export const InstallPwaBanner: React.FC = () => {
     const handleBeforeInstallPrompt = (e: any) => {
       e.preventDefault();
       setDeferredPrompt(e);
-      setShowBanner(true);
+      if (!localStorage.getItem('pwa_install_banner_seen')) {
+        setShowBanner(true);
+        localStorage.setItem('pwa_install_banner_seen', 'true');
+      }
     };
 
     window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
 
-    // On iOS, show banner if not standalone and not dismissed
+    // On iOS, show banner only once if not standalone and not seen
     if (isIosDevice && !standalone) {
-      const dismissed = localStorage.getItem('pwa_banner_dismissed');
-      if (!dismissed) {
-        setShowBanner(true);
-      }
+      setShowBanner(true);
+      localStorage.setItem('pwa_install_banner_seen', 'true');
     }
 
     return () => {
@@ -46,6 +53,7 @@ export const InstallPwaBanner: React.FC = () => {
   }, []);
 
   const handleInstallClick = async () => {
+    localStorage.setItem('pwa_install_banner_seen', 'true');
     if (deferredPrompt) {
       deferredPrompt.prompt();
       const { outcome } = await deferredPrompt.userChoice;
@@ -60,7 +68,7 @@ export const InstallPwaBanner: React.FC = () => {
 
   const handleDismiss = () => {
     setShowBanner(false);
-    localStorage.setItem('pwa_banner_dismissed', 'true');
+    localStorage.setItem('pwa_install_banner_seen', 'true');
   };
 
   if (isStandalone || !showBanner) return null;

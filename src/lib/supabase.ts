@@ -17,7 +17,23 @@ export const supabase = isSupabaseConfigured
 
 // Helpers to transform database snake_case <-> camelCase
 
-export function mapDbUserToUser(row: any): User {
+export interface DbUserRow {
+  id: string;
+  name: string;
+  email: string;
+  role: User['role'];
+  avatar_text?: string;
+  status?: User['status'];
+  joined_date?: string;
+  height_cm?: number;
+  weight_kg?: number;
+  target_weight_kg?: number;
+  goal?: User['goal'];
+  assigned_plan_id?: string | null;
+  notes?: string | null;
+}
+
+export function mapDbUserToUser(row: DbUserRow): User {
   return {
     id: row.id,
     name: row.name,
@@ -35,7 +51,7 @@ export function mapDbUserToUser(row: any): User {
   };
 }
 
-export function mapUserToDb(user: User): any {
+export function mapUserToDb(user: User): DbUserRow {
   return {
     id: user.id,
     name: user.name,
@@ -53,7 +69,20 @@ export function mapUserToDb(user: User): any {
   };
 }
 
-export function mapDbPlanToPlan(row: any): WorkoutPlan {
+export interface DbPlanRow {
+  id: string;
+  title: string;
+  description?: string;
+  level?: WorkoutPlan['level'];
+  duration_weeks?: number;
+  days_per_week?: number;
+  days: WorkoutPlan['days'] | string;
+  created_for_user_id?: string | null;
+  created_at?: string;
+  updated_at?: string;
+}
+
+export function mapDbPlanToPlan(row: DbPlanRow): WorkoutPlan {
   return {
     id: row.id,
     title: row.title,
@@ -68,7 +97,7 @@ export function mapDbPlanToPlan(row: any): WorkoutPlan {
   };
 }
 
-export function mapPlanToDb(plan: WorkoutPlan): any {
+export function mapPlanToDb(plan: WorkoutPlan): DbPlanRow {
   return {
     id: plan.id,
     title: plan.title,
@@ -83,7 +112,19 @@ export function mapPlanToDb(plan: WorkoutPlan): any {
   };
 }
 
-export function mapDbExerciseToExercise(row: any): Exercise {
+export interface DbExerciseRow {
+  id: string;
+  name: string;
+  target_muscle: Exercise['targetMuscle'];
+  equipment: Exercise['equipment'];
+  category: Exercise['category'];
+  execution_cue?: string;
+  tips?: string[];
+  alternative_exercise?: string | null;
+  video_url?: string | null;
+}
+
+export function mapDbExerciseToExercise(row: DbExerciseRow): Exercise {
   return {
     id: row.id,
     name: row.name,
@@ -97,7 +138,7 @@ export function mapDbExerciseToExercise(row: any): Exercise {
   };
 }
 
-export function mapExerciseToDb(ex: Exercise): any {
+export function mapExerciseToDb(ex: Exercise): DbExerciseRow {
   return {
     id: ex.id,
     name: ex.name,
@@ -111,7 +152,20 @@ export function mapExerciseToDb(ex: Exercise): any {
   };
 }
 
-export function mapDbLogToLog(row: any): WorkoutLog {
+export interface DbWorkoutLogRow {
+  id: string;
+  user_id: string;
+  plan_id: string;
+  day_id: string;
+  day_name: string;
+  date: string;
+  duration_seconds?: number;
+  total_volume_kg?: number;
+  completed_exercises: WorkoutLog['completedExercises'] | string;
+  coach_feedback?: string | null;
+}
+
+export function mapDbLogToLog(row: DbWorkoutLogRow): WorkoutLog {
   return {
     id: row.id,
     userId: row.user_id,
@@ -128,7 +182,7 @@ export function mapDbLogToLog(row: any): WorkoutLog {
   };
 }
 
-export function mapLogToDb(log: WorkoutLog): any {
+export function mapLogToDb(log: WorkoutLog): DbWorkoutLogRow {
   return {
     id: log.id,
     user_id: log.userId,

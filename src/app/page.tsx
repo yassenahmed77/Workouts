@@ -39,6 +39,15 @@ export default function Home() {
   const [isClientDetailModalOpen, setIsClientDetailModalOpen] = useState(false);
   const [detailUser, setDetailUser] = useState<User | null>(null);
 
+  // Register Service Worker for Native Push Notifications & PWA
+  useEffect(() => {
+    if (typeof window !== 'undefined' && 'serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/sw.js').catch((err) => {
+        console.warn('SW registration failed:', err);
+      });
+    }
+  }, []);
+
   // Sync tab from URL query parameter (PWA 3D Touch Shortcuts)
   useEffect(() => {
     if (typeof window !== 'undefined') {

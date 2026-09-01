@@ -1,4 +1,4 @@
-import { WorkoutLog, LoggedExercise, LoggedSet, MuscleGroup, WorkoutPlan } from '@/types';
+import { WorkoutLog, MuscleGroup, WorkoutPlan } from '@/types';
 
 export interface ExerciseSessionRecord {
   logId: string;

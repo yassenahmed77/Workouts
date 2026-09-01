@@ -113,7 +113,10 @@ export const NotificationDrawer: React.FC<NotificationDrawerProps> = ({
         <div className="absolute top-0 right-0 w-64 h-64 bg-[#ff6b00]/10 rounded-full blur-3xl pointer-events-none" />
 
         {/* Drawer Header (Dynamic Island & Notch Safe) */}
-        <div className="p-4 sm:p-5 pt-[max(18px,env(safe-area-inset-top))] border-b border-[#1e202c] flex items-center justify-between gap-3 relative z-10">
+        <div 
+          className="p-4 sm:p-5 border-b border-[#1e202c] flex items-center justify-between gap-3 relative z-10 safe-drawer-top"
+          style={{ paddingTop: 'max(env(safe-area-inset-top, 0px), 18px)' }}
+        >
           <div className="flex items-center gap-2.5">
             <div className="w-9 h-9 rounded-2xl bg-[#171822] text-[#ff6b00] border border-[#2e303d] flex items-center justify-center relative">
               <Bell className="w-4 h-4" />
@@ -152,22 +155,44 @@ export const NotificationDrawer: React.FC<NotificationDrawerProps> = ({
           </div>
         </div>
 
-        {/* Push Notification Activation Banner */}
-        {!isPushEnabled && (
+        {/* Push Notification Activation / Test Banner */}
+        {!isPushEnabled ? (
           <div className="m-4 p-3.5 rounded-2xl bg-[#14151e] border border-[#ff6b00]/30 flex items-center justify-between gap-3">
             <div className="min-w-0">
               <span className="text-xs font-extrabold text-white block">
-                Enable App Alerts
+                Enable Phone Alerts
               </span>
               <p className="text-[10px] text-zinc-400 mt-0.5">
-                Never lose your streak or miss a workout session.
+                Real-time lock screen banners & workout streak alerts.
               </p>
             </div>
             <button
               onClick={handleEnablePush}
-              className="px-3 py-1.5 rounded-xl btn-orange text-[11px] font-black whitespace-nowrap cursor-pointer active:scale-95 transition-all flex-shrink-0"
+              className="px-3.5 py-2 rounded-xl btn-orange text-[11px] font-black whitespace-nowrap cursor-pointer active:scale-95 transition-all flex-shrink-0"
             >
               Enable 🔔
+            </button>
+          </div>
+        ) : (
+          <div className="mx-4 mt-3 mb-1 p-3 rounded-2xl bg-[#111218] border border-[#1e202c] flex items-center justify-between gap-3">
+            <div className="flex items-center gap-2 min-w-0">
+              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse flex-shrink-0" />
+              <span className="text-[11px] font-bold text-zinc-300 truncate">
+                Lock Screen Alerts Active
+              </span>
+            </div>
+            <button
+              onClick={() => {
+                triggerWebNotification(
+                  '🔥 WORKOUTS PRO Alert',
+                  '⚠️ Don\'t lose your streak! 2 daily habits left for today.',
+                  '/?tab=habits'
+                );
+                showToast('Test banner sent to your phone! 🔔', 'success');
+              }}
+              className="px-2.5 py-1 rounded-lg bg-[#1a1b26] hover:bg-[#252738] border border-[#2e3044] text-[10px] font-mono font-bold text-[#ff6b00] cursor-pointer active:scale-95 transition-all flex-shrink-0"
+            >
+              Test Alert 🚀
             </button>
           </div>
         )}

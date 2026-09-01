@@ -19,14 +19,31 @@ const ToastContext = createContext<ToastContextType | undefined>(undefined);
 
 export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [toasts, setToasts] = useState<Toast[]>([]);
+  const lastToastRef = React.useRef<{ message: string; timestamp: number }>({ message: '', timestamp: 0 });
 
   const showToast = useCallback((message: string, type: ToastType = 'success') => {
-    const id = `toast-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`;
-    setToasts((prev) => [...prev, { id, message, type }]);
+    const now = Date.now();
+    // Prevent duplicate toast calls within 1500ms
+    if (lastToastRef.current.message === message && now - lastToastRef.current.timestamp < 1500) {
+      return;
+    }
+    lastToastRef.current = { message, timestamp: now };
+
+    const id = `toast-${now}-${Math.random().toString(36).substring(2, 7)}`;
+    
+    // Defer state update to next tick
+    setTimeout(() => {
+      setToasts((prev) => {
+        if (prev.some((t) => t.message === message)) {
+          return prev;
+        }
+        return [...prev, { id, message, type }];
+      });
+    }, 0);
 
     setTimeout(() => {
       setToasts((prev) => prev.filter((t) => t.id !== id));
-    }, 3200);
+    }, 3000);
   }, []);
 
   const removeToast = (id: string) => {

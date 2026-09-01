@@ -792,3 +792,38 @@ export function calculateOverallHabitsSummary(userId: string, habits: UserHabit[
     activeStreak
   };
 }
+
+/**
+ * Check adherence of habits for a specific date (YYYY-MM-DD)
+ */
+export function getHabitsAdherenceForDate(
+  userId: string,
+  habits: UserHabit[],
+  dateStr: string
+) {
+  if (!habits || habits.length === 0) {
+    return { completedCount: 0, totalCount: 0, isAllCompleted: true, hasPartial: false };
+  }
+  const dailyHabits = habits.filter((h) => h.type !== 'quit');
+  if (dailyHabits.length === 0) {
+    return { completedCount: 0, totalCount: 0, isAllCompleted: true, hasPartial: false };
+  }
+
+  const records = getHabitRecords(userId);
+  let completed = 0;
+  dailyHabits.forEach((h) => {
+    if (records[`${h.id}_${dateStr}`]?.completed) {
+      completed++;
+    }
+  });
+
+  const isAllCompleted = completed >= dailyHabits.length;
+  const hasPartial = completed > 0 && completed < dailyHabits.length;
+
+  return {
+    completedCount: completed,
+    totalCount: dailyHabits.length,
+    isAllCompleted,
+    hasPartial
+  };
+}

@@ -13,9 +13,15 @@ import {
   getTodayRecordForHabit,
   setHabitRecord,
   calculateHabitStreak,
-  calculateQuitLiveStats
+  calculateQuitLiveStats,
+  getHabitsAdherenceForDate
 } from '@/lib/habitsEngine';
 import { RenderHabitIcon } from './TraineeHabitsView';
+import { 
+  getActiveWorkoutDraft, 
+  hasActiveWorkoutDraft, 
+  clearActiveWorkoutDraft 
+} from '@/lib/activeWorkoutEngine';
 import { 
   Play, 
   ChevronRight, 
@@ -208,10 +214,12 @@ export const TraineeDashboard: React.FC<TraineeDashboardProps> = ({
     [weightLogs, currentUser?.weightKg]
   );
 
-  // 6. Dynamic Calendar Strip (Current Week Monday-Sunday with real logged dates)
+  // 6. Dynamic Calendar Strip (Evaluates real workout logs + habits adherence for each day)
   const calendarDays = useMemo(() => {
     const daysArr = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
     const curr = new Date();
+    const todayStr = curr.toISOString().split('T')[0];
+
     // Get Monday of current week
     const dayOfWeek = curr.getDay(); // 0 is Sunday
     const distanceToMonday = (dayOfWeek + 6) % 7;
@@ -222,26 +230,53 @@ export const TraineeDashboard: React.FC<TraineeDashboardProps> = ({
       const d = new Date(monday);
       d.setDate(monday.getDate() + i);
       const dateStr = d.toISOString().split('T')[0];
-      const hasLog = userLogs.some((l) => l.date === dateStr);
-      const isToday = dateStr === now.toISOString().split('T')[0];
 
-      let status: 'completed' | 'today' | 'upcoming' = 'upcoming';
-      if (isToday) {
-        status = hasLog ? 'completed' : 'today';
-      } else if (hasLog) {
-        status = 'completed';
-      } else if (d < now) {
-        status = 'upcoming';
+      const hasWorkoutLog = userLogs.some((l) => l.date === dateStr);
+      const habitsStatus = currentUser 
+        ? getHabitsAdherenceForDate(currentUser.id, userHabits, dateStr)
+        : { completedCount: 0, totalCount: 0, isAllCompleted: true, hasPartial: false };
+
+      const isToday = dateStr === todayStr;
+
+      // Scheduled rest day check (i: 0 = Mon, ..., 6 = Sun)
+      const scheduledDay = plan?.days?.[i];
+      const isScheduledRestDay = scheduledDay ? scheduledDay.isRestDay || scheduledDay.exercises.length === 0 : false;
+
+      let status: 'full_complete' | 'partial' | 'today' | 'upcoming' = 'upcoming';
+
+      if (isScheduledRestDay && !hasWorkoutLog) {
+        // Scheduled rest day: full complete if all habits are completed
+        if (habitsStatus.isAllCompleted) {
+          status = 'full_complete';
+        } else if (habitsStatus.hasPartial) {
+          status = 'partial';
+        } else if (isToday) {
+          status = 'today';
+        } else {
+          status = 'upcoming';
+        }
+      } else {
+        // Scheduled workout day (or workout was logged):
+        if (hasWorkoutLog && habitsStatus.isAllCompleted) {
+          status = 'full_complete'; // Both Workout & Habits fully done!
+        } else if (hasWorkoutLog || habitsStatus.isAllCompleted || habitsStatus.hasPartial) {
+          status = 'partial'; // Partial completion (Workout only OR Habits only)
+        } else if (isToday) {
+          status = 'today';
+        } else {
+          status = 'upcoming';
+        }
       }
 
       return {
         day: daysArr[d.getDay()],
         date: d.getDate(),
         dateStr,
+        isToday,
         status
       };
     });
-  }, [userLogs]);
+  }, [userLogs, userHabits, currentUser?.id, habitRefreshKey, plan?.days]);
 
   if (!currentUser) return null;
 
@@ -388,8 +423,9 @@ export const TraineeDashboard: React.FC<TraineeDashboardProps> = ({
         {/* 7-Day Horizontal Row */}
         <div className="grid grid-cols-7 gap-1.5">
           {calendarDays.map((item, i) => {
-            const isToday = item.status === 'today';
-            const isCompleted = item.status === 'completed';
+            const isToday = item.isToday;
+            const isFullComplete = item.status === 'full_complete';
+            const isPartial = item.status === 'partial';
 
             return (
               <div
@@ -409,12 +445,24 @@ export const TraineeDashboard: React.FC<TraineeDashboardProps> = ({
 
                 {/* Status Dot / Checkmark */}
                 <div className="mt-1.5 flex items-center justify-center">
-                  {isToday ? (
-                    <span className="w-2.5 h-2.5 rounded-full bg-white ring-2 ring-white/30" />
-                  ) : isCompleted ? (
-                    <span className="w-3.5 h-3.5 rounded-full bg-[#1c1d27] border border-[#ff6b00]/40 flex items-center justify-center text-[#ff6b00]">
+                  {isFullComplete ? (
+                    <div className={`w-4 h-4 rounded-full flex items-center justify-center shadow-sm ${
+                      isToday 
+                        ? 'bg-white text-emerald-600' 
+                        : 'bg-emerald-500/20 border border-emerald-500/50 text-emerald-400'
+                    }`}>
+                      <Check className="w-2.5 h-2.5 stroke-[3.5]" />
+                    </div>
+                  ) : isPartial ? (
+                    <div className={`w-4 h-4 rounded-full flex items-center justify-center ${
+                      isToday
+                        ? 'bg-white/30 text-white'
+                        : 'bg-[#ff6b00]/15 border border-[#ff6b00]/40 text-[#ff6b00]'
+                    }`}>
                       <Check className="w-2.5 h-2.5 stroke-[3]" />
-                    </span>
+                    </div>
+                  ) : isToday ? (
+                    <span className="w-2.5 h-2.5 rounded-full bg-white ring-2 ring-white/30 animate-pulse" />
                   ) : (
                     <span className="w-2 h-2 rounded-full bg-zinc-700/60" />
                   )}
@@ -446,35 +494,30 @@ export const TraineeDashboard: React.FC<TraineeDashboardProps> = ({
               </span>
             </div>
 
-            {/* Exercises Preview List */}
+            {/* Exercises Preview List (Spacious & Clean Layout) */}
             <div className="space-y-2">
               {activeDay && activeDay.exercises.length > 0 ? (
                 activeDay.exercises.slice(0, 6).map((ex, idx) => (
                   <div
                     key={ex.id}
                     onClick={() => setActiveSessionDay(activeDay)}
-                    className="flex items-center justify-between p-2.5 rounded-2xl bg-[#09090b] border border-[#1e202c] hover:border-[#35384d] hover:bg-[#14151e] transition-all cursor-pointer group"
+                    className="flex items-center justify-between p-3 rounded-2xl bg-[#09090b] border border-[#1e202c] hover:border-[#35384d] hover:bg-[#14151e] transition-all cursor-pointer group gap-3"
                   >
-                    <div className="flex items-center gap-2.5 min-w-0">
+                    <div className="flex items-center gap-3 min-w-0 flex-1">
                       {/* Number Badge */}
-                      <span className="w-6 h-6 rounded-lg bg-[#161722] text-[#ff6b00] font-mono text-xs font-black flex items-center justify-center flex-shrink-0">
+                      <span className="w-6 h-6 rounded-lg bg-[#161722] text-[#ff6b00] font-mono text-xs font-black flex items-center justify-center flex-shrink-0 border border-[#262838]">
                         {idx + 1}
                       </span>
 
-                      {/* Icon */}
-                      <div className="w-7 h-7 rounded-lg bg-[#14151e] border border-[#252736] flex items-center justify-center flex-shrink-0">
-                        {getExerciseIcon(ex.exerciseName)}
-                      </div>
-
-                      <div className="min-w-0">
-                        <p className="text-xs font-bold text-zinc-200 group-hover:text-white truncate">
-                          {ex.exerciseName}
-                        </p>
-                      </div>
+                      {/* Full Exercise Name with ample space */}
+                      <p className="text-xs sm:text-sm font-bold text-zinc-200 group-hover:text-white truncate">
+                        {ex.exerciseName}
+                      </p>
                     </div>
 
-                    <div className="flex items-center gap-1.5 flex-shrink-0 ml-2">
-                      <span className="text-[11px] font-mono font-bold text-zinc-400">
+                    {/* Clean compact Sets x Reps on far right */}
+                    <div className="flex items-center gap-2 flex-shrink-0">
+                      <span className="text-xs font-mono font-medium text-zinc-400">
                         {ex.sets} × {ex.targetReps}
                       </span>
                       <ChevronRight className="w-3.5 h-3.5 text-zinc-600 group-hover:text-[#ff6b00] transition-colors" />
@@ -538,6 +581,64 @@ export const TraineeDashboard: React.FC<TraineeDashboardProps> = ({
                     >
                       <Trash2 className="w-3.5 h-3.5" />
                       <span>Delete Log</span>
+                    </button>
+                  </div>
+                </div>
+              );
+            }
+
+            // Check if there is an in-progress draft
+            const activeDraft = activeDay ? getActiveWorkoutDraft(currentUser.id, activeDay.id) : null;
+            const isDraftInProgress = Boolean(activeDay && hasActiveWorkoutDraft(currentUser.id, activeDay.id));
+
+            if (isDraftInProgress && activeDraft && activeDay) {
+              const completedSetsCount = activeDraft.exerciseLogs.reduce(
+                (acc, ex) => acc + ex.sets.filter((s) => s.completed).length,
+                0
+              );
+              const totalSetsCount = activeDraft.exerciseLogs.reduce((acc, ex) => acc + ex.sets.length, 0);
+              const mins = Math.floor(activeDraft.elapsedSeconds / 60);
+              const secs = activeDraft.elapsedSeconds % 60;
+              const timeStr = `${mins}:${secs.toString().padStart(2, '0')}`;
+
+              return (
+                <div className="space-y-2.5 pt-1 border-t border-[#1e202c]">
+                  <div className="p-3 rounded-2xl bg-[#1c1813] border border-[#ff6b00]/30 flex items-center justify-between shadow-sm">
+                    <div className="flex items-center gap-2.5 min-w-0">
+                      <div className="w-8 h-8 rounded-xl bg-[#ff6b00]/20 text-[#ff6b00] border border-[#ff6b00]/30 flex items-center justify-center flex-shrink-0 animate-pulse">
+                        <Zap className="w-4 h-4 fill-current" />
+                      </div>
+                      <div className="min-w-0">
+                        <div className="flex items-center gap-1.5">
+                          <span className="text-xs font-black text-white">Workout In Progress</span>
+                          <span className="text-[9px] font-mono font-bold px-1.5 py-0.2 rounded-full bg-[#ff6b00]/20 text-[#ff6b00]">⚡ Live</span>
+                        </div>
+                        <span className="text-[11px] text-zinc-400 font-numeric block truncate">
+                          {completedSetsCount} of {totalSetsCount} Sets Logged • {timeStr} Elapsed
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-[1fr_auto] gap-2">
+                    <button
+                      onClick={() => setActiveSessionDay(activeDay)}
+                      className="py-3.5 px-4 rounded-2xl btn-orange text-xs sm:text-sm font-black flex items-center justify-center gap-2 cursor-pointer shadow-lg shadow-[#ff6b00]/25 active:scale-98 transition-all"
+                    >
+                      <Play className="w-4 h-4 fill-current" />
+                      <span>RESUME WORKOUT</span>
+                    </button>
+
+                    <button
+                      onClick={() => {
+                        clearActiveWorkoutDraft(currentUser.id, activeDay.id);
+                        setActiveSessionDay(activeDay);
+                        showToast('Started workout fresh from scratch', 'info');
+                      }}
+                      className="py-3.5 px-3.5 rounded-2xl bg-[#161722] hover:bg-[#202232] border border-[#2e3042] text-zinc-400 hover:text-amber-400 text-xs font-bold flex items-center justify-center gap-1 cursor-pointer transition-all"
+                      title="Reset and start clean"
+                    >
+                      <RotateCcw className="w-4 h-4" />
                     </button>
                   </div>
                 </div>

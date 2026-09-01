@@ -34,6 +34,11 @@ import {
   RotateCcw,
   Trash2
 } from 'lucide-react';
+import { 
+  getActiveWorkoutDraft, 
+  saveActiveWorkoutDraft, 
+  clearActiveWorkoutDraft 
+} from '@/lib/activeWorkoutEngine';
 
 interface LiveWorkoutSessionProps {
   plan: WorkoutPlan;
@@ -51,13 +56,22 @@ export const LiveWorkoutSession: React.FC<LiveWorkoutSessionProps> = ({
   const { currentUser, saveWorkoutLog, deleteWorkoutLog, getUserLogs } = useGym();
   const { showToast } = useToast();
 
-  // Elapsed workout timer
-  const [elapsedSeconds, setElapsedSeconds] = useState(0);
+  // Check if an active in-progress workout draft already exists
+  const existingDraft = useMemo(() => {
+    if (!currentUser?.id || !day?.id) return null;
+    return getActiveWorkoutDraft(currentUser.id, day.id);
+  }, [currentUser?.id, day?.id]);
+
+  // Elapsed workout timer (hydrated from draft if exists)
+  const [elapsedSeconds, setElapsedSeconds] = useState<number>(() => {
+    if (existingDraft && typeof existingDraft.elapsedSeconds === 'number') {
+      return existingDraft.elapsedSeconds;
+    }
+    return 0;
+  });
   const [isTimerRunning, setIsTimerRunning] = useState(true);
   const [isResetConfirmOpen, setIsResetConfirmOpen] = useState(false);
   const [lastSavedLogId, setLastSavedLogId] = useState<string | null>(null);
-
-  if (!currentUser) return null;
 
   // Sound toggle
   const [soundEnabled, setSoundEnabled] = useState(true);
@@ -73,7 +87,7 @@ export const LiveWorkoutSession: React.FC<LiveWorkoutSessionProps> = ({
   const [plateCalcBarWeight, setPlateCalcBarWeight] = useState<number>(20);
 
   // Previous logs memory for progressive overload reference
-  const pastLogs = getUserLogs(currentUser.id);
+  const pastLogs = useMemo(() => (currentUser ? getUserLogs(currentUser.id) : []), [currentUser, getUserLogs]);
   const previousExerciseData = useMemo(() => {
     const memory: Record<string, { weightKg: number; reps: number }[]> = {};
     if (!pastLogs || !Array.isArray(pastLogs)) return memory;
@@ -111,15 +125,20 @@ export const LiveWorkoutSession: React.FC<LiveWorkoutSessionProps> = ({
         sets: Array.from({ length: setsCount }, (_, i) => ({
           setNumber: i + 1,
           weightKg: prevData && prevData[i] ? prevData[i].weightKg : 0,
-          reps: prevData && prevData[i] ? prevData[i].reps : targetRepsNum,
+          reps: prevData && prevData[i] ? prevData[i].reps : 0,
           completed: false // default false for all sets
         }))
       };
     });
   }, [day?.exercises, previousExerciseData]);
 
-  // Exercise log entries
-  const [exerciseLogs, setExerciseLogs] = useState<LoggedExercise[]>(createFreshExerciseLogs);
+  // Exercise log entries (hydrated from draft if exists)
+  const [exerciseLogs, setExerciseLogs] = useState<LoggedExercise[]>(() => {
+    if (existingDraft && Array.isArray(existingDraft.exerciseLogs) && existingDraft.exerciseLogs.length > 0) {
+      return existingDraft.exerciseLogs;
+    }
+    return createFreshExerciseLogs();
+  });
 
   // Completed workout celebration modal
   const [isCompletedModalOpen, setIsCompletedModalOpen] = useState(false);
@@ -129,6 +148,28 @@ export const LiveWorkoutSession: React.FC<LiveWorkoutSessionProps> = ({
     completedSetsCount: number;
     prsAchieved?: string[];
   } | null>(null);
+
+  // Notify user if an in-progress session was resumed
+  useEffect(() => {
+    if (existingDraft && (existingDraft.elapsedSeconds > 15 || existingDraft.exerciseLogs.some(e => e.sets.some(s => s.completed)))) {
+      showToast('⚡ Resumed your in-progress workout session!', 'info');
+    }
+  }, []);
+
+  // Real-time automatic persistence of active workout draft to localStorage
+  useEffect(() => {
+    if (!currentUser || !day || !plan || isCompletedModalOpen) return;
+    saveActiveWorkoutDraft({
+      userId: currentUser.id,
+      planId: plan.id,
+      dayId: day.id,
+      dayName: day.dayName,
+      startedAt: existingDraft?.startedAt || new Date().toISOString(),
+      elapsedSeconds,
+      lastUpdated: new Date().toISOString(),
+      exerciseLogs
+    });
+  }, [exerciseLogs, elapsedSeconds, currentUser, day, plan, existingDraft?.startedAt, isCompletedModalOpen]);
 
   // Elapsed workout timer interval
   useEffect(() => {
@@ -180,15 +221,52 @@ export const LiveWorkoutSession: React.FC<LiveWorkoutSessionProps> = ({
     });
   };
 
-  // Toggle set complete: checks/unchecks and auto-advances to next set
+  // Toggle set complete: validates weight & reps, checks/unchecks and auto-advances
   const handleToggleSetComplete = (exerciseIndex: number, setIndex: number) => {
     const routineEx = day?.exercises?.[exerciseIndex];
-    
+    const currentSet = exerciseLogs[exerciseIndex]?.sets?.[setIndex];
+    if (!currentSet) return;
+
+    const currentStatus = currentSet.completed;
+    const newStatus = !currentStatus;
+
+    // Validation check: If marking complete, user must enter weight and reps
+    if (newStatus) {
+      const isBodyweight = 
+        routineEx?.equipment?.toLowerCase().includes('bodyweight') ||
+        routineEx?.equipment?.toLowerCase().includes('body weight') ||
+        routineEx?.equipment?.toLowerCase().includes('none') ||
+        routineEx?.targetMuscle?.toLowerCase().includes('abs') ||
+        routineEx?.exerciseName?.toLowerCase().includes('pull up') ||
+        routineEx?.exerciseName?.toLowerCase().includes('chin up') ||
+        routineEx?.exerciseName?.toLowerCase().includes('push up') ||
+        routineEx?.exerciseName?.toLowerCase().includes('dip') ||
+        routineEx?.exerciseName?.toLowerCase().includes('plank');
+
+      if (!isBodyweight && (currentSet.weightKg === undefined || currentSet.weightKg <= 0)) {
+        showToast('Please enter the weight (KG) before checking the set! ⚡', 'error');
+        const weightInput = document.getElementById(`set-weight-${exerciseIndex}-${setIndex}`);
+        if (weightInput) {
+          weightInput.focus();
+          (weightInput as HTMLInputElement).select?.();
+        }
+        return;
+      }
+
+      if (!currentSet.reps || currentSet.reps <= 0) {
+        showToast('Please enter your reps count before checking the set! ⚡', 'error');
+        const repsInput = document.getElementById(`set-reps-${exerciseIndex}-${setIndex}`);
+        if (repsInput) {
+          repsInput.focus();
+          (repsInput as HTMLInputElement).select?.();
+        }
+        return;
+      }
+    }
+
     setExerciseLogs((prev) => {
       const next = [...prev];
       const targetSets = [...next[exerciseIndex].sets];
-      const currentStatus = targetSets[setIndex].completed;
-      const newStatus = !currentStatus;
 
       targetSets[setIndex] = {
         ...targetSets[setIndex],
@@ -253,6 +331,7 @@ export const LiveWorkoutSession: React.FC<LiveWorkoutSessionProps> = ({
   };
 
   const handleFinishWorkout = () => {
+    if (!currentUser) return;
     setIsTimerRunning(false);
 
     let totalVolume = 0;
@@ -323,15 +402,20 @@ export const LiveWorkoutSession: React.FC<LiveWorkoutSessionProps> = ({
       completedExercises: finalizedExercises.filter(ex => ex.sets.some(s => s.completed || s.weightKg > 0))
     });
 
+    // Clear active in-progress draft from storage
+    clearActiveWorkoutDraft(currentUser.id, day.id);
+
     showToast('All exercises saved to your progress history! 🔥', 'success');
   };
 
   // Restart workout from scratch: deletes the just-saved log from database/history and resets all inputs
   const handleRestartWorkout = async () => {
+    if (!currentUser) return;
     if (lastSavedLogId) {
       await deleteWorkoutLog(lastSavedLogId);
       setLastSavedLogId(null);
     }
+    clearActiveWorkoutDraft(currentUser.id, day.id);
     setElapsedSeconds(0);
     setExerciseLogs(createFreshExerciseLogs());
     setRestSecondsLeft(null);
@@ -343,6 +427,8 @@ export const LiveWorkoutSession: React.FC<LiveWorkoutSessionProps> = ({
 
   // Reset in-progress session back to 00:00 and clean sets
   const handleResetSession = () => {
+    if (!currentUser) return;
+    clearActiveWorkoutDraft(currentUser.id, day.id);
     setElapsedSeconds(0);
     setExerciseLogs(createFreshExerciseLogs());
     setRestSecondsLeft(null);
@@ -390,6 +476,8 @@ export const LiveWorkoutSession: React.FC<LiveWorkoutSessionProps> = ({
     }
     return <Activity className="w-5 h-5 text-amber-400" />;
   };
+
+  if (!currentUser) return null;
 
   return (
     <div className="max-w-md mx-auto space-y-4 pb-36 px-2 sm:px-0">
@@ -507,43 +595,48 @@ export const LiveWorkoutSession: React.FC<LiveWorkoutSessionProps> = ({
               {/* Subtle Left Accent Glow Line */}
               <div className="absolute top-0 left-0 bottom-0 w-1 bg-[#ff6b00] rounded-l-3xl shadow-[0_0_12px_#ff6b00]" />
 
-              {/* Exercise Header (Full Title on Line 1, Guide & Duration on Line 2) */}
-              <div className="space-y-2.5">
-                {/* Line 1: Exercise Number & Full Title */}
-                <div className="flex items-start gap-3">
-                  {/* Number Badge */}
-                  <div className="w-8 h-8 rounded-2xl bg-[#1c1d27] border border-[#2e303d] text-[#ff6b00] font-mono text-xs font-black flex items-center justify-center flex-shrink-0 mt-0.5 shadow-inner">
-                    {exIdx + 1}
-                  </div>
-
-                  <div className="flex-1 min-w-0">
-                    <h3 className="text-base font-extrabold text-white tracking-tight leading-snug">
-                      {routineEx.exerciseName}
-                    </h3>
-                    <p className="text-xs text-zinc-400 font-medium mt-0.5">
-                      {routineEx.targetMuscle} • {routineEx.equipment}
-                    </p>
-                  </div>
+              {/* Exercise Header: Clean, side-by-side in small readable font without icons */}
+              <div className="flex items-start gap-3">
+                {/* Number Badge */}
+                <div className="w-7 h-7 rounded-xl bg-[#1c1d27] border border-[#2e303d] text-[#ff6b00] font-mono text-xs font-black flex items-center justify-center flex-shrink-0 mt-0.5 shadow-inner">
+                  {exIdx + 1}
                 </div>
 
-                {/* Line 2: Action Badges (Guide & Rest Duration) */}
-                <div className="flex items-center gap-2 pl-11">
-                  {routineEx.videoUrl && (
-                    <a
-                      href={routineEx.videoUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold text-white bg-[#1a1b26] hover:bg-[#252738] border border-[#2a2d3d] transition-colors shadow-sm"
-                    >
-                      <Play className="w-3 h-3 fill-current text-[#ff6b00]" />
-                      <span>Guide</span>
-                    </a>
-                  )}
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center justify-between gap-2">
+                    <h3 className="text-base font-extrabold text-white tracking-tight leading-snug truncate">
+                      {routineEx.exerciseName}
+                    </h3>
 
-                  {/* Rest Timer Badge */}
-                  <div className="flex items-center gap-1.5 text-xs font-mono font-bold text-zinc-300 px-3 py-1.5 rounded-xl bg-[#14151e] border border-[#212330]">
-                    <Clock className="w-3.5 h-3.5 text-[#ff6b00]" />
-                    <span>{routineEx.restSeconds || 150}s Rest</span>
+                    {routineEx.videoUrl && (
+                      <a
+                        href={routineEx.videoUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-xs font-bold text-[#ff6b00] hover:underline flex-shrink-0"
+                      >
+                        Guide
+                      </a>
+                    )}
+                  </div>
+
+                  {/* Only Sets x Reps and RIR side-by-side as requested */}
+                  <div className="flex items-center gap-2 mt-1 text-xs font-mono text-zinc-400">
+                    <span className="text-[#ff6b00] font-bold">
+                      {routineEx.sets} Sets × {routineEx.targetReps} Reps
+                    </span>
+                    {routineEx.targetRpe && (() => {
+                      const rpeStr = String(routineEx.targetRpe).trim();
+                      const formattedRir = rpeStr.toLowerCase().includes('rir')
+                        ? rpeStr
+                        : `${rpeStr.replace(/rpe/gi, '').trim()} RIR`;
+                      return (
+                        <>
+                          <span>•</span>
+                          <span className="text-zinc-300 font-semibold">{formattedRir}</span>
+                        </>
+                      );
+                    })()}
                   </div>
                 </div>
               </div>

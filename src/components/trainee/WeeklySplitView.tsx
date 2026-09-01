@@ -4,15 +4,16 @@ import React, { useState } from 'react';
 import { useGym } from '@/context/GymContext';
 import { WorkoutDay } from '@/types';
 import { LiveWorkoutSession } from './LiveWorkoutSession';
-import { ShieldAlert, Play, ChevronRight } from 'lucide-react';
+import { ShieldAlert, Play, ChevronRight, RotateCcw, CheckCircle2 } from 'lucide-react';
 
 export const WeeklySplitView: React.FC = () => {
-  const { currentUser, getPlanForUser } = useGym();
+  const { currentUser, getPlanForUser, getUserLogs } = useGym();
   const [activeLiveDay, setActiveLiveDay] = useState<WorkoutDay | null>(null);
 
   if (!currentUser) return null;
 
   const plan = getPlanForUser(currentUser.id);
+  const userLogs = getUserLogs(currentUser.id);
 
   // If currently tracking a live workout session
   if (activeLiveDay && plan) {
@@ -119,15 +120,43 @@ export const WeeklySplitView: React.FC = () => {
                 <span className="text-[10px] font-mono px-3 py-1 rounded-full bg-[#1c1d27] text-zinc-400 border border-[#2e303d] flex-shrink-0">
                   REST DAY
                 </span>
-              ) : (
-                <button
-                  onClick={() => setActiveLiveDay(day)}
-                  className="px-3.5 py-1.5 rounded-xl btn-orange text-[11px] font-black flex items-center gap-1.5 cursor-pointer shadow-md active:scale-95 transition-all flex-shrink-0 ml-auto self-center"
-                >
-                  <Play className="w-3 h-3 fill-current" />
-                  <span>Start</span>
-                </button>
-              )}
+              ) : (() => {
+                const todayStr = new Date().toISOString().split('T')[0];
+                const isDoneToday = userLogs.some(
+                  (l) => l.date === todayStr && (l.dayId === day.id || l.dayName === day.dayName)
+                );
+
+                return (
+                  <div className="flex items-center gap-2 flex-shrink-0 ml-auto self-center">
+                    {isDoneToday && (
+                      <span className="hidden sm:inline-flex items-center gap-1 text-[10px] font-mono font-bold text-emerald-400 px-2 py-0.5 rounded-full bg-emerald-950/40 border border-emerald-500/30">
+                        <CheckCircle2 className="w-3 h-3" />
+                        <span>Done</span>
+                      </span>
+                    )}
+                    <button
+                      onClick={() => setActiveLiveDay(day)}
+                      className={`px-3.5 py-1.5 rounded-xl text-[11px] font-black flex items-center gap-1.5 cursor-pointer shadow-md active:scale-95 transition-all ${
+                        isDoneToday
+                          ? 'bg-[#1c1d27] hover:bg-[#282a38] text-[#ff6b00] border border-[#ff6b00]/30'
+                          : 'btn-orange'
+                      }`}
+                    >
+                      {isDoneToday ? (
+                        <>
+                          <RotateCcw className="w-3 h-3" />
+                          <span>Restart</span>
+                        </>
+                      ) : (
+                        <>
+                          <Play className="w-3 h-3 fill-current" />
+                          <span>Start</span>
+                        </>
+                      )}
+                    </button>
+                  </div>
+                );
+              })()}
             </div>
 
             {!day.isRestDay && day.exercises.length > 0 && (() => {

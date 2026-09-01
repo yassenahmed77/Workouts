@@ -33,6 +33,7 @@ interface GymContextType {
   updatePlan: (plan: WorkoutPlan) => Promise<void>;
   deletePlan: (planId: string) => Promise<void>;
   saveWorkoutLog: (log: WorkoutLog) => Promise<void>;
+  deleteWorkoutLog: (logId: string) => Promise<void>;
   createTrainee: (name: string, email: string, goal: User['goal'], weightKg: number, heightCm: number) => Promise<User>;
   updateUserProfile: (userId: string, updates: Partial<User>) => Promise<void>;
   updateUserNotes: (userId: string, notes: string) => Promise<void>;
@@ -294,6 +295,18 @@ export function GymProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
+  const deleteWorkoutLog = async (logId: string) => {
+    setLogs((prev) => prev.filter((l) => l.id !== logId));
+
+    if (isSupabaseConfigured && supabase) {
+      try {
+        await supabase.from('workout_logs').delete().eq('id', logId);
+      } catch (err) {
+        console.error('Supabase delete workout log error:', err);
+      }
+    }
+  };
+
   const createTrainee = async (
     name: string,
     email: string,
@@ -446,6 +459,7 @@ export function GymProvider({ children }: { children: React.ReactNode }) {
         updatePlan,
         deletePlan,
         saveWorkoutLog,
+        deleteWorkoutLog,
         createTrainee,
         updateUserProfile,
         updateUserNotes,

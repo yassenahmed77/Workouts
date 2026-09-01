@@ -30,7 +30,9 @@ import {
   Zap,
   Activity,
   Flame,
-  TrendingUp
+  TrendingUp,
+  RotateCcw,
+  Trash2
 } from 'lucide-react';
 
 interface LiveWorkoutSessionProps {
@@ -46,12 +48,14 @@ export const LiveWorkoutSession: React.FC<LiveWorkoutSessionProps> = ({
   onExit,
   onSessionCompleted
 }) => {
-  const { currentUser, saveWorkoutLog, getUserLogs } = useGym();
+  const { currentUser, saveWorkoutLog, deleteWorkoutLog, getUserLogs } = useGym();
   const { showToast } = useToast();
 
   // Elapsed workout timer
   const [elapsedSeconds, setElapsedSeconds] = useState(0);
   const [isTimerRunning, setIsTimerRunning] = useState(true);
+  const [isResetConfirmOpen, setIsResetConfirmOpen] = useState(false);
+  const [lastSavedLogId, setLastSavedLogId] = useState<string | null>(null);
 
   if (!currentUser) return null;
 
@@ -92,8 +96,8 @@ export const LiveWorkoutSession: React.FC<LiveWorkoutSessionProps> = ({
     return memory;
   }, [pastLogs]);
 
-  // Exercise log entries
-  const [exerciseLogs, setExerciseLogs] = useState<LoggedExercise[]>(() => {
+  // Helper to generate fresh, uncompleted exercise logs
+  const createFreshExerciseLogs = React.useCallback((): LoggedExercise[] => {
     const exercises = day?.exercises && Array.isArray(day.exercises) ? day.exercises : [];
     return exercises.map((ex, idx) => {
       const exName = ex?.exerciseName || `Exercise ${idx + 1}`;
@@ -112,7 +116,10 @@ export const LiveWorkoutSession: React.FC<LiveWorkoutSessionProps> = ({
         }))
       };
     });
-  });
+  }, [day?.exercises, previousExerciseData]);
+
+  // Exercise log entries
+  const [exerciseLogs, setExerciseLogs] = useState<LoggedExercise[]>(createFreshExerciseLogs);
 
   // Completed workout celebration modal
   const [isCompletedModalOpen, setIsCompletedModalOpen] = useState(false);
@@ -300,9 +307,12 @@ export const LiveWorkoutSession: React.FC<LiveWorkoutSessionProps> = ({
       // ignore
     }
 
+    const newLogId = `log-${Date.now()}`;
+    setLastSavedLogId(newLogId);
+
     // Save ALL completed exercises across the whole workout session into database/logs
     saveWorkoutLog({
-      id: `log-${Date.now()}`,
+      id: newLogId,
       userId: currentUser.id,
       planId: plan.id,
       dayId: day.id,
@@ -314,6 +324,31 @@ export const LiveWorkoutSession: React.FC<LiveWorkoutSessionProps> = ({
     });
 
     showToast('All exercises saved to your progress history! 🔥', 'success');
+  };
+
+  // Restart workout from scratch: deletes the just-saved log from database/history and resets all inputs
+  const handleRestartWorkout = async () => {
+    if (lastSavedLogId) {
+      await deleteWorkoutLog(lastSavedLogId);
+      setLastSavedLogId(null);
+    }
+    setElapsedSeconds(0);
+    setExerciseLogs(createFreshExerciseLogs());
+    setRestSecondsLeft(null);
+    setCompletedSummary(null);
+    setIsCompletedModalOpen(false);
+    setIsTimerRunning(true);
+    showToast('Workout restarted from scratch! History log cleared. 🔥', 'success');
+  };
+
+  // Reset in-progress session back to 00:00 and clean sets
+  const handleResetSession = () => {
+    setElapsedSeconds(0);
+    setExerciseLogs(createFreshExerciseLogs());
+    setRestSecondsLeft(null);
+    setIsResetConfirmOpen(false);
+    setIsTimerRunning(true);
+    showToast('Workout session reset to start fresh 🔄', 'info');
   };
 
   // Plate calculation helper (per side)
@@ -396,6 +431,16 @@ export const LiveWorkoutSession: React.FC<LiveWorkoutSessionProps> = ({
               title="Barbell Calculator"
             >
               <Calculator className="w-4 h-4 stroke-[2.2]" />
+            </button>
+
+            {/* Reset / Restart Session Button */}
+            <button
+              type="button"
+              onClick={() => setIsResetConfirmOpen(true)}
+              className="w-9 h-9 rounded-2xl bg-[#14151e] border border-[#212330] text-zinc-400 hover:text-amber-400 hover:border-amber-400/30 flex items-center justify-center transition-colors flex-shrink-0 active:scale-95 cursor-pointer"
+              title="Reset Workout Session"
+            >
+              <RotateCcw className="w-4 h-4 stroke-[2.2]" />
             </button>
           </div>
 
@@ -829,13 +874,59 @@ export const LiveWorkoutSession: React.FC<LiveWorkoutSessionProps> = ({
               </div>
             </div>
 
-            <button
-              onClick={onSessionCompleted}
-              className="w-full py-3.5 rounded-2xl btn-orange text-xs font-black tracking-wide flex items-center justify-center gap-2 cursor-pointer"
-            >
-              <span>Back to Home</span>
-              <ArrowRight className="w-4 h-4" />
-            </button>
+            <div className="space-y-2 mt-4">
+              <button
+                onClick={onSessionCompleted}
+                className="w-full py-3.5 rounded-2xl btn-orange text-xs font-black tracking-wide flex items-center justify-center gap-2 cursor-pointer shadow-lg shadow-[#ff6b00]/25"
+              >
+                <span>Back to Home</span>
+                <ArrowRight className="w-4 h-4" />
+              </button>
+
+              <button
+                type="button"
+                onClick={handleRestartWorkout}
+                className="w-full py-3 rounded-2xl bg-[#1c1d27] hover:bg-[#272938] border border-[#2e303d] text-zinc-300 hover:text-white text-xs font-bold flex items-center justify-center gap-2 cursor-pointer transition-all active:scale-98"
+              >
+                <RotateCcw className="w-3.5 h-3.5 text-[#ff6b00]" />
+                <span>Restart Workout & Clear History</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* In-Session Reset Confirmation Modal */}
+      {isResetConfirmOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-150">
+          <div className="w-full max-w-xs bg-[#14151e] border border-[#2e303d] rounded-3xl p-5 shadow-2xl text-center relative animate-in zoom-in-95 duration-150 space-y-3">
+            <div className="w-12 h-12 rounded-2xl bg-amber-500/10 border border-amber-500/30 text-amber-400 flex items-center justify-center mx-auto shadow-inner">
+              <RotateCcw className="w-6 h-6 stroke-[2.5]" />
+            </div>
+
+            <div>
+              <h3 className="text-base font-extrabold text-white">Reset Workout Session?</h3>
+              <p className="text-xs text-zinc-400 mt-1">
+                This will reset the timer to 00:00 and clear all checked sets so you can start over fresh.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-2 gap-2 pt-1">
+              <button
+                type="button"
+                onClick={() => setIsResetConfirmOpen(false)}
+                className="py-2.5 px-3 rounded-xl bg-[#1c1d27] border border-[#2e303d] text-xs font-bold text-zinc-300 hover:text-white cursor-pointer"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={handleResetSession}
+                className="py-2.5 px-3 rounded-xl bg-amber-500 hover:bg-amber-600 text-black text-xs font-black cursor-pointer shadow-md shadow-amber-500/20"
+              >
+                Reset Session
+              </button>
+            </div>
           </div>
         </div>
       )}

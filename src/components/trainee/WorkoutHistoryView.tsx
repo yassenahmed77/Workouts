@@ -2,6 +2,9 @@
 
 import React, { useState, useMemo } from 'react';
 import { useGym } from '@/context/GymContext';
+import { useToast } from '@/context/ToastContext';
+import { WorkoutDay, WorkoutLog } from '@/types';
+import { LiveWorkoutSession } from './LiveWorkoutSession';
 import { 
   getExerciseProgressAnalysis, 
   ExerciseProgressSummary,
@@ -21,7 +24,10 @@ import {
   ChevronDown, 
   ChevronUp, 
   Flame, 
-  Sparkles
+  Sparkles,
+  Trash2,
+  RotateCcw,
+  Play
 } from 'lucide-react';
 
 const CATEGORY_TABS = [
@@ -83,7 +89,8 @@ const ProgressRing: React.FC<{
 };
 
 export const WorkoutHistoryView: React.FC = () => {
-  const { currentUser, getUserLogs, getPlanForUser } = useGym();
+  const { currentUser, getUserLogs, getPlanForUser, deleteWorkoutLog } = useGym();
+  const { showToast } = useToast();
   
   // Main view toggle: 'exercises' (Weight & Overload progression) or 'sessions' (Full workout logs)
   const [viewMode, setViewMode] = useState<'exercises' | 'sessions'>('exercises');
@@ -94,6 +101,10 @@ export const WorkoutHistoryView: React.FC = () => {
   
   // Expanded exercise cards tracking
   const [expandedExercises, setExpandedExercises] = useState<Record<string, boolean>>({});
+
+  // Active session deletion & restart state
+  const [logToDelete, setLogToDelete] = useState<WorkoutLog | null>(null);
+  const [activeSessionDay, setActiveSessionDay] = useState<WorkoutDay | null>(null);
 
   const logs = useMemo(() => (currentUser ? getUserLogs(currentUser.id) : []), [currentUser, getUserLogs]);
   const userPlan = useMemo(() => (currentUser ? getPlanForUser(currentUser.id) : undefined), [currentUser, getPlanForUser]);
@@ -141,6 +152,17 @@ export const WorkoutHistoryView: React.FC = () => {
   };
 
   if (!currentUser) return null;
+
+  if (activeSessionDay && userPlan) {
+    return (
+      <LiveWorkoutSession
+        plan={userPlan}
+        day={activeSessionDay}
+        onExit={() => setActiveSessionDay(null)}
+        onSessionCompleted={() => setActiveSessionDay(null)}
+      />
+    );
+  }
 
   return (
     <div className="space-y-4 max-w-md mx-auto pb-28">
@@ -475,11 +497,26 @@ export const WorkoutHistoryView: React.FC = () => {
                                 </span>
                               </div>
 
-                              {sessRecord.overloadBadge && (
-                                <span className="text-[9px] font-mono font-bold px-2 py-0.5 rounded-full bg-[#1c1d27] text-[#ff6b00] border border-[#ff6b00]/30">
-                                  {sessRecord.overloadBadge}
-                                </span>
-                              )}
+                              <div className="flex items-center gap-1.5">
+                                {sessRecord.overloadBadge && (
+                                  <span className="text-[9px] font-mono font-bold px-2 py-0.5 rounded-full bg-[#1c1d27] text-[#ff6b00] border border-[#ff6b00]/30">
+                                    {sessRecord.overloadBadge}
+                                  </span>
+                                )}
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    const targetLog = logs.find((l) => l.id === sessRecord.logId);
+                                    if (targetLog) {
+                                      setLogToDelete(targetLog);
+                                    }
+                                  }}
+                                  className="p-1 rounded-lg text-zinc-500 hover:text-red-400 hover:bg-red-950/30 transition-colors cursor-pointer"
+                                  title="Delete this session from history"
+                                >
+                                  <Trash2 className="w-3 h-3" />
+                                </button>
+                              </div>
                             </div>
 
                             {/* Sets Breakdown List */}
@@ -535,8 +572,8 @@ export const WorkoutHistoryView: React.FC = () => {
                   className="p-4 rounded-3xl bg-[#111218] border border-[#212330] hover:border-zinc-700 transition-all shadow-md space-y-3"
                 >
                   {/* Header */}
-                  <div className="flex items-center justify-between pb-2.5 border-b border-[#1e202a]">
-                    <div>
+                  <div className="flex items-start justify-between gap-2 pb-2.5 border-b border-[#1e202a]">
+                    <div className="min-w-0 flex-1">
                       <div className="flex items-center gap-2">
                         <span className="text-xs font-mono text-zinc-400">
                           {log.date}
@@ -546,16 +583,47 @@ export const WorkoutHistoryView: React.FC = () => {
                           {mins} mins
                         </span>
                       </div>
-                      <h4 className="text-sm font-extrabold text-white tracking-tight mt-0.5">
+                      <h4 className="text-sm font-extrabold text-white tracking-tight mt-0.5 truncate">
                         {log.dayName}
                       </h4>
                     </div>
 
-                    <div className="px-2.5 py-1 rounded-xl bg-[#09090b] border border-[#232530] text-right">
-                      <span className="block text-[8px] font-mono uppercase text-zinc-500 font-bold">Volume</span>
-                      <span className="text-xs font-extrabold font-numeric text-[#ff6b00]">
-                        {log.totalVolumeKg.toLocaleString()} kg
-                      </span>
+                    <div className="flex items-center gap-1.5 flex-shrink-0">
+                      <div className="px-2.5 py-1 rounded-xl bg-[#09090b] border border-[#232530] text-right">
+                        <span className="block text-[8px] font-mono uppercase text-zinc-500 font-bold">Volume</span>
+                        <span className="text-xs font-extrabold font-numeric text-[#ff6b00]">
+                          {log.totalVolumeKg.toLocaleString()} kg
+                        </span>
+                      </div>
+
+                      {/* Re-do / Restart Workout Button */}
+                      {userPlan && (() => {
+                        const matchedDay = userPlan.days.find(
+                          (d) => d.id === log.dayId || d.dayName.toLowerCase() === log.dayName.toLowerCase()
+                        );
+                        if (!matchedDay) return null;
+
+                        return (
+                          <button
+                            type="button"
+                            onClick={() => setActiveSessionDay(matchedDay)}
+                            className="w-8 h-8 rounded-xl bg-[#181924] hover:bg-[#252738] border border-[#2a2d3e] text-zinc-300 hover:text-[#ff6b00] flex items-center justify-center transition-all cursor-pointer shadow-sm active:scale-95"
+                            title="Re-do / Restart this Workout"
+                          >
+                            <RotateCcw className="w-3.5 h-3.5" />
+                          </button>
+                        );
+                      })()}
+
+                      {/* Delete Log Button */}
+                      <button
+                        type="button"
+                        onClick={() => setLogToDelete(log)}
+                        className="w-8 h-8 rounded-xl bg-[#181924] hover:bg-red-950/40 border border-[#2a2d3e] hover:border-red-500/40 text-zinc-400 hover:text-red-400 flex items-center justify-center transition-all cursor-pointer shadow-sm active:scale-95"
+                        title="Delete Session from History"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
                     </div>
                   </div>
 
@@ -604,6 +672,56 @@ export const WorkoutHistoryView: React.FC = () => {
               );
             })
           )}
+        </div>
+      )}
+
+      {/* Delete Log Confirmation Modal */}
+      {logToDelete && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-150">
+          <div className="w-full max-w-sm bg-[#14151e] border border-[#2e303d] rounded-3xl p-6 shadow-2xl text-center relative animate-in zoom-in-95 duration-150 space-y-4">
+            <div className="w-12 h-12 rounded-2xl bg-red-500/15 border border-red-500/30 text-red-400 flex items-center justify-center mx-auto shadow-inner">
+              <Trash2 className="w-6 h-6 stroke-[2.5]" />
+            </div>
+
+            <div>
+              <h3 className="text-base font-extrabold text-white">Delete Workout Session?</h3>
+              <p className="text-xs text-zinc-400 mt-1">
+                Are you sure you want to remove <span className="text-white font-bold">&quot;{logToDelete.dayName}&quot;</span> ({logToDelete.date}) from your history?
+              </p>
+            </div>
+
+            <div className="p-3 rounded-2xl bg-[#09090b] border border-[#1e202c] grid grid-cols-2 gap-2 text-xs">
+              <div>
+                <span className="block text-[8px] font-mono uppercase text-zinc-500 font-bold">Volume</span>
+                <span className="text-xs font-extrabold font-numeric text-[#ff6b00]">{logToDelete.totalVolumeKg.toLocaleString()} kg</span>
+              </div>
+              <div>
+                <span className="block text-[8px] font-mono uppercase text-zinc-500 font-bold">Duration</span>
+                <span className="text-xs font-extrabold font-numeric text-white">{Math.round(logToDelete.durationSeconds / 60)} Mins</span>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-2 pt-1">
+              <button
+                type="button"
+                onClick={() => setLogToDelete(null)}
+                className="py-2.5 px-3 rounded-xl bg-[#1c1d27] border border-[#2e303d] text-xs font-bold text-zinc-300 hover:text-white cursor-pointer"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={async () => {
+                  await deleteWorkoutLog(logToDelete.id);
+                  showToast('Workout session removed from history! 🗑️', 'info');
+                  setLogToDelete(null);
+                }}
+                className="py-2.5 px-3 rounded-xl bg-red-600 hover:bg-red-700 text-white text-xs font-black cursor-pointer shadow-md shadow-red-600/30"
+              >
+                Delete Session
+              </button>
+            </div>
+          </div>
         </div>
       )}
 

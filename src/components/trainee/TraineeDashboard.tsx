@@ -39,7 +39,9 @@ import {
   TrendingUp,
   Award,
   Scale,
-  Sparkles
+  Sparkles,
+  RotateCcw,
+  Trash2
 } from 'lucide-react';
 
 interface TraineeDashboardProps {
@@ -53,10 +55,12 @@ export const TraineeDashboard: React.FC<TraineeDashboardProps> = ({
   onNavigateToHistory,
   onNavigateToHabits
 }) => {
-  const { currentUser, getPlanForUser, getUserLogs } = useGym();
+  const { currentUser, getPlanForUser, getUserLogs, deleteWorkoutLog } = useGym();
   const { showToast } = useToast();
 
   const [activeSessionDay, setActiveSessionDay] = useState<WorkoutDay | null>(null);
+  const [showRestartConfirmModal, setShowRestartConfirmModal] = useState(false);
+  const [showDeleteLogConfirm, setShowDeleteLogConfirm] = useState(false);
 
   // Dynamic Habits state from persistent habitsEngine
   const [userHabits, setUserHabits] = useState<UserHabit[]>(() => (currentUser ? getUserHabits(currentUser.id) : []));
@@ -485,22 +489,79 @@ export const TraineeDashboard: React.FC<TraineeDashboardProps> = ({
             </div>
           </div>
 
-          {/* Big Orange Gradient CTA Button */}
-          {activeDay && (
-            <button
-              onClick={() => {
-                if (activeDay && plan) {
-                  setActiveSessionDay(activeDay);
-                } else {
-                  onNavigateToSplit();
-                }
-              }}
-              className="w-full py-3.5 px-5 rounded-2xl btn-orange text-xs sm:text-sm font-black flex items-center justify-center gap-2 cursor-pointer shadow-lg shadow-[#ff6b00]/20 active:scale-98 transition-all"
-            >
-              <Play className="w-4 h-4 fill-current" />
-              <span>START WORKOUT</span>
-            </button>
-          )}
+          {/* If workout has already been completed today */}
+          {(() => {
+            const todayDateStr = new Date().toISOString().split('T')[0];
+            const todayWorkoutLog = userLogs.find(
+              (l) => l.date === todayDateStr && (l.dayId === activeDay?.id || l.dayName === activeDay?.dayName)
+            );
+            const isTodayWorkoutCompleted = Boolean(todayWorkoutLog);
+
+            if (isTodayWorkoutCompleted && todayWorkoutLog) {
+              const mins = Math.round(todayWorkoutLog.durationSeconds / 60);
+
+              return (
+                <div className="space-y-2.5 pt-1 border-t border-[#1e202c]">
+                  {/* Completed Today Badge Banner */}
+                  <div className="p-3 rounded-2xl bg-[#141d1a] border border-emerald-500/30 flex items-center justify-between shadow-sm">
+                    <div className="flex items-center gap-2.5 min-w-0">
+                      <div className="w-8 h-8 rounded-xl bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 flex items-center justify-center flex-shrink-0">
+                        <CheckCircle2 className="w-4 h-4 stroke-[2.5]" />
+                      </div>
+                      <div className="min-w-0">
+                        <div className="flex items-center gap-1.5">
+                          <span className="text-xs font-black text-white">Workout Completed Today</span>
+                          <span className="text-[9px] font-mono font-bold px-1.5 py-0.2 rounded-full bg-emerald-500/20 text-emerald-300">✓ Done</span>
+                        </div>
+                        <span className="text-[11px] text-zinc-400 font-numeric block truncate">
+                          {mins} mins • {todayWorkoutLog.totalVolumeKg.toLocaleString()} kg Volume • {todayWorkoutLog.completedExercises.length} Exercises
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Restart & Delete Action Buttons */}
+                  <div className="grid grid-cols-2 gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setShowRestartConfirmModal(true)}
+                      className="py-3 px-3.5 rounded-2xl btn-orange text-xs font-black flex items-center justify-center gap-1.5 cursor-pointer shadow-md shadow-[#ff6b00]/20 active:scale-98 transition-all"
+                    >
+                      <RotateCcw className="w-3.5 h-3.5 stroke-[2.5]" />
+                      <span>Restart Workout</span>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => setShowDeleteLogConfirm(true)}
+                      className="py-3 px-3.5 rounded-2xl bg-[#161722] hover:bg-[#202232] border border-[#2e3042] text-zinc-300 hover:text-red-400 hover:border-red-500/30 text-xs font-bold flex items-center justify-center gap-1.5 cursor-pointer active:scale-98 transition-all"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                      <span>Delete Log</span>
+                    </button>
+                  </div>
+                </div>
+              );
+            }
+
+            return (
+              activeDay && (
+                <button
+                  onClick={() => {
+                    if (activeDay && plan) {
+                      setActiveSessionDay(activeDay);
+                    } else {
+                      onNavigateToSplit();
+                    }
+                  }}
+                  className="w-full py-3.5 px-5 rounded-2xl btn-orange text-xs sm:text-sm font-black flex items-center justify-center gap-2 cursor-pointer shadow-lg shadow-[#ff6b00]/20 active:scale-98 transition-all"
+                >
+                  <Play className="w-4 h-4 fill-current" />
+                  <span>START WORKOUT</span>
+                </button>
+              )
+            );
+          })()}
         </div>
 
         {/* Right Column: Habits & Weekly Progress */}
@@ -736,6 +797,117 @@ export const TraineeDashboard: React.FC<TraineeDashboardProps> = ({
 
         </div>
       </div>
+
+      {/* Restart Workout Confirmation Modal */}
+      {showRestartConfirmModal && activeDay && (() => {
+        const todayDateStr = new Date().toISOString().split('T')[0];
+        const todayWorkoutLog = userLogs.find(
+          (l) => l.date === todayDateStr && (l.dayId === activeDay?.id || l.dayName === activeDay?.dayName)
+        );
+
+        return (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-150">
+            <div className="w-full max-w-sm bg-[#14151e] border border-[#2e303d] rounded-3xl p-6 shadow-2xl text-center relative animate-in zoom-in-95 duration-150 space-y-4">
+              <div className="w-12 h-12 rounded-2xl bg-[#ff6b00]/15 border border-[#ff6b00]/30 text-[#ff6b00] flex items-center justify-center mx-auto shadow-inner">
+                <RotateCcw className="w-6 h-6 stroke-[2.5]" />
+              </div>
+
+              <div>
+                <h3 className="text-base font-extrabold text-white">Restart Today&apos;s Workout?</h3>
+                <p className="text-xs text-zinc-400 mt-1">
+                  You already have a logged session for today. How would you like to proceed?
+                </p>
+              </div>
+
+              <div className="space-y-2 pt-1">
+                <button
+                  type="button"
+                  onClick={async () => {
+                    if (todayWorkoutLog) {
+                      await deleteWorkoutLog(todayWorkoutLog.id);
+                    }
+                    setShowRestartConfirmModal(false);
+                    setActiveSessionDay(activeDay);
+                    showToast('Previous log deleted. Ready to crush the workout from scratch! 🔥', 'success');
+                  }}
+                  className="w-full py-3 px-4 rounded-2xl btn-orange text-xs font-black flex items-center justify-center gap-2 cursor-pointer shadow-lg shadow-[#ff6b00]/25"
+                >
+                  <Trash2 className="w-3.5 h-3.5" />
+                  <span>Delete Old Log & Start Fresh</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowRestartConfirmModal(false);
+                    setActiveSessionDay(activeDay);
+                  }}
+                  className="w-full py-2.5 px-4 rounded-2xl bg-[#1c1d27] hover:bg-[#272938] border border-[#2e303d] text-zinc-200 text-xs font-bold flex items-center justify-center gap-2 cursor-pointer transition-all"
+                >
+                  <Play className="w-3.5 h-3.5 fill-current text-[#ff6b00]" />
+                  <span>Start Extra Session (Keep Old Log)</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setShowRestartConfirmModal(false)}
+                  className="w-full py-2 text-xs font-bold text-zinc-500 hover:text-zinc-300 cursor-pointer pt-1"
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </div>
+        );
+      })()}
+
+      {/* Delete Today's Log Confirmation Modal */}
+      {showDeleteLogConfirm && activeDay && (() => {
+        const todayDateStr = new Date().toISOString().split('T')[0];
+        const todayWorkoutLog = userLogs.find(
+          (l) => l.date === todayDateStr && (l.dayId === activeDay?.id || l.dayName === activeDay?.dayName)
+        );
+
+        return (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-150">
+            <div className="w-full max-w-sm bg-[#14151e] border border-[#2e303d] rounded-3xl p-6 shadow-2xl text-center relative animate-in zoom-in-95 duration-150 space-y-4">
+              <div className="w-12 h-12 rounded-2xl bg-red-500/15 border border-red-500/30 text-red-400 flex items-center justify-center mx-auto shadow-inner">
+                <Trash2 className="w-6 h-6 stroke-[2.5]" />
+              </div>
+
+              <div>
+                <h3 className="text-base font-extrabold text-white">Delete Today&apos;s Workout Log?</h3>
+                <p className="text-xs text-zinc-400 mt-1">
+                  Are you sure you want to remove today&apos;s workout log from your history? Your streak and stats will be updated.
+                </p>
+              </div>
+
+              <div className="grid grid-cols-2 gap-2 pt-1">
+                <button
+                  type="button"
+                  onClick={() => setShowDeleteLogConfirm(false)}
+                  className="py-2.5 px-3 rounded-xl bg-[#1c1d27] border border-[#2e303d] text-xs font-bold text-zinc-300 hover:text-white cursor-pointer"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  onClick={async () => {
+                    if (todayWorkoutLog) {
+                      await deleteWorkoutLog(todayWorkoutLog.id);
+                      showToast('Today\'s workout log removed from history! 🗑️', 'info');
+                    }
+                    setShowDeleteLogConfirm(false);
+                  }}
+                  className="py-2.5 px-3 rounded-xl bg-red-600 hover:bg-red-700 text-white text-xs font-black cursor-pointer shadow-md shadow-red-600/30"
+                >
+                  Delete Log
+                </button>
+              </div>
+            </div>
+          </div>
+        );
+      })()}
 
     </div>
   );

@@ -1,31 +1,65 @@
 @import "tailwindcss";
 
 :root {
-  --bg-main: #09090b;
-  --bg-card: #111218;
-  --bg-card-hover: #161720;
-  --bg-subtle: #1a1b26;
-  --bg-surface-elevated: #20212e;
-  --border-dim: #212330;
-  --border-subtle: rgba(255, 255, 255, 0.07);
-  --border-strong: #303345;
-  --text-primary: #f4f4f6;
-  --text-secondary: #a1a1aa;
-  --text-muted: #71717a;
+  /* TitanFit Modern Obsidian & Matte Dark Foundation */
+  --bg-main: #0a0a0c;
+  --bg-card: #18191e;
+  --bg-card-hover: #1c1d22;
+  --bg-subtle: #141519;
+  --bg-surface-elevated: #1c1d22;
+  --border-dim: #24262e;
+  --border-subtle: rgba(255, 255, 255, 0.06);
+  --border-strong: #2f80ed;
   
-  /* Cyber Sunset Orange Primary Accent */
-  --accent-primary: #ff6b00;
-  --accent-primary-hover: #ff7a1a;
-  --accent-primary-muted: rgba(255, 107, 0, 0.12);
-  --accent-primary-glow: rgba(255, 107, 0, 0.35);
+  --text-primary: #f5f7fa;
+  --text-secondary: #94a3b8;
+  --text-muted: #8e8e93;
   
+  /* Primary Accent: Electric Sapphire Blue for Navigation, Buttons & Visualizations */
+  --accent-cyan: #2f80ed;
+  --accent-cyan-dark: #2563eb;
+  --accent-cyan-muted: rgba(47, 128, 237, 0.12);
+  --accent-cyan-glow: rgba(47, 128, 237, 0.35);
+  
+  /* Primary Action: High-Performance Electric Blue */
+  --accent-action: #2f80ed;
+  --accent-action-hover: #3897f0;
+  --accent-action-muted: rgba(47, 128, 237, 0.14);
+
+  /* Semantic Accents */
   --accent-emerald: #10b981;
-  --accent-cyan: #06b6d4;
-  --accent-purple: #a855f7;
   --accent-amber: #f59e0b;
   --accent-red: #ef4444;
+  --accent-critical: #f43f5e;
 
-  /* iOS Safe Area Insets (Dynamic Island & Notch Safe) */
+  /* Backward Compatibility with Electric Blue */
+  --accent-orange: #2f80ed;
+  --accent-orange-hover: #3897f0;
+  --accent-orange-muted: rgba(47, 128, 237, 0.14);
+  --accent-orange-glow: rgba(47, 128, 237, 0.35);
+  --accent-primary: #2f80ed;
+  --accent-primary-hover: #3897f0;
+  --accent-primary-muted: rgba(47, 128, 237, 0.14);
+  --accent-primary-glow: rgba(47, 128, 237, 0.35);
+
+  /* Screenshot Inspired Palette Tokens (Matte Charcoal & Sunrise Horizon & Electric Sapphire Blue) */
+  --bg-matte: #0a0a0c;
+  --surface-matte: #18191e;
+  --surface-matte-elevated: #1c1d22;
+  --surface-matte-subtle: #141519;
+  --border-matte: #24262e;
+  --border-matte-subtle: rgba(255, 255, 255, 0.06);
+
+  --accent-blue: #2f80ed;
+  --accent-blue-hover: #3897f0;
+  --accent-blue-active: #2563eb;
+  --accent-blue-glow: rgba(47, 128, 237, 0.35);
+
+  --horizon-dark: #36281a;
+  --horizon-mid: #b88647;
+  --horizon-light: #f3c88e;
+
+  /* iOS Safe Area Insets */
   --sat: max(env(safe-area-inset-top, 0px), 0px);
   --sab: max(env(safe-area-inset-bottom, 0px), 0px);
   --sal: max(env(safe-area-inset-left, 0px), 0px);
@@ -41,34 +75,70 @@
   padding-top: max(env(safe-area-inset-top, 0px), 16px);
 }
 
+html, body {
+  min-height: 100%;
+}
+
 body {
-  background-color: #09090b;
-  color: #f4f4f6;
+  background-color: #0a0a0c;
+  color: #f5f7fa;
   font-family: var(--font-geist-sans), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   letter-spacing: -0.012em;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   overflow-x: hidden;
-  min-height: 100vh;
 }
 
-/* Custom minimal scrollbar */
+/* Clean minimal scrollbars - never blocks scrolling */
 ::-webkit-scrollbar {
   width: 5px;
   height: 5px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #09090b;
+  background: transparent;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #27272a;
+  background: #1e293b;
   border-radius: 9999px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #3f3f46;
+  background: #334155;
+}
+
+/* Custom Scrollbar - Sleek Luxury Track & Thumb */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: rgba(5, 8, 14, 0.6);
+  border-radius: 9999px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #334155;
+  border-radius: 9999px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #2f80ed;
+}
+.custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: #334155 rgba(5, 8, 14, 0.6);
+}
+
+.scrollbar-none {
+  scrollbar-width: none !important;
+  -ms-overflow-style: none !important;
+}
+
+.scrollbar-none::-webkit-scrollbar {
+  display: none !important;
+  width: 0px !important;
+  height: 0px !important;
 }
 
 /* Monospace digits for precision timers & reps */
@@ -79,17 +149,17 @@ body {
 
 /* Glass panel subtle backdrop */
 .glass-panel {
-  background: rgba(17, 18, 24, 0.85);
+  background: rgba(24, 25, 30, 0.85);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.07);
+  border: 1px solid #24262e;
 }
 
 .glass-panel-elevated {
-  background: rgba(22, 23, 32, 0.95);
+  background: rgba(28, 29, 34, 0.95);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.09);
+  border: 1px solid #24262e;
   box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.6);
 }
 
@@ -120,41 +190,77 @@ input[type="number"] {
   transform: scale(0.98);
 }
 
-/* Cyber Sunset Orange Glow & Buttons */
-.btn-orange {
-  background: linear-gradient(135deg, #ff5500 0%, #ff7700 100%);
+/* Unified Electric Blue Buttons & Accents */
+.btn-cyan, .btn-orange {
+  background: linear-gradient(135deg, #2563eb 0%, #2f80ed 100%);
   color: #ffffff;
   font-weight: 800;
   letter-spacing: -0.01em;
-  box-shadow: 0 4px 20px -2px rgba(255, 107, 0, 0.4);
+  box-shadow: 0 4px 18px -2px rgba(47, 128, 237, 0.4);
   transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.btn-orange:hover {
-  background: linear-gradient(135deg, #ff661a 0%, #ff881a 100%);
-  box-shadow: 0 6px 28px 0 rgba(255, 107, 0, 0.55);
+.btn-cyan:hover, .btn-orange:hover {
+  background: linear-gradient(135deg, #2f80ed 0%, #3897f0 100%);
+  box-shadow: 0 6px 26px 0 rgba(47, 128, 237, 0.55);
   transform: translateY(-1px);
 }
 
-.btn-orange:active {
+.btn-cyan:active, .btn-orange:active {
   transform: scale(0.98);
-  box-shadow: 0 2px 10px rgba(255, 107, 0, 0.25);
+  box-shadow: 0 2px 10px rgba(47, 128, 237, 0.25);
 }
 
-.border-orange-subtle {
-  border-color: rgba(255, 107, 0, 0.2);
+.border-cyan-subtle, .border-orange-subtle {
+  border-color: rgba(47, 128, 237, 0.25);
 }
 
-.bg-orange-subtle {
-  background-color: rgba(255, 107, 0, 0.08);
+.bg-cyan-subtle, .bg-orange-subtle {
+  background-color: rgba(47, 128, 237, 0.1);
 }
 
-.text-orange-primary {
-  color: #ff6b00;
+.text-cyan-primary, .text-orange-primary {
+  color: #2f80ed;
 }
 
-.glow-ambient-orange {
-  background: radial-gradient(circle at 75% 15%, rgba(255, 107, 0, 0.12) 0%, transparent 65%);
+.glow-ambient-cyan, .glow-ambient-orange {
+  background: radial-gradient(circle at 75% 15%, rgba(47, 128, 237, 0.15) 0%, transparent 65%);
 }
+
+@keyframes shimmerTrack {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(250%); }
+}
+
+.animate-shimmer-track {
+  animation: shimmerTrack 2.5s infinite linear;
+}
+
+/* Electric Sapphire Blue Pill Button */
+.btn-electric-blue {
+  background: linear-gradient(135deg, #2563eb 0%, #2f80ed 100%);
+  color: #ffffff;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  box-shadow: 0 4px 18px -2px rgba(47, 128, 237, 0.4);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.btn-electric-blue:hover {
+  background: linear-gradient(135deg, #2f80ed 0%, #3897f0 100%);
+  box-shadow: 0 6px 26px 0 rgba(47, 128, 237, 0.55);
+  transform: translateY(-1px);
+}
+
+.btn-electric-blue:active {
+  transform: scale(0.98);
+  box-shadow: 0 2px 10px rgba(47, 128, 237, 0.25);
+}
+
+/* Ambient Sunrise Horizon Arc Container Glow */
+.ambient-sunrise-glow {
+  background: radial-gradient(ellipse 80% 50% at 50% -20%, rgba(184, 134, 71, 0.22) 0%, rgba(54, 40, 26, 0.08) 50%, transparent 80%);
+}
+
 
 

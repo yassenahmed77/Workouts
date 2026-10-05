@@ -102,7 +102,7 @@ export const TraineeProfileView: React.FC = () => {
 
     // Sync profile weightKg
     await updateUserProfile(currentUser.id, { weightKg: val });
-    showToast(`Logged ${val} kg for ${newCheckInDate}! 🔥`, 'success');
+    showToast(`Logged ${val} kg for ${newCheckInDate}!`, 'success');
   };
 
   const handleDeleteWeightLog = (logId: string) => {
@@ -117,11 +117,11 @@ export const TraineeProfileView: React.FC = () => {
   };
 
   return (
-    <div className="max-w-2xl mx-auto space-y-5 px-1 sm:px-0 pb-12">
+    <div className="w-full max-w-2xl md:max-w-5xl lg:max-w-6xl xl:max-w-7xl mx-auto space-y-6 px-1 sm:px-0 pb-12">
       {/* Profile Header */}
-      <div className="p-5 sm:p-6 rounded-3xl bg-[#111218] border border-[#212330] flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-xl">
+      <div className="p-5 sm:p-6 rounded-3xl bg-[#18191e] border border-[#24262e] flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-xl">
         <div className="flex items-center gap-3.5 sm:gap-4">
-          <div className="w-14 h-14 rounded-2xl bg-[#1c1d27] border border-[#2e303d] flex items-center justify-center text-[#ff6b00] font-black text-xl flex-shrink-0 shadow-inner">
+          <div className="w-14 h-14 rounded-2xl bg-[#141519] border border-[#24262e] flex items-center justify-center text-[#2f80ed] font-black text-xl flex-shrink-0 shadow-inner">
             {currentUser.avatarText}
           </div>
           <div>
@@ -129,7 +129,7 @@ export const TraineeProfileView: React.FC = () => {
               <h2 className="text-lg sm:text-xl font-extrabold text-white tracking-tight">
                 {currentUser.name}
               </h2>
-              <span className="text-[10px] font-mono uppercase tracking-wider px-2 py-0.5 rounded-full bg-[#ff6b00]/10 text-[#ff6b00] border border-[#ff6b00]/20 font-bold">
+              <span className="text-[10px] font-mono uppercase tracking-wider px-2 py-0.5 rounded-full bg-[#2f80ed]/10 text-[#2f80ed] border border-[#2f80ed]/20 font-bold">
                 ATHLETE
               </span>
             </div>
@@ -141,10 +141,10 @@ export const TraineeProfileView: React.FC = () => {
         </div>
 
         <div className="flex items-center gap-2 self-start sm:self-auto">
-          <div className="px-3.5 py-1.5 rounded-2xl bg-[#09090b] border border-[#232530] text-left sm:text-right">
+          <div className="px-3.5 py-1.5 rounded-2xl bg-[#141519] border border-[#24262e] text-left sm:text-right">
             <span className="block text-[9px] font-mono uppercase text-zinc-500 font-bold">Status</span>
-            <span className="text-xs font-bold text-[#ff6b00] font-mono flex items-center gap-1.5">
-              <span className="w-2 h-2 rounded-full bg-[#ff6b00] animate-pulse" />
+            <span className="text-xs font-bold text-[#2f80ed] font-mono flex items-center gap-1.5">
+              <span className="w-2 h-2 rounded-full bg-[#2f80ed] animate-pulse" />
               ACTIVE
             </span>
           </div>
@@ -153,22 +153,22 @@ export const TraineeProfileView: React.FC = () => {
 
       {/* Biometrics Hero Row (Weight & Target Biometrics) */}
       <div className="grid grid-cols-3 gap-2.5 sm:gap-3">
-        <div className="p-3.5 rounded-2xl bg-[#111218] border border-[#212330] text-center shadow-md">
+        <div className="p-3.5 rounded-2xl bg-[#18191e] border border-[#24262e] text-center shadow-md">
           <div className="flex items-center justify-center gap-1 text-[10px] font-mono uppercase text-zinc-400 font-bold mb-1">
-            <Scale className="w-3 h-3 text-[#ff6b00]" />
+            <Scale className="w-3 h-3 text-[#2f80ed]" />
             <span>Weight</span>
           </div>
           <span className="text-xl font-black font-numeric text-white block">
             {weightAnalysis.currentWeightKg} <span className="text-xs text-zinc-400 font-normal">kg</span>
           </span>
-          <span className="text-[9px] text-[#ff6b00] font-mono mt-0.5 block font-bold">
+          <span className="text-[9px] text-[#2f80ed] font-mono mt-0.5 block font-bold">
             {weightAnalysis.statusText}
           </span>
         </div>
 
-        <div className="p-3.5 rounded-2xl bg-[#111218] border border-[#212330] text-center shadow-md">
+        <div className="p-3.5 rounded-2xl bg-[#18191e] border border-[#24262e] text-center shadow-md">
           <div className="flex items-center justify-center gap-1 text-[10px] font-mono uppercase text-zinc-400 font-bold mb-1">
-            <Target className="w-3 h-3 text-cyan-400" />
+            <Target className="w-3 h-3 text-[#2f80ed]" />
             <span>Target</span>
           </div>
           <span className="text-xl font-black font-numeric text-white block">
@@ -177,7 +177,7 @@ export const TraineeProfileView: React.FC = () => {
           <span className="text-[9px] text-zinc-500 font-mono mt-0.5 block">Goal</span>
         </div>
 
-        <div className="p-3.5 rounded-2xl bg-[#111218] border border-[#212330] text-center shadow-md">
+        <div className="p-3.5 rounded-2xl bg-[#18191e] border border-[#24262e] text-center shadow-md">
           <div className="flex items-center justify-center gap-1 text-[10px] font-mono uppercase text-zinc-400 font-bold mb-1">
             <Activity className="w-3 h-3 text-purple-400" />
             <span>BMI</span>
@@ -189,16 +189,18 @@ export const TraineeProfileView: React.FC = () => {
         </div>
       </div>
 
-      {/* Weekly Weight Check-in Tracker Card */}
-      <div className="p-5 sm:p-6 rounded-3xl bg-[#111218] border border-[#212330] space-y-4 shadow-xl">
-        <div className="flex items-center justify-between pb-3 border-b border-[#232530]">
+      {/* Responsive 2-Column Grid on Desktop for Settings & Weigh-Ins */}
+      <div className="space-y-5 md:grid md:grid-cols-2 md:gap-6 md:space-y-0 items-start">
+        {/* Weekly Weight Check-in Tracker Card */}
+        <div className="p-5 sm:p-6 rounded-3xl bg-[#18191e] border border-[#24262e] space-y-4 shadow-xl">
+        <div className="flex items-center justify-between pb-3 border-b border-[#24262e]">
           <div className="flex items-center gap-2">
-            <Scale className="w-4 h-4 text-[#ff6b00]" />
+            <Scale className="w-4 h-4 text-[#2f80ed]" />
             <h3 className="text-sm font-bold text-white tracking-tight">
               Weekly Weight Check-In
             </h3>
           </div>
-          <span className="text-[10px] font-mono text-zinc-400 font-bold px-2 py-0.5 rounded-full bg-[#1c1d27] border border-[#2e303d]">
+          <span className="text-[10px] font-mono text-zinc-400 font-bold px-2 py-0.5 rounded-full bg-[#141519] border border-[#24262e]">
             {weightAnalysis.totalNetDeltaKg > 0 ? `+${weightAnalysis.totalNetDeltaKg}kg` : `${weightAnalysis.totalNetDeltaKg}kg`} Total
           </span>
         </div>
@@ -211,7 +213,7 @@ export const TraineeProfileView: React.FC = () => {
               type="date"
               value={newCheckInDate}
               onChange={(e) => setNewCheckInDate(e.target.value)}
-              className="w-full px-3 py-2 rounded-xl bg-[#09090b] border border-[#232530] text-xs text-white font-mono focus:outline-none focus:border-[#ff6b00]"
+              className="w-full px-3 py-2 rounded-xl bg-[#141519] border border-[#24262e] text-xs text-white font-mono focus:outline-none focus:border-[#2f80ed]"
             />
           </div>
 
@@ -223,13 +225,13 @@ export const TraineeProfileView: React.FC = () => {
               placeholder="e.g. 68.5"
               value={newCheckInWeight}
               onChange={(e) => setNewCheckInWeight(e.target.value)}
-              className="w-full px-3 py-2 rounded-xl bg-[#09090b] border border-[#232530] text-xs text-white font-numeric font-bold focus:outline-none focus:border-[#ff6b00]"
+              className="w-full px-3 py-2 rounded-xl bg-[#141519] border border-[#24262e] text-xs text-white font-numeric font-bold focus:outline-none focus:border-[#2f80ed]"
             />
           </div>
 
           <button
             type="submit"
-            className="w-full sm:w-auto self-end px-5 py-2.5 rounded-xl bg-[#ff6b00] text-black text-xs font-black flex items-center justify-center gap-1.5 shadow-md hover:bg-[#ff7d1a] cursor-pointer active:scale-95 transition-all mt-auto"
+            className="w-full sm:w-auto self-end px-5 py-2.5 rounded-xl btn-cyan text-xs font-black flex items-center justify-center gap-1.5 shadow-md cursor-pointer active:scale-95 transition-all mt-auto"
           >
             <Plus className="w-3.5 h-3.5 stroke-[3]" />
             <span>Log Weight</span>
@@ -250,7 +252,7 @@ export const TraineeProfileView: React.FC = () => {
                 return (
                   <div
                     key={entry.id}
-                    className="flex items-center justify-between p-2.5 px-3 rounded-2xl bg-[#09090b] border border-[#1e202c] text-xs"
+                    className="flex items-center justify-between p-2.5 px-3 rounded-2xl bg-[#141519] border border-[#24262e] text-xs"
                   >
                     <div className="flex items-center gap-2.5">
                       <Calendar className="w-3.5 h-3.5 text-zinc-500" />
@@ -292,10 +294,10 @@ export const TraineeProfileView: React.FC = () => {
 
       {/* Editable Profile & Biometrics Form */}
       <form onSubmit={handleSaveProfile} className="space-y-5">
-        <div className="p-5 sm:p-6 rounded-3xl bg-[#111218] border border-[#212330] space-y-4 shadow-xl">
-          <div className="flex items-center justify-between pb-3 border-b border-[#232530]">
+        <div className="p-5 sm:p-6 rounded-3xl bg-[#18191e] border border-[#24262e] space-y-4 shadow-xl">
+          <div className="flex items-center justify-between pb-3 border-b border-[#24262e]">
             <h3 className="text-sm font-bold text-white tracking-tight flex items-center gap-2">
-              <Activity className="w-4 h-4 text-[#ff6b00]" />
+              <Activity className="w-4 h-4 text-[#2f80ed]" />
               Account & Biometrics Settings
             </h3>
           </div>
@@ -312,7 +314,7 @@ export const TraineeProfileView: React.FC = () => {
                   required
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  className="w-full pl-9 pr-3 py-2.5 rounded-xl bg-[#09090b] border border-[#232530] text-xs text-white focus:outline-none focus:border-[#ff6b00]/60 font-medium"
+                  className="w-full pl-9 pr-3 py-2.5 rounded-xl bg-[#141519] border border-[#24262e] text-xs text-white focus:outline-none focus:border-[#2f80ed]/60 font-medium"
                 />
               </div>
             </div>
@@ -328,7 +330,7 @@ export const TraineeProfileView: React.FC = () => {
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full pl-9 pr-3 py-2.5 rounded-xl bg-[#09090b] border border-[#232530] text-xs text-white focus:outline-none focus:border-[#ff6b00]/60 font-medium"
+                  className="w-full pl-9 pr-3 py-2.5 rounded-xl bg-[#141519] border border-[#24262e] text-xs text-white focus:outline-none focus:border-[#2f80ed]/60 font-medium"
                 />
               </div>
             </div>
@@ -343,7 +345,7 @@ export const TraineeProfileView: React.FC = () => {
                 required
                 value={weightKg}
                 onChange={(e) => setWeightKg(parseFloat(e.target.value) || 0)}
-                className="w-full px-3.5 py-2.5 rounded-xl bg-[#09090b] border border-[#232530] font-numeric text-xs font-bold text-white focus:outline-none focus:border-[#ff6b00]/60"
+                className="w-full px-3.5 py-2.5 rounded-xl bg-[#141519] border border-[#24262e] font-numeric text-xs font-bold text-white focus:outline-none focus:border-[#2f80ed]/60"
               />
             </div>
 
@@ -357,7 +359,7 @@ export const TraineeProfileView: React.FC = () => {
                 required
                 value={targetWeightKg}
                 onChange={(e) => setTargetWeightKg(parseFloat(e.target.value) || 0)}
-                className="w-full px-3.5 py-2.5 rounded-xl bg-[#09090b] border border-[#232530] font-numeric text-xs font-bold text-white focus:outline-none focus:border-[#ff6b00]/60"
+                className="w-full px-3.5 py-2.5 rounded-xl bg-[#141519] border border-[#24262e] font-numeric text-xs font-bold text-white focus:outline-none focus:border-[#2f80ed]/60"
               />
             </div>
 
@@ -370,7 +372,7 @@ export const TraineeProfileView: React.FC = () => {
                 required
                 value={heightCm}
                 onChange={(e) => setHeightCm(parseInt(e.target.value) || 0)}
-                className="w-full px-3.5 py-2.5 rounded-xl bg-[#09090b] border border-[#232530] font-numeric text-xs font-bold text-white focus:outline-none focus:border-[#ff6b00]/60"
+                className="w-full px-3.5 py-2.5 rounded-xl bg-[#141519] border border-[#24262e] font-numeric text-xs font-bold text-white focus:outline-none focus:border-[#2f80ed]/60"
               />
             </div>
 
@@ -382,7 +384,7 @@ export const TraineeProfileView: React.FC = () => {
                 type="text"
                 disabled
                 value={bmi}
-                className="w-full px-3.5 py-2.5 rounded-xl bg-[#09090b] border border-[#232530] font-numeric text-xs font-bold text-zinc-400 cursor-not-allowed"
+                className="w-full px-3.5 py-2.5 rounded-xl bg-[#141519] border border-[#24262e] font-numeric text-xs font-bold text-zinc-400 cursor-not-allowed"
               />
             </div>
           </div>
@@ -396,7 +398,7 @@ export const TraineeProfileView: React.FC = () => {
               value={goal}
               onChange={(e) => setGoal(e.target.value as UserGoal)}
               placeholder="e.g. Hypertrophy, Cutting, Strength"
-              className="w-full px-3.5 py-2.5 rounded-xl bg-[#09090b] border border-[#232530] text-xs text-white focus:outline-none focus:border-[#ff6b00]/60 font-medium"
+              className="w-full px-3.5 py-2.5 rounded-xl bg-[#141519] border border-[#24262e] text-xs text-white focus:outline-none focus:border-[#2f80ed]/60 font-medium"
             />
           </div>
 
@@ -409,7 +411,7 @@ export const TraineeProfileView: React.FC = () => {
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               placeholder="e.g. Shoulder warmup before heavy pressing, focus on progressive overload..."
-              className="w-full px-3.5 py-2.5 rounded-xl bg-[#09090b] border border-[#232530] text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-[#ff6b00]/60 leading-relaxed"
+              className="w-full px-3.5 py-2.5 rounded-xl bg-[#141519] border border-[#24262e] text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-[#2f80ed]/60 leading-relaxed"
             />
           </div>
 
@@ -417,7 +419,7 @@ export const TraineeProfileView: React.FC = () => {
             <button
               type="submit"
               disabled={isSaving}
-              className="w-full sm:w-auto px-6 py-3 rounded-2xl text-xs font-black btn-orange flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
+              className="w-full sm:w-auto px-6 py-3 rounded-2xl text-xs font-black btn-cyan flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
             >
               <Check className="w-4 h-4 stroke-[3]" />
               <span>{isSaving ? 'Saving...' : 'Save Profile Changes'}</span>
@@ -425,16 +427,17 @@ export const TraineeProfileView: React.FC = () => {
           </div>
         </div>
       </form>
+      </div>
 
       {/* Program Details Card */}
-      <div className="p-5 sm:p-6 rounded-2xl bg-[#121215] border border-zinc-800 space-y-4 shadow-sm">
+      <div className="p-5 sm:p-6 rounded-2xl bg-[#18191e] border border-[#24262e] space-y-4 shadow-sm">
         <h3 className="text-sm font-bold text-white tracking-tight flex items-center gap-2">
           <Target className="w-4 h-4 text-zinc-400" />
           Assigned Training Protocol Details
         </h3>
 
         {plan ? (
-          <div className="p-4 rounded-xl bg-[#09090b] border border-zinc-800 space-y-3">
+          <div className="p-4 rounded-xl bg-[#141519] border border-[#24262e] space-y-3">
             <div className="flex items-center justify-between">
               <div>
                 <h4 className="text-sm font-bold text-white">{plan.title}</h4>
@@ -442,7 +445,7 @@ export const TraineeProfileView: React.FC = () => {
               </div>
             </div>
 
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 pt-2 border-t border-zinc-800 text-xs">
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 pt-2 border-t border-[#24262e] text-xs">
               <div>
                 <span className="text-[10px] font-mono text-zinc-500 block uppercase">Schedule</span>
                 <span className="font-semibold text-zinc-200">{plan.daysPerWeek} Days / Week</span>
@@ -458,7 +461,7 @@ export const TraineeProfileView: React.FC = () => {
             </div>
           </div>
         ) : (
-          <div className="p-4 rounded-xl bg-[#09090b] border border-zinc-800 text-center py-6">
+          <div className="p-4 rounded-xl bg-[#141519] border border-[#24262e] text-center py-6">
             <Dumbbell className="w-6 h-6 text-zinc-600 mx-auto mb-2" />
             <p className="text-xs text-zinc-400 font-medium">No workout protocol currently assigned</p>
           </div>

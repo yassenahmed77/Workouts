@@ -91,30 +91,30 @@ export interface QuitLiveStats {
 }
 
 export const HABIT_ICON_OPTIONS = [
-  { key: 'cigarette-off', label: '🚭 Smoke-Free / Nicotine' },
-  { key: 'zap', label: '⚡ Energy / Creatine' },
-  { key: 'droplets', label: '💧 Water / Hydration' },
-  { key: 'moon', label: '🌙 Sleep / Rest' },
-  { key: 'pill', label: '💊 Vitamins / Supplements' },
-  { key: 'flame', label: '🔥 Calories / Burn' },
-  { key: 'utensils', label: '🍽️ Nutrition / Diet' },
-  { key: 'dumbbell', label: '🏋️ Workout / Lifting' },
-  { key: 'footprints', label: '🦶 Steps / Walking' },
-  { key: 'book', label: '📖 Reading / Learning' },
-  { key: 'heart', label: '🧘 Meditation / Mindfulness' },
-  { key: 'apple', label: '🍎 Clean Eating / No Sugar' },
-  { key: 'coffee', label: '☕ Coffee / Caffeine Control' },
-  { key: 'snowflake', label: '🧊 Cold Plunge / Shower' },
-  { key: 'bike', label: '🚴 Cardio / Cycling' },
-  { key: 'timer', label: '⏱️ Intermittent Fasting' },
-  { key: 'target', label: '🎯 Daily Focus' },
-  { key: 'sun', label: '☀️ Morning Sunlight' },
-  { key: 'brain', label: '🧠 Screen Detox / Mind' },
-  { key: 'sparkles', label: '✨ Self-Care / Skincare' },
-  { key: 'shield', label: '🛡️ Discipline / Willpower' },
-  { key: 'award', label: '🏆 Goal Milestone' },
-  { key: 'smile', label: '😊 Gratitude' },
-  { key: 'bed', label: '🛏️ Early Bedtime' }
+  { key: 'cigarette-off', label: 'Smoke-Free / Nicotine' },
+  { key: 'zap', label: 'Energy / Creatine' },
+  { key: 'droplets', label: 'Water / Hydration' },
+  { key: 'moon', label: 'Sleep / Rest' },
+  { key: 'pill', label: 'Vitamins / Supplements' },
+  { key: 'flame', label: 'Calories / Burn' },
+  { key: 'utensils', label: 'Nutrition / Diet' },
+  { key: 'dumbbell', label: 'Workout / Lifting' },
+  { key: 'footprints', label: 'Steps / Walking' },
+  { key: 'book', label: 'Reading / Learning' },
+  { key: 'heart', label: 'Meditation / Mindfulness' },
+  { key: 'apple', label: 'Clean Eating / No Sugar' },
+  { key: 'coffee', label: 'Coffee / Caffeine Control' },
+  { key: 'snowflake', label: 'Cold Plunge / Shower' },
+  { key: 'bike', label: 'Cardio / Cycling' },
+  { key: 'timer', label: 'Intermittent Fasting' },
+  { key: 'target', label: 'Daily Focus' },
+  { key: 'sun', label: 'Morning Sunlight' },
+  { key: 'brain', label: 'Screen Detox / Mind' },
+  { key: 'sparkles', label: 'Self-Care / Skincare' },
+  { key: 'shield', label: 'Discipline / Willpower' },
+  { key: 'award', label: 'Goal Milestone' },
+  { key: 'smile', label: 'Gratitude' },
+  { key: 'bed', label: 'Early Bedtime' }
 ];
 
 export const HABIT_COLOR_OPTIONS = [
@@ -124,7 +124,7 @@ export const HABIT_COLOR_OPTIONS = [
   { value: '#8b5cf6', name: 'Electric Purple' },
   { value: '#ec4899', name: 'Neon Pink' },
   { value: '#f59e0b', name: 'Amber Gold' },
-  { value: '#06b6d4', name: 'Cyan Glow' }
+  { value: '#2f80ed', name: 'Sapphire Blue' }
 ];
 
 export const QUIT_HABIT_PRESETS: {
@@ -209,7 +209,7 @@ export const QUIT_HABIT_PRESETS: {
   {
     title: 'Vape-Free Clean Air',
     iconKey: 'snowflake',
-    color: '#06b6d4',
+    color: '#2f80ed',
     category: 'Quit / Break',
     type: 'quit',
     quitConfig: {
@@ -481,50 +481,50 @@ export function calculateQuitLiveStats(habit: UserHabit): QuitLiveStats {
   let stageTitle = 'First 24 Hours';
   let description = 'Peak withdrawal & cravings. Winning the mental battle second by second!';
   let stageColor = '#ff6b00';
-  let stageIcon = '🌱';
+  let stageIcon = 'sprout';
 
   if (exactDaysDecimal >= 90) {
     stageLevel = 7;
     stageName = 'Unbreakable Legend';
     stageTitle = '90+ Days Mastered';
     description = 'Permanent freedom achieved! Neural pathways rewired & ultimate discipline unlocked!';
-    stageColor = '#06b6d4';
-    stageIcon = '🏆';
+    stageColor = '#2f80ed';
+    stageIcon = 'trophy';
   } else if (exactDaysDecimal >= 60) {
     stageLevel = 6;
     stageName = 'Freedom Mastery';
     stageTitle = '2 Months Protocol';
     description = 'Dopamine baseline completely stabilized. The old identity has dissolved.';
     stageColor = '#f59e0b';
-    stageIcon = '👑';
+    stageIcon = 'crown';
   } else if (exactDaysDecimal >= 21) {
     stageLevel = 5;
     stageName = 'Identity Shift';
     stageTitle = '3 Weeks Clean';
     description = 'Habit loops rewritten. You are now someone who has conquered this urge.';
     stageColor = '#ec4899';
-    stageIcon = '🦾';
+    stageIcon = 'shield';
   } else if (exactDaysDecimal >= 7) {
     stageLevel = 4;
     stageName = 'Neuro-Rewiring';
     stageTitle = '1 Week Strong';
     description = 'Physical withdrawal symptoms gone. Psychological momentum building!';
     stageColor = '#8b5cf6';
-    stageIcon = '🛡️';
+    stageIcon = 'shield';
   } else if (exactDaysDecimal >= 3) {
     stageLevel = 3;
     stageName = 'Momentum';
     stageTitle = '72 Hours Clean';
     description = 'Toxins leaving system. Oxygen levels surging and sensory recovery begins.';
     stageColor = '#3b82f6';
-    stageIcon = '⚡';
+    stageIcon = 'zap';
   } else if (exactDaysDecimal >= 1) {
     stageLevel = 2;
     stageName = 'Detoxification';
     stageTitle = 'Day 2 Detox';
     description = 'First full day conquered! Blood carbon monoxide levels normalising.';
     stageColor = '#10b981';
-    stageIcon = '🌿';
+    stageIcon = 'sparkles';
   }
 
   // Milestones timeline
@@ -793,8 +793,58 @@ export function calculateOverallHabitsSummary(userId: string, habits: UserHabit[
   };
 }
 
+export interface DayHistoryDot {
+  dateStr: string;
+  dayLabel: string;
+  isToday: boolean;
+  completed: boolean;
+  value: number;
+}
+
+/**
+ * Returns the last 7 days history (chronological ending today) for a habit
+ */
+export function getHabitWeekHistory(userId: string, habitId: string): DayHistoryDot[] {
+  const records = getHabitRecords(userId);
+  const now = new Date();
+  const dayNames = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
+  const dots: DayHistoryDot[] = [];
+
+  for (let i = 6; i >= 0; i--) {
+    const d = new Date();
+    d.setDate(now.getDate() - i);
+    const dateStr = d.toISOString().split('T')[0];
+    const dayLabel = dayNames[d.getDay()];
+    const rec = records[`${habitId}_${dateStr}`];
+    dots.push({
+      dateStr,
+      dayLabel,
+      isToday: i === 0,
+      completed: !!rec?.completed,
+      value: rec?.value || 0
+    });
+  }
+  return dots;
+}
+
+/**
+ * Calculates total accumulated financial savings across all active quit habits
+ */
+export function getQuitHabitsTotalSavings(habits: UserHabit[]): { totalSaved: number; currency: string } {
+  const quitHabits = habits.filter((h) => h.type === 'quit');
+  let totalSaved = 0;
+  let currency = 'EGP';
+  quitHabits.forEach((h) => {
+    const stats = calculateQuitLiveStats(h);
+    totalSaved += stats.moneySaved;
+    if (stats.currency) currency = stats.currency;
+  });
+  return { totalSaved: Math.round(totalSaved), currency };
+}
+
 /**
  * Check adherence of habits for a specific date (YYYY-MM-DD)
+ * Includes both daily habits and active clean quit trackers.
  */
 export function getHabitsAdherenceForDate(
   userId: string,
@@ -805,9 +855,7 @@ export function getHabitsAdherenceForDate(
     return { completedCount: 0, totalCount: 0, isAllCompleted: true, hasPartial: false };
   }
   const dailyHabits = habits.filter((h) => h.type !== 'quit');
-  if (dailyHabits.length === 0) {
-    return { completedCount: 0, totalCount: 0, isAllCompleted: true, hasPartial: false };
-  }
+  const quitHabits = habits.filter((h) => h.type === 'quit');
 
   const records = getHabitRecords(userId);
   let completed = 0;
@@ -817,13 +865,173 @@ export function getHabitsAdherenceForDate(
     }
   });
 
-  const isAllCompleted = completed >= dailyHabits.length;
-  const hasPartial = completed > 0 && completed < dailyHabits.length;
+  // Quit habit adherence check:
+  // If started on or before dateStr, and no relapse recorded on that date, it counts as clean & completed!
+  quitHabits.forEach((h) => {
+    if (h.quitConfig?.startedAt) {
+      const startDateStr = h.quitConfig.startedAt.split('T')[0];
+      if (dateStr >= startDateStr) {
+        const hasRelapse = h.quitConfig.relapseHistory?.some((r) => r.timestamp.startsWith(dateStr));
+        if (!hasRelapse) {
+          completed++;
+        }
+      }
+    }
+  });
+
+  const totalCount = habits.length;
+  const isAllCompleted = totalCount > 0 && completed >= totalCount;
+  const hasPartial = completed > 0 && completed < totalCount;
 
   return {
     completedCount: completed,
-    totalCount: dailyHabits.length,
+    totalCount,
     isAllCompleted,
     hasPartial
   };
 }
+
+export interface DailyAdherenceBreakdown {
+  score: number; // 0 to 100
+  isFullComplete: boolean;
+  hasPartial: boolean;
+  isRestDay: boolean;
+  workoutWeight: number; // e.g. 60 or 0
+  habitsWeight: number; // e.g. 40 or 100
+  workoutScore: number; // 0 to workoutWeight
+  habitsScore: number; // 0 to habitsWeight
+  completedHabitsCount: number;
+  totalHabitsCount: number;
+  hasWorkoutLog: boolean;
+}
+
+/**
+ * Weighted Daily Adherence Calculation:
+ * - Workouts and Habits are balanced proportionately ("nesba w tanasob").
+ * - Completing a workout session carries heavy weight (60%) on training days.
+ * - Daily habits (and active clean quit trackers) share the remaining 40% (or 100% on rest days).
+ * - On Rest Days: workout is not required, habits represent 100% of daily adherence.
+ */
+export function calculateDailyAdherenceScore(
+  dateStr: string,
+  hasWorkoutLog: boolean,
+  isScheduledRestDay: boolean,
+  habitsAdherence: { completedCount: number; totalCount: number }
+): DailyAdherenceBreakdown {
+  const { completedCount, totalCount } = habitsAdherence;
+
+  // Case 1: Workout was logged on this day
+  if (hasWorkoutLog) {
+    if (totalCount === 0) {
+      return {
+        score: 100,
+        isFullComplete: true,
+        hasPartial: false,
+        isRestDay: false,
+        workoutWeight: 100,
+        habitsWeight: 0,
+        workoutScore: 100,
+        habitsScore: 0,
+        completedHabitsCount: 0,
+        totalHabitsCount: 0,
+        hasWorkoutLog: true
+      };
+    }
+
+    const workoutWeight = 60;
+    const habitsWeight = 40;
+    const workoutScore = 60;
+    const habitRatio = completedCount / totalCount;
+    const habitsScore = Math.round(habitRatio * habitsWeight);
+    const score = Math.min(100, workoutScore + habitsScore);
+
+    return {
+      score,
+      isFullComplete: score >= 100,
+      hasPartial: score > 0 && score < 100,
+      isRestDay: false,
+      workoutWeight,
+      habitsWeight,
+      workoutScore,
+      habitsScore,
+      completedHabitsCount: completedCount,
+      totalHabitsCount: totalCount,
+      hasWorkoutLog: true
+    };
+  }
+
+  // Case 2: Scheduled Rest Day (no workout required)
+  if (isScheduledRestDay) {
+    if (totalCount === 0) {
+      return {
+        score: 100,
+        isFullComplete: true,
+        hasPartial: false,
+        isRestDay: true,
+        workoutWeight: 0,
+        habitsWeight: 100,
+        workoutScore: 0,
+        habitsScore: 100,
+        completedHabitsCount: 0,
+        totalHabitsCount: 0,
+        hasWorkoutLog: false
+      };
+    }
+
+    const habitRatio = completedCount / totalCount;
+    const score = Math.min(100, Math.round(habitRatio * 100));
+
+    return {
+      score,
+      isFullComplete: score >= 100,
+      hasPartial: score > 0 && score < 100,
+      isRestDay: true,
+      workoutWeight: 0,
+      habitsWeight: 100,
+      workoutScore: 0,
+      habitsScore: score,
+      completedHabitsCount: completedCount,
+      totalHabitsCount: totalCount,
+      hasWorkoutLog: false
+    };
+  }
+
+  // Case 3: Training Day without a logged workout
+  if (totalCount === 0) {
+    return {
+      score: 0,
+      isFullComplete: false,
+      hasPartial: false,
+      isRestDay: false,
+      workoutWeight: 100,
+      habitsWeight: 0,
+      workoutScore: 0,
+      habitsScore: 0,
+      completedHabitsCount: 0,
+      totalHabitsCount: 0,
+      hasWorkoutLog: false
+    };
+  }
+
+  const workoutWeight = 60;
+  const habitsWeight = 40;
+  const workoutScore = 0;
+  const habitRatio = completedCount / totalCount;
+  const habitsScore = Math.round(habitRatio * habitsWeight);
+  const score = Math.min(100, habitsScore);
+
+  return {
+    score,
+    isFullComplete: false,
+    hasPartial: score > 0,
+    isRestDay: false,
+    workoutWeight,
+    habitsWeight,
+    workoutScore,
+    habitsScore,
+    completedHabitsCount: completedCount,
+    totalHabitsCount: totalCount,
+    hasWorkoutLog: false
+  };
+}
+

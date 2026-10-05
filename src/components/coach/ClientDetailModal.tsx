@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { useGym } from '@/context/GymContext';
 import { useToast } from '@/context/ToastContext';
 import { User, WorkoutPlan } from '@/types';
+import { sanitizeNotes } from '@/lib/sanitizer';
 import { 
   X, 
   User as UserIcon, 
@@ -43,6 +44,15 @@ export const ClientDetailModal: React.FC<ClientDetailModalProps> = ({
     }
   }, [user]);
 
+  React.useEffect(() => {
+    if (!isOpen) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, onClose]);
+
   if (!isOpen || !user) return null;
 
   const assignedPlan = plans.find((p) => p.id === user.assignedPlanId);
@@ -50,28 +60,33 @@ export const ClientDetailModal: React.FC<ClientDetailModalProps> = ({
   const totalVolume = traineeLogs.reduce((acc, l) => acc + l.totalVolumeKg, 0);
 
   const handleSaveNotes = () => {
-    updateUserNotes(user.id, notes);
+    updateUserNotes(user.id, sanitizeNotes(notes));
     setIsSaved(true);
     showToast('Coach notes saved', 'success');
     setTimeout(() => setIsSaved(false), 2000);
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-150">
+    <div 
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-150 select-none"
+      onClick={(e) => {
+        if (e.target === e.currentTarget) onClose();
+      }}
+    >
       <div 
-        className="w-full max-w-3xl bg-[#141418] border border-zinc-700 rounded-3xl p-6 shadow-2xl relative max-h-[90vh] flex flex-col animate-in zoom-in-95 duration-150"
+        className="w-full max-w-3xl bg-[#18191e] border border-[#24262e] rounded-3xl p-6 shadow-2xl relative max-h-[90vh] flex flex-col animate-in zoom-in-95 duration-150"
         onClick={(e) => e.stopPropagation()}
       >
         <button
           onClick={onClose}
-          className="absolute top-5 right-5 text-zinc-500 hover:text-zinc-300 p-1.5 rounded-xl hover:bg-zinc-800 transition-colors"
+          className="absolute top-5 right-5 text-zinc-500 hover:text-white p-1.5 rounded-xl hover:bg-[#141519] transition-colors"
         >
           <X className="w-5 h-5" />
         </button>
 
         {/* Athlete Header */}
-        <div className="flex items-center gap-4 pb-5 border-b border-zinc-800">
-          <div className="w-12 h-12 rounded-2xl bg-zinc-800 border border-zinc-700 flex items-center justify-center text-base font-bold text-white">
+        <div className="flex items-center gap-4 pb-5 border-b border-[#24262e]">
+          <div className="w-12 h-12 rounded-2xl bg-[#141519] border border-[#24262e] flex items-center justify-center text-base font-bold text-[#2f80ed]">
             {user.avatarText}
           </div>
           <div>
@@ -79,7 +94,7 @@ export const ClientDetailModal: React.FC<ClientDetailModalProps> = ({
               <h2 className="text-base font-bold text-white tracking-tight">
                 {user.name}
               </h2>
-              <span className="text-[10px] font-mono uppercase px-2 py-0.5 rounded bg-zinc-800 text-zinc-300 border border-zinc-700">
+              <span className="text-[10px] font-mono uppercase px-2 py-0.5 rounded bg-[#141519] text-zinc-300 border border-[#24262e]">
                 {user.goal}
               </span>
             </div>
@@ -91,38 +106,38 @@ export const ClientDetailModal: React.FC<ClientDetailModalProps> = ({
         <div className="flex-1 overflow-y-auto py-5 space-y-5 pr-1">
           {/* Biometrics Strip */}
           <div className="grid grid-cols-4 gap-3 text-center">
-            <div className="p-3 rounded-xl bg-[#09090b] border border-zinc-800">
+            <div className="p-3 rounded-xl bg-[#141519] border border-[#24262e]">
               <span className="block text-[9px] font-mono uppercase text-zinc-500">Weight</span>
               <span className="text-sm font-bold font-numeric text-white">{user.weightKg} kg</span>
             </div>
-            <div className="p-3 rounded-xl bg-[#09090b] border border-zinc-800">
+            <div className="p-3 rounded-xl bg-[#141519] border border-[#24262e]">
               <span className="block text-[9px] font-mono uppercase text-zinc-500">Target</span>
               <span className="text-sm font-bold font-numeric text-zinc-200">{user.targetWeightKg} kg</span>
             </div>
-            <div className="p-3 rounded-xl bg-[#09090b] border border-zinc-800">
+            <div className="p-3 rounded-xl bg-[#141519] border border-[#24262e]">
               <span className="block text-[9px] font-mono uppercase text-zinc-500">Height</span>
               <span className="text-sm font-bold font-numeric text-white">{user.heightCm} cm</span>
             </div>
-            <div className="p-3 rounded-xl bg-[#09090b] border border-zinc-800">
+            <div className="p-3 rounded-xl bg-[#141519] border border-[#24262e]">
               <span className="block text-[9px] font-mono uppercase text-zinc-500">Workouts</span>
               <span className="text-sm font-bold font-numeric text-zinc-200">{traineeLogs.length}</span>
             </div>
           </div>
 
           {/* Assigned Protocol Box */}
-          <div className="p-4 rounded-xl bg-[#09090b] border border-zinc-800">
+          <div className="p-4 rounded-xl bg-[#141519] border border-[#24262e]">
             <div className="flex items-center justify-between mb-2">
               <span className="text-[10px] font-mono uppercase tracking-wider text-zinc-400 font-semibold">
-                Assigned Workout Protocol
+                Assigned Workout Plan
               </span>
               <button
                 onClick={() => {
                   onClose();
                   onOpenAssignPlan(user);
                 }}
-                className="text-xs font-bold text-zinc-300 hover:text-white transition-colors"
+                className="text-xs font-bold text-[#2f80ed] hover:text-[#3897f0] transition-colors"
               >
-                {assignedPlan ? 'Change Plan' : 'Assign Plan Now'}
+                {assignedPlan ? 'Edit Routine' : '+ Build Custom Routine'}
               </button>
             </div>
 
@@ -141,7 +156,7 @@ export const ClientDetailModal: React.FC<ClientDetailModalProps> = ({
                 </div>
               </div>
             ) : (
-              <p className="text-xs text-amber-400 font-medium">No workout plan assigned yet</p>
+              <p className="text-xs text-amber-400 font-medium">No custom workout routine built yet</p>
             )}
           </div>
 
@@ -152,7 +167,7 @@ export const ClientDetailModal: React.FC<ClientDetailModalProps> = ({
             </span>
 
             {traineeLogs.length === 0 ? (
-              <p className="text-xs text-zinc-500 italic p-4 rounded-xl bg-[#09090b] border border-zinc-800 text-center">
+              <p className="text-xs text-zinc-500 italic p-4 rounded-xl bg-[#141519] border border-[#24262e] text-center">
                 Athlete has not logged any workouts yet.
               </p>
             ) : (
@@ -160,7 +175,7 @@ export const ClientDetailModal: React.FC<ClientDetailModalProps> = ({
                 {traineeLogs.map((log) => (
                   <div
                     key={log.id}
-                    className="p-3 rounded-xl bg-[#09090b] border border-zinc-800 flex items-center justify-between text-xs"
+                    className="p-3 rounded-xl bg-[#141519] border border-[#24262e] flex items-center justify-between text-xs"
                   >
                     <div>
                       <span className="font-semibold text-white block">
@@ -196,13 +211,13 @@ export const ClientDetailModal: React.FC<ClientDetailModalProps> = ({
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               placeholder="Enter technique focus, injury modifications, or progression targets..."
-              className="w-full p-3 rounded-xl bg-[#09090b] border border-zinc-800 text-xs text-zinc-200 placeholder-zinc-600 focus:outline-none focus:border-zinc-500"
+              className="w-full p-3 rounded-xl bg-[#141519] border border-[#24262e] text-xs text-zinc-200 placeholder-zinc-600 focus:outline-none focus:border-[#2f80ed]"
             />
             <div className="flex justify-end mt-2">
               <button
                 type="button"
                 onClick={handleSaveNotes}
-                className="px-4 py-2 text-xs font-bold text-zinc-900 bg-zinc-100 hover:bg-white rounded-xl transition-colors shadow-sm"
+                className="btn-cyan px-4 py-2 text-xs font-bold rounded-xl transition-all shadow-sm"
               >
                 Save Notes
               </button>

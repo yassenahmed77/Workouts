@@ -35,7 +35,7 @@ export const viewport: Viewport = {
   maximumScale: 1,
   userScalable: false,
   viewportFit: "cover",
-  themeColor: "#09090b"
+  themeColor: "#0a0a0c"
 };
 
 export default function RootLayout({
@@ -48,7 +48,7 @@ export default function RootLayout({
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full dark`}
     >
-      <body className="min-h-full flex flex-col bg-[#08080b] text-[#f4f4f6]">
+      <body className="min-h-full flex flex-col bg-[#0a0a0c] text-[#f4f4f6]">
         <ToastProvider>
           <GymProvider>
             {children}

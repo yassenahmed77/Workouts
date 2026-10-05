@@ -22,6 +22,7 @@ export interface DbUserRow {
   name: string;
   email: string;
   role: User['role'];
+  coach_id?: string | null;
   avatar_text?: string;
   status?: User['status'];
   joined_date?: string;
@@ -39,6 +40,7 @@ export function mapDbUserToUser(row: DbUserRow): User {
     name: row.name,
     email: row.email,
     role: row.role,
+    coachId: row.coach_id || undefined,
     avatarText: row.avatar_text || row.name?.slice(0, 2).toUpperCase() || 'TR',
     status: row.status || 'active',
     joinedDate: row.joined_date || new Date().toISOString().split('T')[0],
@@ -57,6 +59,7 @@ export function mapUserToDb(user: User): DbUserRow {
     name: user.name,
     email: user.email,
     role: user.role,
+    coach_id: user.coachId || null,
     avatar_text: user.avatarText,
     status: user.status,
     joined_date: user.joinedDate,
@@ -78,6 +81,7 @@ export interface DbPlanRow {
   days_per_week?: number;
   days: WorkoutPlan['days'] | string;
   created_for_user_id?: string | null;
+  coach_id?: string | null;
   created_at?: string;
   updated_at?: string;
 }
@@ -92,6 +96,7 @@ export function mapDbPlanToPlan(row: DbPlanRow): WorkoutPlan {
     daysPerWeek: Number(row.days_per_week) || (Array.isArray(row.days) ? row.days.length : 4),
     days: Array.isArray(row.days) ? row.days : (typeof row.days === 'string' ? JSON.parse(row.days) : []),
     createdForUserId: row.created_for_user_id || undefined,
+    coachId: row.coach_id || undefined,
     createdAt: row.created_at || new Date().toISOString().split('T')[0],
     updatedAt: row.updated_at || new Date().toISOString().split('T')[0]
   };
@@ -107,6 +112,7 @@ export function mapPlanToDb(plan: WorkoutPlan): DbPlanRow {
     days_per_week: plan.daysPerWeek,
     days: plan.days,
     created_for_user_id: plan.createdForUserId || null,
+    coach_id: plan.coachId || null,
     created_at: plan.createdAt,
     updated_at: plan.updatedAt
   };

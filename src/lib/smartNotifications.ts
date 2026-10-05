@@ -112,7 +112,7 @@ export function generateSmartNotifications(
     generated.push({
       id: `streak-warning-${todayStr}`,
       type: 'streak_warning',
-      title: '⚠️ Streak at Risk!',
+      title: 'Streak at Risk!',
       message: `You have a ${habitsSummary.activeStreak}-day streak going! Complete ${uncompletedCount} remaining habits before midnight to keep it alive.`,
       timestamp: new Date().toISOString(),
       read: false,
@@ -130,7 +130,7 @@ export function generateSmartNotifications(
     generated.push({
       id: `workout-due-${todayStr}`,
       type: 'workout_due',
-      title: '⚡ Time to Train!',
+      title: 'Time to Train!',
       message: `Scheduled: ${activeDay.dayName} (${activeDay.exercises.length} movements, ~${activeDay.estimatedMinutes}m). Ready to hit the iron?`,
       timestamp: new Date().toISOString(),
       read: false,
@@ -151,7 +151,7 @@ export function generateSmartNotifications(
         generated.push({
           id: `habit-water-${todayStr}`,
           type: 'habit_reminder',
-          title: '💧 Hydration Checkpoint',
+          title: 'Hydration Checkpoint',
           message: `You're at ${rec?.value || 0}L of your ${habit.targetValue}L daily target. Drink a glass now to maintain muscle fullness!`,
           timestamp: new Date().toISOString(),
           read: false,
@@ -163,7 +163,7 @@ export function generateSmartNotifications(
         generated.push({
           id: `habit-supp-${todayStr}`,
           type: 'habit_reminder',
-          title: `💊 ${habit.title} Reminder`,
+          title: `${habit.title} Reminder`,
           message: `Keep your supplement regimen consistent. Tap to log your ${habit.title} for today!`,
           timestamp: new Date().toISOString(),
           read: false,
@@ -184,7 +184,7 @@ export function generateSmartNotifications(
     generated.push({
       id: `weekly-goal-${currentWeekKey}`,
       type: 'weekly_goal',
-      title: '🏆 100% Weekly Discipline!',
+      title: '100% Weekly Discipline!',
       message: `Incredible work! You crushed all ${thisWeekLogs.length} of ${weeklyTarget} scheduled workouts this week.`,
       timestamp: new Date().toISOString(),
       read: false,
@@ -201,7 +201,7 @@ export function generateSmartNotifications(
       generated.push({
         id: `pr-celebration-${latestLog.id}`,
         type: 'pr_celebration',
-        title: '🔥 High-Volume Lift!',
+        title: 'High-Volume Lift!',
         message: `Massive tonnage! You moved ${latestLog.totalVolumeKg.toLocaleString()} kg total volume during your ${latestLog.dayName} session.`,
         timestamp: latestLog.date,
         read: false,
@@ -217,7 +217,7 @@ export function generateSmartNotifications(
     generated.push({
       id: `recovery-sleep-${todayStr}`,
       type: 'recovery',
-      title: '🌙 Peak Recovery Window',
+      title: 'Peak Recovery Window',
       message: 'Muscle growth occurs during deep sleep. Optimize your 8-hour sleep schedule for maximum protein synthesis.',
       timestamp: new Date().toISOString(),
       read: false,

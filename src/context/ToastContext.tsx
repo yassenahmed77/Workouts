@@ -1,35 +1,53 @@
 'use client';
 
-import React, { createContext, useContext, useState, useCallback } from 'react';
-import { AlertCircle, X, Sparkles, Flame } from 'lucide-react';
+import React, { createContext, useContext, useState, useCallback, useEffect } from 'react';
+import { CheckCircle2, AlertTriangle, Info, Trash2 } from 'lucide-react';
 
 export type ToastType = 'success' | 'error' | 'info';
+
+export interface ToastAction {
+  label: string;
+  onClick: () => void | Promise<void>;
+}
 
 interface Toast {
   id: string;
   message: string;
   type: ToastType;
+  action?: ToastAction;
+}
+
+export interface ConfirmDialogOptions {
+  title?: string;
+  message: string;
+  confirmText?: string;
+  cancelText?: string;
+  variant?: 'danger' | 'warning' | 'primary';
+  onConfirm: () => void | Promise<void>;
 }
 
 interface ToastContextType {
-  showToast: (message: string, type?: ToastType) => void;
+  showToast: (message: string, type?: ToastType, action?: ToastAction) => void;
+  confirmDialog: (options: ConfirmDialogOptions) => void;
 }
 
 const ToastContext = createContext<ToastContextType | undefined>(undefined);
 
 export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [toasts, setToasts] = useState<Toast[]>([]);
+  const [confirmState, setConfirmState] = useState<ConfirmDialogOptions | null>(null);
   const lastToastRef = React.useRef<{ message: string; timestamp: number }>({ message: '', timestamp: 0 });
 
-  const showToast = useCallback((message: string, type: ToastType = 'success') => {
+  const showToast = useCallback((message: string, type: ToastType = 'success', action?: ToastAction) => {
     const now = Date.now();
-    // Prevent duplicate toast calls within 1500ms
-    if (lastToastRef.current.message === message && now - lastToastRef.current.timestamp < 1500) {
+    // Prevent duplicate toast calls within 1200ms
+    if (lastToastRef.current.message === message && now - lastToastRef.current.timestamp < 1200) {
       return;
     }
     lastToastRef.current = { message, timestamp: now };
 
     const id = `toast-${now}-${Math.random().toString(36).substring(2, 7)}`;
+    const duration = action ? 5500 : 3200; // Longer duration for actionable/Undo toasts
     
     // Defer state update to next tick
     setTimeout(() => {
@@ -37,58 +55,147 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         if (prev.some((t) => t.message === message)) {
           return prev;
         }
-        return [...prev, { id, message, type }];
+        return [...prev, { id, message, type, action }];
       });
     }, 0);
 
     setTimeout(() => {
       setToasts((prev) => prev.filter((t) => t.id !== id));
-    }, 3000);
+    }, duration);
+  }, []);
+
+  const confirmDialog = useCallback((options: ConfirmDialogOptions) => {
+    setConfirmState(options);
   }, []);
 
   const removeToast = (id: string) => {
     setToasts((prev) => prev.filter((t) => t.id !== id));
   };
 
+  // Close confirm dialog on Escape key
+  useEffect(() => {
+    if (!confirmState) return;
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setConfirmState(null);
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [confirmState]);
+
   return (
-    <ToastContext.Provider value={{ showToast }}>
+    <ToastContext.Provider value={{ showToast, confirmDialog }}>
       {children}
 
-      {/* Floating Toast Portal (Center-Top on Mobile, Bottom-Right on Desktop) */}
-      <div className="fixed top-5 sm:top-auto sm:bottom-6 left-1/2 -translate-x-1/2 sm:left-auto sm:right-6 sm:translate-x-0 z-50 flex flex-col gap-2 max-w-sm w-[92vw] sm:w-80 pointer-events-none">
-        {toasts.map((toast) => (
-          <div
-            key={toast.id}
-            className={`pointer-events-auto flex items-center justify-between gap-3 p-3.5 rounded-2xl shadow-2xl backdrop-blur-xl border transition-all duration-300 animate-in slide-in-from-top-3 sm:slide-in-from-bottom-3 fade-in ${
-              toast.type === 'success'
-                ? 'bg-[#111218]/95 border-[#ff6b00]/40 text-white shadow-[#ff6b00]/10'
-                : toast.type === 'error'
-                ? 'bg-[#150f12]/95 border-rose-500/40 text-white shadow-rose-900/10'
-                : 'bg-[#111218]/95 border-[#2b2d3d] text-white shadow-black/40'
-            }`}
+      {/* 1. Custom Confirmation Dialog (Replaces native browser window.confirm) */}
+      {confirmState && (
+        <div 
+          role="dialog"
+          aria-modal="true"
+          className="fixed inset-0 z-[250] flex items-center justify-center p-4 select-none animate-in fade-in duration-150"
+        >
+          {/* Backdrop */}
+          <div 
+            onClick={() => setConfirmState(null)} 
+            className="fixed inset-0 bg-black/80 backdrop-blur-sm transition-opacity"
+          />
+
+          {/* Dialog Card */}
+          <div 
+            className="relative w-full max-w-sm rounded-2xl bg-[#090d14] border border-[#1e2a3c] shadow-2xl p-5 z-10 flex flex-col space-y-4 animate-in zoom-in-95 duration-150 text-white"
+            onClick={(e) => e.stopPropagation()}
           >
-            <div className="flex items-center gap-2.5 min-w-0">
-              <div className={`w-7 h-7 rounded-xl flex items-center justify-center flex-shrink-0 ${
-                toast.type === 'success'
-                  ? 'bg-[#ff6b00]/20 text-[#ff6b00] border border-[#ff6b00]/30'
-                  : toast.type === 'error'
-                  ? 'bg-rose-500/20 text-rose-400 border border-rose-500/30'
-                  : 'bg-[#1c1d29] text-zinc-300 border border-[#2b2d3d]'
+            <div className="flex items-start gap-3">
+              <div className={`p-2.5 rounded-xl flex-shrink-0 ${
+                confirmState.variant === 'warning' 
+                  ? 'bg-amber-500/10 text-amber-400 border border-amber-500/20'
+                  : 'bg-rose-500/10 text-rose-400 border border-rose-500/20'
               }`}>
-                {toast.type === 'success' && <Flame className="w-4 h-4 fill-current animate-pulse" />}
-                {toast.type === 'error' && <AlertCircle className="w-4 h-4" />}
-                {toast.type === 'info' && <Sparkles className="w-4 h-4 text-[#ff6b00]" />}
+                {confirmState.variant === 'warning' ? (
+                  <AlertTriangle className="w-5 h-5" />
+                ) : (
+                  <Trash2 className="w-5 h-5" />
+                )}
               </div>
-              <span className="text-xs font-bold tracking-tight truncate text-zinc-100">{toast.message}</span>
+
+              <div className="flex-1 min-w-0">
+                <h3 className="text-sm font-bold text-white tracking-tight">
+                  {confirmState.title || 'Confirm Action'}
+                </h3>
+                <p className="text-xs text-slate-400 mt-1 leading-relaxed">
+                  {confirmState.message}
+                </p>
+              </div>
             </div>
-            <button
-              onClick={() => removeToast(toast.id)}
-              className="text-zinc-500 hover:text-white transition-colors p-1.5 rounded-lg hover:bg-[#1c1d29] cursor-pointer flex-shrink-0"
-            >
-              <X className="w-3.5 h-3.5" />
-            </button>
+
+            <div className="flex items-center justify-end gap-2 pt-2 border-t border-[#141b26]">
+              <button
+                type="button"
+                onClick={() => setConfirmState(null)}
+                className="px-3.5 py-1.5 rounded-lg text-xs font-medium text-slate-300 hover:text-white bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] transition-colors cursor-pointer"
+              >
+                {confirmState.cancelText || 'Cancel'}
+              </button>
+
+              <button
+                type="button"
+                onClick={async () => {
+                  const onConfirm = confirmState.onConfirm;
+                  setConfirmState(null);
+                  await onConfirm();
+                }}
+                className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-all shadow-md cursor-pointer active:scale-95 ${
+                  confirmState.variant === 'warning'
+                    ? 'bg-amber-500 hover:bg-amber-400 text-[#080c14]'
+                    : 'bg-rose-600 hover:bg-rose-500 text-white shadow-rose-950/40'
+                }`}
+              >
+                {confirmState.confirmText || 'Delete'}
+              </button>
+            </div>
           </div>
-        ))}
+        </div>
+      )}
+
+      {/* 2. Centered Minimal Rich Toast Notification with Action / Undo */}
+      <div className="fixed top-6 left-1/2 -translate-x-1/2 z-[200] pointer-events-none flex flex-col items-center gap-2 max-w-[90vw]">
+        {toasts.map((toast) => {
+          const isError = toast.type === 'error';
+          const isSuccess = toast.type === 'success';
+
+          return (
+            <div
+              key={toast.id}
+              className="pointer-events-auto px-4 py-2.5 rounded-xl bg-[#090d14]/95 border border-[#1e2a3c] shadow-2xl backdrop-blur-xl flex items-center gap-3 transition-all duration-200 animate-in fade-in slide-in-from-top-2 hover:border-cyan-500/40"
+            >
+              {isSuccess && <CheckCircle2 className="w-4 h-4 text-emerald-400 flex-shrink-0" />}
+              {isError && <AlertTriangle className="w-4 h-4 text-rose-400 flex-shrink-0" />}
+              {!isSuccess && !isError && <Info className="w-4 h-4 text-cyan-400 flex-shrink-0" />}
+              
+              <p className="text-xs font-semibold text-slate-100 whitespace-normal leading-relaxed">
+                {toast.message}
+              </p>
+
+              {/* Action Button (e.g. "Undo") */}
+              {toast.action && (
+                <button
+                  type="button"
+                  onClick={async (e) => {
+                    e.stopPropagation();
+                    removeToast(toast.id);
+                    await toast.action?.onClick();
+                  }}
+                  className="ml-1 px-2.5 py-1 rounded-lg bg-cyan-500/15 hover:bg-cyan-500/25 border border-cyan-500/35 text-cyan-300 text-xs font-bold transition-all cursor-pointer active:scale-95 shadow-xs"
+                >
+                  {toast.action.label}
+                </button>
+              )}
+            </div>
+          );
+        })}
       </div>
     </ToastContext.Provider>
   );

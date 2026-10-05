@@ -68,7 +68,7 @@ export const NotificationDrawer: React.FC<NotificationDrawerProps> = ({
   const handleMarkAllRead = () => {
     const updated = markAllNotificationsAsRead(currentUser.id);
     setNotifications(updated);
-    showToast('All notifications marked as read! ✓', 'info');
+    showToast('All notifications marked as read!', 'info');
   };
 
   const handleNotificationClick = (notif: SmartNotification) => {
@@ -84,8 +84,8 @@ export const NotificationDrawer: React.FC<NotificationDrawerProps> = ({
     const granted = await requestPushPermission();
     setIsPushEnabled(granted);
     if (granted) {
-      triggerWebNotification('⚡ Notifications Enabled!', 'You will now receive intelligent streak & workout reminders.');
-      showToast('Browser notifications activated! 🔔', 'success');
+      triggerWebNotification('Notifications Enabled!', 'You will now receive intelligent streak & workout reminders.');
+      showToast('Browser notifications activated!', 'success');
     } else {
       showToast('Notification permission was not granted', 'error');
     }
@@ -93,12 +93,12 @@ export const NotificationDrawer: React.FC<NotificationDrawerProps> = ({
 
   const getNotifIcon = (notif: SmartNotification) => {
     switch (notif.iconKey) {
-      case 'flame': return <Flame className="w-4 h-4 text-[#ff6b00] fill-current" />;
+      case 'flame': return <Flame className="w-4 h-4 text-[#2f80ed] fill-current" />;
       case 'dumbbell': return <Dumbbell className="w-4 h-4 text-emerald-400" />;
-      case 'droplets': return <Droplets className="w-4 h-4 text-cyan-400" />;
+      case 'droplets': return <Droplets className="w-4 h-4 text-[#2f80ed]" />;
       case 'award': return <Award className="w-4 h-4 text-amber-400" />;
       case 'moon': return <Moon className="w-4 h-4 text-purple-400" />;
-      case 'zap': return <Zap className="w-4 h-4 text-[#ff6b00]" />;
+      case 'zap': return <Zap className="w-4 h-4 text-[#2f80ed]" />;
       default: return <Sparkles className="w-4 h-4 text-zinc-300" />;
     }
   };
@@ -106,22 +106,22 @@ export const NotificationDrawer: React.FC<NotificationDrawerProps> = ({
   return (
     <div className="fixed inset-0 z-50 flex justify-end bg-black/80 backdrop-blur-sm animate-in fade-in duration-200">
       <div 
-        className="w-full max-w-md bg-[#0d0e14] border-l border-[#212330] h-full flex flex-col shadow-2xl animate-in slide-in-from-right duration-250 relative overflow-hidden"
+        className="w-full max-w-md bg-[#0a0a0c] border-l border-[#24262e] h-full flex flex-col shadow-2xl animate-in slide-in-from-right duration-250 relative overflow-hidden"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Glowing Background Blur */}
-        <div className="absolute top-0 right-0 w-64 h-64 bg-[#ff6b00]/10 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute top-0 right-0 w-64 h-64 bg-[#2f80ed]/10 rounded-full blur-3xl pointer-events-none" />
 
         {/* Drawer Header (Dynamic Island & Notch Safe) */}
         <div 
-          className="p-4 sm:p-5 border-b border-[#1e202c] flex items-center justify-between gap-3 relative z-10 safe-drawer-top"
+          className="p-4 sm:p-5 border-b border-[#24262e] flex items-center justify-between gap-3 relative z-10 safe-drawer-top"
           style={{ paddingTop: 'max(env(safe-area-inset-top, 0px), 18px)' }}
         >
           <div className="flex items-center gap-2.5">
-            <div className="w-9 h-9 rounded-2xl bg-[#171822] text-[#ff6b00] border border-[#2e303d] flex items-center justify-center relative">
+            <div className="w-9 h-9 rounded-2xl bg-[#18191e] text-[#2f80ed] border border-[#24262e] flex items-center justify-center relative">
               <Bell className="w-4 h-4" />
               {unreadCount > 0 && (
-                <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-[#ff6b00] text-white text-[9px] font-mono font-black flex items-center justify-center animate-pulse">
+                <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-[#2f80ed] text-white text-[9px] font-mono font-black flex items-center justify-center animate-pulse">
                   {unreadCount}
                 </span>
               )}
@@ -140,7 +140,7 @@ export const NotificationDrawer: React.FC<NotificationDrawerProps> = ({
             {unreadCount > 0 && (
               <button
                 onClick={handleMarkAllRead}
-                className="p-2 rounded-xl text-zinc-400 hover:text-white hover:bg-[#181924] transition-colors cursor-pointer"
+                className="p-2 rounded-xl text-zinc-400 hover:text-white hover:bg-[#18191e] transition-colors cursor-pointer"
                 title="Mark all as read"
               >
                 <CheckCheck className="w-4 h-4" />
@@ -148,7 +148,7 @@ export const NotificationDrawer: React.FC<NotificationDrawerProps> = ({
             )}
             <button
               onClick={onClose}
-              className="p-2 rounded-xl text-zinc-400 hover:text-white hover:bg-[#181924] transition-colors cursor-pointer"
+              className="p-2 rounded-xl text-zinc-400 hover:text-white hover:bg-[#18191e] transition-colors cursor-pointer"
             >
               <X className="w-5 h-5" />
             </button>
@@ -157,7 +157,7 @@ export const NotificationDrawer: React.FC<NotificationDrawerProps> = ({
 
         {/* Push Notification Activation / Test Banner */}
         {!isPushEnabled ? (
-          <div className="m-4 p-3.5 rounded-2xl bg-[#14151e] border border-[#ff6b00]/30 flex items-center justify-between gap-3">
+          <div className="m-4 p-3.5 rounded-2xl bg-[#18191e] border border-[#2f80ed]/30 flex items-center justify-between gap-3">
             <div className="min-w-0">
               <span className="text-xs font-extrabold text-white block">
                 Enable Phone Alerts
@@ -168,13 +168,13 @@ export const NotificationDrawer: React.FC<NotificationDrawerProps> = ({
             </div>
             <button
               onClick={handleEnablePush}
-              className="px-3.5 py-2 rounded-xl btn-orange text-[11px] font-black whitespace-nowrap cursor-pointer active:scale-95 transition-all flex-shrink-0"
+              className="px-3.5 py-2 rounded-xl btn-cyan text-[11px] font-black whitespace-nowrap cursor-pointer active:scale-95 transition-all flex-shrink-0"
             >
-              Enable 🔔
+              Enable Alerts
             </button>
           </div>
         ) : (
-          <div className="mx-4 mt-3 mb-1 p-3 rounded-2xl bg-[#111218] border border-[#1e202c] flex items-center justify-between gap-3">
+          <div className="mx-4 mt-3 mb-1 p-3 rounded-2xl bg-[#18191e] border border-[#24262e] flex items-center justify-between gap-3">
             <div className="flex items-center gap-2 min-w-0">
               <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse flex-shrink-0" />
               <span className="text-[11px] font-bold text-zinc-300 truncate">
@@ -184,15 +184,15 @@ export const NotificationDrawer: React.FC<NotificationDrawerProps> = ({
             <button
               onClick={() => {
                 triggerWebNotification(
-                  '🔥 WORKOUTS PRO Alert',
-                  '⚠️ Don\'t lose your streak! 2 daily habits left for today.',
+                  'WORKOUTS PRO Alert',
+                  'Don\'t lose your streak! 2 daily habits left for today.',
                   '/?tab=habits'
                 );
-                showToast('Test banner sent to your phone! 🔔', 'success');
+                showToast('Test banner sent to your phone!', 'success');
               }}
-              className="px-2.5 py-1 rounded-lg bg-[#1a1b26] hover:bg-[#252738] border border-[#2e3044] text-[10px] font-mono font-bold text-[#ff6b00] cursor-pointer active:scale-95 transition-all flex-shrink-0"
+              className="px-2.5 py-1 rounded-lg bg-[#141519] hover:bg-[#1c1d22] border border-[#24262e] text-[10px] font-mono font-bold text-[#2f80ed] cursor-pointer active:scale-95 transition-all flex-shrink-0"
             >
-              Test Alert 🚀
+              Test Alert
             </button>
           </div>
         )}
@@ -205,13 +205,13 @@ export const NotificationDrawer: React.FC<NotificationDrawerProps> = ({
               onClick={() => handleNotificationClick(notif)}
               className={`p-4 rounded-2xl border transition-all cursor-pointer relative group space-y-2 ${
                 !notif.read
-                  ? 'bg-[#14151e] border-[#ff6b00]/40 shadow-md shadow-[#ff6b00]/5'
-                  : 'bg-[#09090b] border-[#1e202c] hover:border-[#303244]'
+                  ? 'bg-[#18191e] border-[#2f80ed]/40 shadow-md shadow-[#2f80ed]/10'
+                  : 'bg-[#141519] border-[#24262e] hover:border-zinc-700'
               }`}
             >
               <div className="flex items-start justify-between gap-3">
                 <div className="flex items-start gap-3 min-w-0">
-                  <div className="w-8 h-8 rounded-xl bg-[#1c1d27] border border-[#2e303d] flex items-center justify-center flex-shrink-0 mt-0.5">
+                  <div className="w-8 h-8 rounded-xl bg-[#141519] border border-[#24262e] flex items-center justify-center flex-shrink-0 mt-0.5">
                     {getNotifIcon(notif)}
                   </div>
                   <div className="min-w-0">
@@ -220,7 +220,7 @@ export const NotificationDrawer: React.FC<NotificationDrawerProps> = ({
                         {notif.title}
                       </h4>
                       {!notif.read && (
-                        <span className="w-2 h-2 rounded-full bg-[#ff6b00] animate-pulse flex-shrink-0" />
+                        <span className="w-2 h-2 rounded-full bg-[#2f80ed] animate-pulse flex-shrink-0" />
                       )}
                     </div>
                     <p className="text-[11px] text-zinc-300 leading-relaxed mt-1">
@@ -231,7 +231,7 @@ export const NotificationDrawer: React.FC<NotificationDrawerProps> = ({
               </div>
 
               {notif.actionTab && (
-                <div className="pt-2 border-t border-[#1e202c] flex items-center justify-between text-[10px] font-bold text-[#ff6b00]">
+                <div className="pt-2 border-t border-[#24262e] flex items-center justify-between text-[10px] font-bold text-[#2f80ed]">
                   <span>Tap to open {notif.actionTab.toUpperCase()}</span>
                   <ArrowRight className="w-3 h-3 group-hover:translate-x-1 transition-transform" />
                 </div>
@@ -240,8 +240,8 @@ export const NotificationDrawer: React.FC<NotificationDrawerProps> = ({
           ))}
 
           {notifications.length === 0 && (
-            <div className="p-8 text-center rounded-3xl bg-[#09090b] border border-[#1e202c] my-6 space-y-2">
-              <Sparkles className="w-8 h-8 text-[#ff6b00] mx-auto mb-1" />
+            <div className="p-8 text-center rounded-3xl bg-[#18191e] border border-[#24262e] my-6 space-y-2">
+              <Sparkles className="w-8 h-8 text-[#2f80ed] mx-auto mb-1" />
               <h3 className="text-sm font-bold text-white">No Alerts Right Now</h3>
               <p className="text-xs text-zinc-400 max-w-xs mx-auto">
                 You are completely up to date with your workouts, habits, and streak targets!

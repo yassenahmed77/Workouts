@@ -6,15 +6,18 @@ export interface BodyWeightLog {
   notes?: string;
 }
 
-const STORAGE_KEY_WEIGHT = 'pro_gym_weight_history_v6';
+const STORAGE_KEY_WEIGHT = 'pro_gym_weight_history_v8';
 
 // Seed realistic initial weekly weight logs for demo user
 const DEFAULT_WEIGHT_LOGS: Record<string, BodyWeightLog[]> = {
   'user-rawan-1': [
-    { id: 'w-1', userId: 'user-rawan-1', date: '2026-05-18', weightKg: 70.0, notes: 'Day 1 starting check-in' },
-    { id: 'w-2', userId: 'user-rawan-1', date: '2026-05-25', weightKg: 69.4, notes: 'Week 1 check-in' },
-    { id: 'w-3', userId: 'user-rawan-1', date: '2026-06-01', weightKg: 68.8, notes: 'Week 2 check-in' },
-    { id: 'w-4', userId: 'user-rawan-1', date: '2026-06-08', weightKg: 68.0, notes: 'Week 3 check-in' }
+    { id: 'w-0', userId: 'user-rawan-1', date: '2026-05-10', weightKg: 71.3, notes: 'Starting Baseline Weigh-in' },
+    { id: 'w-1', userId: 'user-rawan-1', date: '2026-05-24', weightKg: 70.1, notes: 'Check-in 1' },
+    { id: 'w-2', userId: 'user-rawan-1', date: '2026-06-07', weightKg: 69.4, notes: 'Check-in 2' },
+    { id: 'w-3', userId: 'user-rawan-1', date: '2026-06-21', weightKg: 68.8, notes: 'Check-in 3' },
+    { id: 'w-4', userId: 'user-rawan-1', date: '2026-07-05', weightKg: 68.2, notes: 'Check-in 4' },
+    { id: 'w-5', userId: 'user-rawan-1', date: '2026-08-15', weightKg: 69.5, notes: 'Check-in 5' },
+    { id: 'w-6', userId: 'user-rawan-1', date: '2026-08-29', weightKg: 67.8, notes: 'Check-in 6' }
   ]
 };
 
@@ -133,9 +136,9 @@ export function calculateDynamicWeightChange(
   const hasDecreased = weeklyDelta < 0;
   const isSteady = weeklyDelta === 0;
 
-  let statusText = 'Steady ⚖️';
-  if (weeklyDelta < 0) statusText = `${weeklyDelta} kg 📉`;
-  else if (weeklyDelta > 0) statusText = `+${weeklyDelta} kg 📈`;
+  let statusText = 'Steady';
+  if (weeklyDelta < 0) statusText = `${weeklyDelta} kg`;
+  else if (weeklyDelta > 0) statusText = `+${weeklyDelta} kg`;
 
   const historyWithDeltas = sorted.map((entry, idx) => {
     const prevWeight = idx > 0 ? sorted[idx - 1].weightKg : entry.weightKg;

@@ -52,7 +52,7 @@ const ProgressRing: React.FC<{
   percentage,
   size = 48,
   strokeWidth = 3.5,
-  color = '#ff6b00',
+  color = '#2f80ed',
   children
 }) => {
   const clamped = Math.min(100, Math.max(0, percentage));
@@ -62,7 +62,7 @@ const ProgressRing: React.FC<{
       <svg className="w-full h-full transform -rotate-90" viewBox="0 0 36 36">
         {/* Background Track */}
         <path
-          className="text-[#1c1d27]"
+          className="text-[#24262e]"
           strokeWidth={strokeWidth}
           stroke="currentColor"
           fill="none"
@@ -165,15 +165,15 @@ export const WorkoutHistoryView: React.FC = () => {
   }
 
   return (
-    <div className="space-y-4 max-w-md mx-auto pb-28">
+    <div className="w-full max-w-md md:max-w-5xl lg:max-w-6xl xl:max-w-7xl mx-auto space-y-5 pb-28 md:pb-12">
       
       {/* 1. Mode Switcher Bar (Exercise Progress vs Sessions Log) */}
-      <div className="p-1.5 rounded-2xl bg-[#111218] border border-[#212330] grid grid-cols-2 gap-1 shadow-md">
+      <div className="p-1.5 rounded-2xl bg-[#18191e] border border-[#24262e] grid grid-cols-2 gap-1 shadow-md">
         <button
           onClick={() => setViewMode('exercises')}
           className={`py-2 px-3 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
             viewMode === 'exercises'
-              ? 'bg-[#ff6b00] text-black shadow-md shadow-[#ff6b00]/25'
+              ? 'bg-[#2f80ed] text-white shadow-md shadow-[#2f80ed]/25'
               : 'text-zinc-400 hover:text-white'
           }`}
         >
@@ -185,7 +185,7 @@ export const WorkoutHistoryView: React.FC = () => {
           onClick={() => setViewMode('sessions')}
           className={`py-2 px-3 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
             viewMode === 'sessions'
-              ? 'bg-[#ff6b00] text-black shadow-md shadow-[#ff6b00]/25'
+              ? 'bg-[#2f80ed] text-white shadow-md shadow-[#2f80ed]/25'
               : 'text-zinc-400 hover:text-white'
           }`}
         >
@@ -195,9 +195,9 @@ export const WorkoutHistoryView: React.FC = () => {
       </div>
 
       {/* 2. Top Unified Analytics & Streaks Hero Card with Dynamic Circular Rings */}
-      <div className="relative p-4 sm:p-5 rounded-3xl bg-[#111218] border border-[#212330] shadow-xl overflow-hidden space-y-4">
+      <div className="relative p-4 sm:p-5 rounded-3xl bg-[#18191e] border border-[#24262e] shadow-xl overflow-hidden space-y-4">
         {/* Subtle Ambient Radial Glow */}
-        <div className="absolute -top-10 -right-10 w-44 h-44 bg-[#ff6b00]/10 rounded-full blur-2xl pointer-events-none" />
+        <div className="absolute -top-10 -right-10 w-44 h-44 bg-[#2f80ed]/10 rounded-full blur-2xl pointer-events-none" />
 
         {/* Row 1: Weekly Workout Streak Header with Dynamic Percentage Circle */}
         <div className="flex items-center justify-between gap-2.5">
@@ -207,7 +207,7 @@ export const WorkoutHistoryView: React.FC = () => {
               percentage={workoutStreak.completionPercentage}
               size={44}
               strokeWidth={3.5}
-              color="#ff6b00"
+              color="#2f80ed"
             >
               <span className="text-[11px] font-black font-numeric text-white leading-none">
                 {workoutStreak.completionPercentage}%
@@ -219,18 +219,18 @@ export const WorkoutHistoryView: React.FC = () => {
                 WORKOUT COMMITMENT
               </span>
               <h4 className="text-sm sm:text-base font-black text-white tracking-tight flex items-center gap-1 whitespace-nowrap">
-                <span>🔥</span>
+                <Flame className="w-4 h-4 text-[#2f80ed]" />
                 <span>{workoutStreak.streakWeeks} Weeks Streak</span>
               </h4>
             </div>
           </div>
 
           <div className="text-right flex-shrink-0">
-            <span className="text-xs font-mono font-extrabold text-[#ff6b00] block whitespace-nowrap">
+            <span className="text-xs font-mono font-extrabold text-[#2f80ed] block whitespace-nowrap">
               {workoutStreak.currentWeekCount} / {workoutStreak.targetDaysPerWeek} Days
             </span>
             <span className="text-[10px] font-mono text-zinc-400 font-medium whitespace-nowrap block">
-              {workoutStreak.isTargetMetThisWeek ? 'Target Met 🏆' : 'Weekly Goal'}
+              {workoutStreak.isTargetMetThisWeek ? 'Target Met' : 'Weekly Goal'}
             </span>
           </div>
         </div>
@@ -238,7 +238,7 @@ export const WorkoutHistoryView: React.FC = () => {
         {/* Row 2: Two Analytical Panels with Achieved Numbers Inside Dynamic Circles */}
         <div className="grid grid-cols-2 gap-2 pt-0.5">
           {/* Panel 1: Strength Progression Rate */}
-          <div className="p-3 rounded-2xl bg-[#09090b] border border-[#1e202c] flex items-center justify-between gap-2">
+          <div className="p-3 rounded-2xl bg-[#141519] border border-[#24262e] flex items-center justify-between gap-2">
             <div className="min-w-0">
               <span className="text-[9px] font-mono uppercase tracking-wider text-zinc-500 font-bold block">
                 STRENGTH PACE
@@ -255,7 +255,7 @@ export const WorkoutHistoryView: React.FC = () => {
               percentage={Math.min(100, Math.max(0, strengthPace.avgPercentageGain))}
               size={40}
               strokeWidth={3.5}
-              color="#ff6b00"
+              color="#2f80ed"
             >
               <span className="text-[10px] font-black font-numeric text-white leading-none">
                 +{strengthPace.avgPercentageGain}%
@@ -264,7 +264,7 @@ export const WorkoutHistoryView: React.FC = () => {
           </div>
 
           {/* Panel 2: Habits Discipline Streak */}
-          <div className="p-3 rounded-2xl bg-[#09090b] border border-[#1e202c] flex items-center justify-between gap-2">
+          <div className="p-3 rounded-2xl bg-[#141519] border border-[#24262e] flex items-center justify-between gap-2">
             <div className="min-w-0">
               <span className="text-[9px] font-mono uppercase tracking-wider text-zinc-500 font-bold block">
                 HABITS ROUTINE
@@ -305,8 +305,8 @@ export const WorkoutHistoryView: React.FC = () => {
                   onClick={() => setSelectedCategory(cat)}
                   className={`py-2 px-1 text-center rounded-xl text-[11px] sm:text-xs font-bold transition-all cursor-pointer truncate active:scale-95 ${
                     isActive
-                      ? 'bg-[#1c1a24] text-[#ff6b00] border border-[#ff6b00]/40 shadow-sm'
-                      : 'bg-[#111218] border border-[#212330] text-zinc-400 hover:text-white'
+                      ? 'bg-[#18191e] text-[#2f80ed] border border-[#2f80ed]/40 shadow-sm'
+                      : 'bg-[#141519] border border-[#24262e] text-zinc-400 hover:text-white'
                   }`}
                 >
                   {cat}
@@ -323,13 +323,13 @@ export const WorkoutHistoryView: React.FC = () => {
               placeholder="Search exercise (e.g. Bench Press)..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-9 pr-3 py-2 rounded-2xl bg-[#111218] border border-[#212330] text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-[#ff6b00]"
+              className="w-full pl-9 pr-3 py-2 rounded-2xl bg-[#141519] border border-[#24262e] text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-[#2f80ed]"
             />
           </div>
 
           {/* Exercises List */}
           {filteredExercises.length === 0 ? (
-            <div className="p-8 text-center rounded-3xl bg-[#111218] border border-[#212330]">
+            <div className="p-8 text-center rounded-3xl bg-[#18191e] border border-[#24262e]">
               <Dumbbell className="w-8 h-8 mx-auto text-zinc-600 mb-2" />
               <h4 className="text-xs font-bold text-zinc-300">No exercise logs found</h4>
               <p className="text-[11px] text-zinc-500 mt-1">
@@ -337,7 +337,8 @@ export const WorkoutHistoryView: React.FC = () => {
               </p>
             </div>
           ) : (
-            filteredExercises.map((exSummary) => {
+            <div className="space-y-3.5 md:grid md:grid-cols-2 lg:grid-cols-3 md:gap-4 md:space-y-0">
+              {filteredExercises.map((exSummary) => {
               const isExpanded = expandedExercises[exSummary.exerciseName] ?? true; // Default open
               const hasGain = exSummary.netWeightGainKg > 0;
               const sessionsChronological = [...exSummary.history].reverse(); // oldest to newest for sparkline
@@ -349,17 +350,17 @@ export const WorkoutHistoryView: React.FC = () => {
               return (
                 <div
                   key={exSummary.exerciseName}
-                  className="rounded-3xl bg-[#111218] border border-[#212330] overflow-hidden shadow-lg transition-all space-y-3 p-4"
+                  className="rounded-3xl bg-[#18191e] border border-[#24262e] overflow-hidden shadow-lg transition-all space-y-3 p-4"
                 >
                   {/* Exercise Header */}
                   <div className="flex items-start justify-between gap-2">
                     <div>
                       <div className="flex items-center gap-1.5">
-                        <span className="text-[9px] font-mono font-bold uppercase px-2 py-0.5 rounded-full bg-[#1c1d27] text-zinc-400 border border-[#2e303d]">
+                        <span className="text-[9px] font-mono font-bold uppercase px-2 py-0.5 rounded-full bg-[#141519] text-zinc-400 border border-[#24262e]">
                           {exSummary.targetMuscle}
                         </span>
                         {hasGain && (
-                          <span className="text-[9px] font-mono font-bold uppercase px-2 py-0.5 rounded-full bg-[#ff6b00]/10 text-[#ff6b00] border border-[#ff6b00]/30 flex items-center gap-1">
+                          <span className="text-[9px] font-mono font-bold uppercase px-2 py-0.5 rounded-full bg-[#2f80ed]/10 text-[#2f80ed] border border-[#2f80ed]/30 flex items-center gap-1">
                             <Flame className="w-2.5 h-2.5 fill-current" />
                             <span>+{exSummary.netWeightGainKg}kg Overload</span>
                           </span>
@@ -372,16 +373,16 @@ export const WorkoutHistoryView: React.FC = () => {
                     </div>
 
                     {/* All-time Top PR Badge */}
-                    <div className="px-3 py-1.5 rounded-2xl bg-[#09090b] border border-[#232530] text-right flex-shrink-0">
+                    <div className="px-3 py-1.5 rounded-2xl bg-[#141519] border border-[#24262e] text-right flex-shrink-0">
                       <span className="block text-[8px] font-mono uppercase text-zinc-500 font-bold">Max PR</span>
-                      <span className="text-sm font-black font-numeric text-[#ff6b00]">
+                      <span className="text-sm font-black font-numeric text-[#2f80ed]">
                         {exSummary.allTimePRWeightKg} kg
                       </span>
                     </div>
                   </div>
 
                   {/* Progressive Overload KPI Strip */}
-                  <div className="grid grid-cols-4 gap-1.5 p-2.5 rounded-2xl bg-[#09090b] border border-[#1e202c] text-center">
+                  <div className="grid grid-cols-4 gap-1.5 p-2.5 rounded-2xl bg-[#141519] border border-[#24262e] text-center">
                     <div>
                       <span className="block text-[8px] font-mono uppercase text-zinc-500 font-bold">Day 1</span>
                       <span className="text-xs font-extrabold font-numeric text-zinc-300">
@@ -389,14 +390,14 @@ export const WorkoutHistoryView: React.FC = () => {
                       </span>
                     </div>
 
-                    <div className="border-x border-[#1e202c]">
+                    <div className="border-x border-[#24262e]">
                       <span className="block text-[8px] font-mono uppercase text-zinc-500 font-bold">Current PR</span>
-                      <span className="text-xs font-extrabold font-numeric text-[#ff6b00]">
+                      <span className="text-xs font-extrabold font-numeric text-[#2f80ed]">
                         {exSummary.allTimePRWeightKg} kg
                       </span>
                     </div>
 
-                    <div className="border-r border-[#1e202c]">
+                    <div className="border-r border-[#24262e]">
                       <span className="block text-[8px] font-mono uppercase text-zinc-500 font-bold">Total Gain</span>
                       <span className={`text-xs font-extrabold font-numeric ${hasGain ? 'text-emerald-400' : 'text-zinc-400'}`}>
                         {hasGain ? `+${exSummary.netWeightGainKg}k` : '0 kg'}
@@ -413,10 +414,10 @@ export const WorkoutHistoryView: React.FC = () => {
 
                   {/* Visual Weight Progression Sparkline Bar Chart */}
                   {sessionsChronological.length > 1 && (
-                    <div className="p-3 rounded-2xl bg-[#0d0e14] border border-[#1e202c] space-y-2">
+                    <div className="p-3 rounded-2xl bg-[#141519] border border-[#24262e] space-y-2">
                       <div className="flex items-center justify-between text-[10px] text-zinc-400">
                         <span className="font-mono flex items-center gap-1.5 font-bold text-zinc-300">
-                          <TrendingUp className="w-3.5 h-3.5 text-[#ff6b00]" />
+                          <TrendingUp className="w-3.5 h-3.5 text-[#2f80ed]" />
                           <span>Weight Progression Curve</span>
                         </span>
                         
@@ -425,9 +426,9 @@ export const WorkoutHistoryView: React.FC = () => {
                             percentage={Math.min(100, exSummary.percentageGain)}
                             size={28}
                             strokeWidth={3.2}
-                            color="#ff6b00"
+                            color="#2f80ed"
                           />
-                          <span className="font-mono font-bold text-[#ff6b00]">
+                          <span className="font-mono font-bold text-[#2f80ed]">
                             +{exSummary.percentageGain}% Since Day 1
                           </span>
                         </div>
@@ -441,14 +442,14 @@ export const WorkoutHistoryView: React.FC = () => {
 
                           return (
                             <div key={sIdx} className="flex-1 flex flex-col items-center gap-1 h-full justify-end group">
-                              <span className="text-[9px] font-mono font-extrabold text-white opacity-90 group-hover:text-[#ff6b00]">
+                              <span className="text-[9px] font-mono font-extrabold text-white opacity-90 group-hover:text-[#2f80ed]">
                                 {sess.maxWeightKg}k
                               </span>
                               <div
                                 className={`w-full rounded-t-lg transition-all duration-500 ${
                                   isPR
-                                    ? 'bg-[#ff6b00] shadow-[0_0_8px_#ff6b00]'
-                                    : 'bg-[#252738] group-hover:bg-[#383b54]'
+                                    ? 'bg-[#2f80ed] shadow-[0_0_8px_#2f80ed]'
+                                    : 'bg-[#24262e] group-hover:bg-[#383b54]'
                                 }`}
                                 style={{ height: `${heightPct}%` }}
                               />
@@ -463,7 +464,7 @@ export const WorkoutHistoryView: React.FC = () => {
                   )}
 
                   {/* Detailed Sets Comparison Accordion Toggle */}
-                  <div className="pt-1 border-t border-[#1e202c]">
+                  <div className="pt-1 border-t border-[#24262e]">
                     <button
                       onClick={() => toggleExpand(exSummary.exerciseName)}
                       className="w-full flex items-center justify-between text-xs font-bold text-zinc-300 hover:text-white py-1 cursor-pointer"
@@ -484,7 +485,7 @@ export const WorkoutHistoryView: React.FC = () => {
                         {exSummary.history.map((sessRecord, idx) => (
                           <div
                             key={sessRecord.logId}
-                            className="p-2.5 rounded-2xl bg-[#09090b] border border-[#1e202c] flex flex-col gap-1.5"
+                            className="p-2.5 rounded-2xl bg-[#141519] border border-[#24262e] flex flex-col gap-1.5"
                           >
                             {/* Session Header */}
                             <div className="flex items-center justify-between">
@@ -499,7 +500,7 @@ export const WorkoutHistoryView: React.FC = () => {
 
                               <div className="flex items-center gap-1.5">
                                 {sessRecord.overloadBadge && (
-                                  <span className="text-[9px] font-mono font-bold px-2 py-0.5 rounded-full bg-[#1c1d27] text-[#ff6b00] border border-[#ff6b00]/30">
+                                  <span className="text-[9px] font-mono font-bold px-2 py-0.5 rounded-full bg-[#18191e] text-[#2f80ed] border border-[#2f80ed]/30">
                                     {sessRecord.overloadBadge}
                                   </span>
                                 )}
@@ -526,8 +527,8 @@ export const WorkoutHistoryView: React.FC = () => {
                                   key={sIdx}
                                   className={`text-[11px] font-numeric font-bold px-2.5 py-1 rounded-xl border ${
                                     s.isTopSet
-                                      ? 'bg-[#ff6b00]/15 text-[#ff6b00] border-[#ff6b00]/40'
-                                      : 'bg-[#14151e] text-zinc-200 border-[#212330]'
+                                      ? 'bg-[#2f80ed]/15 text-[#2f80ed] border-[#2f80ed]/40'
+                                      : 'bg-[#18191e] text-zinc-200 border-[#24262e]'
                                   }`}
                                 >
                                   {s.weightKg}kg × {s.reps}
@@ -545,7 +546,8 @@ export const WorkoutHistoryView: React.FC = () => {
 
                 </div>
               );
-            })
+            })}
+            </div>
           )}
 
         </div>
@@ -553,9 +555,9 @@ export const WorkoutHistoryView: React.FC = () => {
 
       {/* 4. FULL WORKOUT SESSION LOGS VIEW */}
       {viewMode === 'sessions' && (
-        <div className="space-y-3">
+        <div className="space-y-3 md:grid md:grid-cols-2 lg:grid-cols-3 md:gap-4 md:space-y-0">
           {logs.length === 0 ? (
-            <div className="p-8 text-center rounded-3xl bg-[#111218] border border-[#212330]">
+            <div className="p-8 text-center rounded-3xl bg-[#18191e] border border-[#24262e]">
               <History className="w-8 h-8 mx-auto text-zinc-600 mb-2" />
               <h4 className="text-xs font-bold text-zinc-300">No workout sessions logged yet</h4>
               <p className="text-[11px] text-zinc-500 mt-1">
@@ -569,10 +571,10 @@ export const WorkoutHistoryView: React.FC = () => {
               return (
                 <div
                   key={log.id}
-                  className="p-4 rounded-3xl bg-[#111218] border border-[#212330] hover:border-zinc-700 transition-all shadow-md space-y-3"
+                  className="p-4 rounded-3xl bg-[#18191e] border border-[#24262e] hover:border-zinc-700 transition-all shadow-md space-y-3"
                 >
                   {/* Header */}
-                  <div className="flex items-start justify-between gap-2 pb-2.5 border-b border-[#1e202a]">
+                  <div className="flex items-start justify-between gap-2 pb-2.5 border-b border-[#24262e]">
                     <div className="min-w-0 flex-1">
                       <div className="flex items-center gap-2">
                         <span className="text-xs font-mono text-zinc-400">
@@ -589,9 +591,9 @@ export const WorkoutHistoryView: React.FC = () => {
                     </div>
 
                     <div className="flex items-center gap-1.5 flex-shrink-0">
-                      <div className="px-2.5 py-1 rounded-xl bg-[#09090b] border border-[#232530] text-right">
+                      <div className="px-2.5 py-1 rounded-xl bg-[#141519] border border-[#24262e] text-right">
                         <span className="block text-[8px] font-mono uppercase text-zinc-500 font-bold">Volume</span>
-                        <span className="text-xs font-extrabold font-numeric text-[#ff6b00]">
+                        <span className="text-xs font-extrabold font-numeric text-[#2f80ed]">
                           {log.totalVolumeKg.toLocaleString()} kg
                         </span>
                       </div>
@@ -607,7 +609,7 @@ export const WorkoutHistoryView: React.FC = () => {
                           <button
                             type="button"
                             onClick={() => setActiveSessionDay(matchedDay)}
-                            className="w-8 h-8 rounded-xl bg-[#181924] hover:bg-[#252738] border border-[#2a2d3e] text-zinc-300 hover:text-[#ff6b00] flex items-center justify-center transition-all cursor-pointer shadow-sm active:scale-95"
+                            className="w-8 h-8 rounded-xl bg-[#141519] hover:bg-[#1c1d22] border border-[#24262e] text-zinc-300 hover:text-[#2f80ed] flex items-center justify-center transition-all cursor-pointer shadow-sm active:scale-95"
                             title="Re-do / Restart this Workout"
                           >
                             <RotateCcw className="w-3.5 h-3.5" />
@@ -619,7 +621,7 @@ export const WorkoutHistoryView: React.FC = () => {
                       <button
                         type="button"
                         onClick={() => setLogToDelete(log)}
-                        className="w-8 h-8 rounded-xl bg-[#181924] hover:bg-red-950/40 border border-[#2a2d3e] hover:border-red-500/40 text-zinc-400 hover:text-red-400 flex items-center justify-center transition-all cursor-pointer shadow-sm active:scale-95"
+                        className="w-8 h-8 rounded-xl bg-[#141519] hover:bg-red-950/40 border border-[#24262e] hover:border-red-500/40 text-zinc-400 hover:text-red-400 flex items-center justify-center transition-all cursor-pointer shadow-sm active:scale-95"
                         title="Delete Session from History"
                       >
                         <Trash2 className="w-3.5 h-3.5" />
@@ -629,8 +631,8 @@ export const WorkoutHistoryView: React.FC = () => {
 
                   {/* Coach Feedback callout if present */}
                   {log.coachFeedback && (
-                    <div className="p-2.5 rounded-2xl bg-[#171822] border border-[#2e303d] text-xs text-zinc-300 flex items-start gap-2">
-                      <MessageSquare className="w-3.5 h-3.5 text-[#ff6b00] flex-shrink-0 mt-0.5" />
+                    <div className="p-2.5 rounded-2xl bg-[#141519] border border-[#24262e] text-xs text-zinc-300 flex items-start gap-2">
+                      <MessageSquare className="w-3.5 h-3.5 text-[#2f80ed] flex-shrink-0 mt-0.5" />
                       <div>
                         <span className="font-mono text-[9px] uppercase font-bold text-zinc-400 block mb-0.5">
                           Coach Feedback
@@ -641,7 +643,7 @@ export const WorkoutHistoryView: React.FC = () => {
                   )}
 
                   {/* Completed Exercises Table */}
-                  <div className="divide-y divide-[#1e202a] text-xs">
+                  <div className="divide-y divide-[#24262e] text-xs">
                     {log.completedExercises.map((ex, i) => {
                       const completedSets = ex.sets.filter((s) => s.completed);
 
@@ -658,7 +660,7 @@ export const WorkoutHistoryView: React.FC = () => {
                             {completedSets.map((s, sIdx) => (
                               <span
                                 key={sIdx}
-                                className="text-[10px] font-numeric font-bold text-[#ff6b00] px-2 py-0.5 rounded-lg bg-[#14161f] border border-[#ff6b00]/20"
+                                className="text-[10px] font-numeric font-bold text-[#2f80ed] px-2 py-0.5 rounded-lg bg-[#18191e] border border-[#2f80ed]/20"
                               >
                                 {s.weightKg}kg × {s.reps}
                               </span>
@@ -678,7 +680,7 @@ export const WorkoutHistoryView: React.FC = () => {
       {/* Delete Log Confirmation Modal */}
       {logToDelete && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-150">
-          <div className="w-full max-w-sm bg-[#14151e] border border-[#2e303d] rounded-3xl p-6 shadow-2xl text-center relative animate-in zoom-in-95 duration-150 space-y-4">
+          <div className="w-full max-w-sm bg-[#18191e] border border-[#24262e] rounded-3xl p-6 shadow-2xl text-center relative animate-in zoom-in-95 duration-150 space-y-4">
             <div className="w-12 h-12 rounded-2xl bg-red-500/15 border border-red-500/30 text-red-400 flex items-center justify-center mx-auto shadow-inner">
               <Trash2 className="w-6 h-6 stroke-[2.5]" />
             </div>
@@ -690,10 +692,10 @@ export const WorkoutHistoryView: React.FC = () => {
               </p>
             </div>
 
-            <div className="p-3 rounded-2xl bg-[#09090b] border border-[#1e202c] grid grid-cols-2 gap-2 text-xs">
+            <div className="p-3 rounded-2xl bg-[#141519] border border-[#24262e] grid grid-cols-2 gap-2 text-xs">
               <div>
                 <span className="block text-[8px] font-mono uppercase text-zinc-500 font-bold">Volume</span>
-                <span className="text-xs font-extrabold font-numeric text-[#ff6b00]">{logToDelete.totalVolumeKg.toLocaleString()} kg</span>
+                <span className="text-xs font-extrabold font-numeric text-[#2f80ed]">{logToDelete.totalVolumeKg.toLocaleString()} kg</span>
               </div>
               <div>
                 <span className="block text-[8px] font-mono uppercase text-zinc-500 font-bold">Duration</span>
@@ -705,7 +707,7 @@ export const WorkoutHistoryView: React.FC = () => {
               <button
                 type="button"
                 onClick={() => setLogToDelete(null)}
-                className="py-2.5 px-3 rounded-xl bg-[#1c1d27] border border-[#2e303d] text-xs font-bold text-zinc-300 hover:text-white cursor-pointer"
+                className="py-2.5 px-3 rounded-xl bg-[#141519] border border-[#24262e] text-xs font-bold text-zinc-300 hover:text-white cursor-pointer"
               >
                 Cancel
               </button>
@@ -713,7 +715,7 @@ export const WorkoutHistoryView: React.FC = () => {
                 type="button"
                 onClick={async () => {
                   await deleteWorkoutLog(logToDelete.id);
-                  showToast('Workout session removed from history! 🗑️', 'info');
+                  showToast('Workout session removed from history!', 'info');
                   setLogToDelete(null);
                 }}
                 className="py-2.5 px-3 rounded-xl bg-red-600 hover:bg-red-700 text-white text-xs font-black cursor-pointer shadow-md shadow-red-600/30"

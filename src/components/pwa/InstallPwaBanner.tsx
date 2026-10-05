@@ -76,10 +76,10 @@ export const InstallPwaBanner: React.FC = () => {
   return (
     <>
       {/* Floating Bottom Install Banner */}
-      <div className="fixed bottom-20 left-1/2 -translate-x-1/2 z-40 w-[92vw] max-w-md bg-[#111218]/95 backdrop-blur-xl border border-[#ff6b00]/40 rounded-2xl p-3.5 shadow-2xl shadow-[#ff6b00]/10 animate-in slide-in-from-bottom-4 duration-300">
+      <div className="fixed bottom-20 left-1/2 -translate-x-1/2 z-40 w-[92vw] max-w-md bg-[#18191e]/95 backdrop-blur-xl border border-[#2f80ed]/40 rounded-2xl p-3.5 shadow-2xl shadow-[#2f80ed]/10 animate-in slide-in-from-bottom-4 duration-300">
         <div className="flex items-center justify-between gap-3">
           <div className="flex items-center gap-2.5 min-w-0">
-            <div className="w-10 h-10 rounded-xl bg-[#171822] text-[#ff6b00] border border-[#2e303d] flex items-center justify-center flex-shrink-0">
+            <div className="w-10 h-10 rounded-xl bg-[#141519] text-[#2f80ed] border border-[#24262e] flex items-center justify-center flex-shrink-0">
               <Flame className="w-5 h-5 fill-current animate-pulse" />
             </div>
             <div className="min-w-0">
@@ -114,7 +114,7 @@ export const InstallPwaBanner: React.FC = () => {
       {showIOSModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-sm animate-in fade-in">
           <div 
-            className="w-full max-w-sm bg-[#111218] border border-[#212330] rounded-3xl p-5 shadow-2xl relative space-y-4"
+            className="w-full max-w-sm bg-[#18191e] border border-[#24262e] rounded-3xl p-5 shadow-2xl relative space-y-4"
             onClick={(e) => e.stopPropagation()}
           >
             <button
@@ -125,15 +125,15 @@ export const InstallPwaBanner: React.FC = () => {
             </button>
 
             <div className="flex items-center gap-2.5">
-              <Smartphone className="w-5 h-5 text-[#ff6b00]" />
+              <Smartphone className="w-5 h-5 text-[#2f80ed]" />
               <h3 className="text-sm font-extrabold text-white">
                 Install on iPhone / iPad
               </h3>
             </div>
 
             <div className="space-y-3 text-xs text-zinc-300">
-              <div className="flex items-start gap-3 p-3 rounded-xl bg-[#09090b] border border-[#1e202c]">
-                <div className="w-6 h-6 rounded-lg bg-[#171822] text-[#ff6b00] flex items-center justify-center font-bold text-xs flex-shrink-0">
+              <div className="flex items-start gap-3 p-3 rounded-xl bg-[#141519] border border-[#24262e]">
+                <div className="w-6 h-6 rounded-lg bg-[#18191e] text-[#2f80ed] flex items-center justify-center font-bold text-xs flex-shrink-0">
                   1
                 </div>
                 <p>
@@ -141,12 +141,12 @@ export const InstallPwaBanner: React.FC = () => {
                 </p>
               </div>
 
-              <div className="flex items-start gap-3 p-3 rounded-xl bg-[#09090b] border border-[#1e202c]">
-                <div className="w-6 h-6 rounded-lg bg-[#171822] text-[#ff6b00] flex items-center justify-center font-bold text-xs flex-shrink-0">
+              <div className="flex items-start gap-3 p-3 rounded-xl bg-[#141519] border border-[#24262e]">
+                <div className="w-6 h-6 rounded-lg bg-[#18191e] text-[#2f80ed] flex items-center justify-center font-bold text-xs flex-shrink-0">
                   2
                 </div>
                 <p>
-                  Scroll down and tap <strong className="text-white">Add to Home Screen</strong> <PlusSquare className="w-3.5 h-3.5 inline mx-1 text-[#ff6b00]" />.
+                  Scroll down and tap <strong className="text-white">Add to Home Screen</strong> <PlusSquare className="w-3.5 h-3.5 inline mx-1 text-[#2f80ed]" />.
                 </p>
               </div>
             </div>

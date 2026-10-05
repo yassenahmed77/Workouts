@@ -359,7 +359,7 @@ export const HabitAddEditModal: React.FC<HabitAddEditModalProps> = ({
                   </div>
                 </div>
               ) : (
-                <div className="grid grid-cols-2 gap-2">
+                <div className="space-y-3">
                   <div>
                     <label className="block text-[9px] font-mono uppercase tracking-wider text-zinc-400 mb-1 font-bold">
                       Estimated Cost Saved / Day ({currency})

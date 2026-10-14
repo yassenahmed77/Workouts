@@ -1,11 +1,13 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useGym } from '@/context/GymContext';
 import { useToast } from '@/context/ToastContext';
-import { User, UserGoal, CompetitorDivision, SubscriptionPlanType, ClientSubscription } from '@/types';
+import { User, UserGoal, CompetitorDivision, SubscriptionPlanType } from '@/types';
 import { clientService } from '@/services/clientService';
 import { sanitizeString, sanitizeNotes } from '@/lib/sanitizer';
+import { SelectDropdown } from '@/components/ui/SelectDropdown';
+import { DatePicker } from '@/components/ui/DatePicker';
 
 interface NewTraineeModalProps {
   isOpen: boolean;
@@ -48,12 +50,18 @@ export const NewTraineeModal: React.FC<NewTraineeModalProps> = ({
   onNavigateToDietStudio,
   onNavigateToClient360
 }) => {
-  const { createTrainee, coachSettings } = useGym();
+  const { createTrainee, coachSettings, users } = useGym();
   const { showToast } = useToast();
 
   // Multi-step sequential flow
   const [currentStep, setCurrentStep] = useState<'profile' | 'workout' | 'diet'>('profile');
   const [createdAthlete, setCreatedAthlete] = useState<User | null>(null);
+
+  // Mobile segmented substep (0ms switch, zero scroll)
+  const [mobileTab, setMobileTab] = useState<'info' | 'membership'>('info');
+
+  // Secondary account flag when duplicate is detected
+  const [isSecondaryAccountAllowed, setIsSecondaryAccountAllowed] = useState(false);
 
   // Form Fields
   const [name, setName] = useState('');
@@ -85,6 +93,19 @@ export const NewTraineeModal: React.FC<NewTraineeModalProps> = ({
   // Field Validation Errors
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Real-time Duplicate Account Detection
+  const existingAthlete = useMemo(() => {
+    if (!users || users.length === 0) return null;
+    return clientService.findExistingAthlete(users, email, phone);
+  }, [users, email, phone]);
+
+  // Real-time Target Weight vs Goal Logic
+  const goalWeightValidation = useMemo(() => {
+    const curr = parseFloat(weightKg);
+    const tgt = parseFloat(targetWeightKg);
+    return clientService.validateGoalWeight(goal, curr, tgt);
+  }, [goal, weightKg, targetWeightKg]);
 
   // Close on Escape key press
   useEffect(() => {
@@ -140,9 +161,11 @@ export const NewTraineeModal: React.FC<NewTraineeModalProps> = ({
     setEndDate(calculateEndDate(newStart, durationMonths));
   };
 
-  // Reset modal state whenever opened fresh (Zero fake prefilled numbers)
+  // Reset modal state whenever opened fresh
   const resetForm = () => {
     setCurrentStep('profile');
+    setMobileTab('info');
+    setIsSecondaryAccountAllowed(false);
     setCreatedAthlete(null);
     setName('');
     setEmail('');
@@ -185,15 +208,22 @@ export const NewTraineeModal: React.FC<NewTraineeModalProps> = ({
 
   const handleGoalChange = (newGoal: UserGoal) => {
     setGoal(newGoal);
-    const curr = parseFloat(weightKg) || 75;
-    if (newGoal === 'Fat Loss & Conditioning') {
-      setTargetWeightKg(String(Math.max(45, curr - 6)));
-    } else if (newGoal === 'Hypertrophy / Muscle Gain') {
-      setTargetWeightKg(String(curr + 4));
+    const curr = parseFloat(weightKg);
+    if (!isNaN(curr) && curr > 0) {
+      if (newGoal === 'Fat Loss & Conditioning') {
+        setTargetWeightKg(String(Math.max(40, curr - 5)));
+      } else if (newGoal === 'Hypertrophy / Muscle Gain') {
+        setTargetWeightKg(String(curr + 4));
+      } else if (newGoal === 'Rehabilitation & Mobility') {
+        setTargetWeightKg(String(curr));
+      }
+    }
+    if (errors.targetWeightKg) {
+      setErrors(prev => ({ ...prev, targetWeightKg: '' }));
     }
   };
 
-  // Comprehensive validation for all required fields using Zod and Sanitizer
+  // Comprehensive validation for all required fields using Zod and domain engines
   const validateStep1 = (): boolean => {
     const errs: Record<string, string> = {};
 
@@ -243,13 +273,26 @@ export const NewTraineeModal: React.FC<NewTraineeModalProps> = ({
       });
     }
 
+    // Goal vs Target Weight Consistency Check
+    if (!isNaN(parsedWeight) && !isNaN(parsedTargetWeight)) {
+      const goalCheck = clientService.validateGoalWeight(goal, parsedWeight, parsedTargetWeight);
+      if (!goalCheck.isValid && goalCheck.error) {
+        errs.targetWeightKg = goalCheck.error;
+      }
+    }
+
+    // Duplicate Athlete Account Interlock
+    if (existingAthlete && !isSecondaryAccountAllowed) {
+      errs.duplicate = 'Athlete already exists. Select an option to proceed.';
+    }
+
     // Competitor Show name if competitor is checked
     if (isCompetitor && !targetShow.trim()) {
       errs.targetShow = 'Required';
     }
 
     setErrors(errs);
-    return validation.success && (!isCompetitor || Boolean(targetShow.trim()));
+    return Object.keys(errs).length === 0;
   };
 
   // STEP 1: Save athlete profile & advance to custom plan step
@@ -257,7 +300,11 @@ export const NewTraineeModal: React.FC<NewTraineeModalProps> = ({
     e.preventDefault();
 
     if (!validateStep1()) {
-      showToast('Please complete all required fields correctly', 'error');
+      if (errors.duplicate || (existingAthlete && !isSecondaryAccountAllowed)) {
+        showToast('Existing athlete account detected. Choose an action above.', 'error');
+      } else {
+        showToast('Please fix the indicated form fields', 'error');
+      }
       return;
     }
 
@@ -349,7 +396,7 @@ export const NewTraineeModal: React.FC<NewTraineeModalProps> = ({
 
   return (
     <div 
-      className="fixed inset-0 z-50 flex items-center justify-center p-3 bg-black/85 backdrop-blur-md animate-in fade-in duration-150 cursor-pointer"
+      className="fixed inset-0 z-50 flex items-center justify-center p-2.5 sm:p-4 bg-black/85 backdrop-blur-md animate-in fade-in duration-150 cursor-pointer overflow-hidden"
       onClick={(e) => {
         if (e.target === e.currentTarget) handleClose();
       }}
@@ -357,450 +404,594 @@ export const NewTraineeModal: React.FC<NewTraineeModalProps> = ({
       aria-modal="true"
     >
       <div 
-        className="w-full max-w-xl bg-[#080c14] border border-[#141b26] rounded-3xl shadow-2xl relative flex flex-col overflow-hidden animate-in zoom-in-95 duration-150 cursor-default"
+        className={`w-full ${currentStep === 'profile' ? 'max-w-4xl' : 'max-w-lg'} bg-[var(--card-bg)] border border-[var(--card-border)] rounded-2xl sm:rounded-3xl shadow-2xl relative flex flex-col overflow-hidden animate-in zoom-in-95 duration-150 cursor-default max-h-[96dvh]`}
         onClick={(e) => e.stopPropagation()}
       >
         {/* ========================================================================= */}
         {/* STEP 1: ATHLETE REGISTRATION (WEBSITE THEME TOKENS, ZERO SCROLL)          */}
         {/* ========================================================================= */}
         {currentStep === 'profile' && (
-          <form onSubmit={handleSaveProfile} className="flex flex-col">
+          <form onSubmit={handleSaveProfile} className="flex flex-col h-full">
             {/* Header */}
-            <div className="px-5 py-3.5 bg-[#0b101b] border-b border-[#141b26] flex items-center justify-between flex-shrink-0">
+            <div className="px-4 py-2.5 sm:px-5 sm:py-3 bg-[var(--card-subtle-bg)] border-b border-[var(--card-border)] flex items-center justify-between flex-shrink-0">
               <div>
-                <h2 className="text-sm font-semibold text-white tracking-tight leading-tight">
+                <h2 className="gym-heading-page text-sm sm:text-base">
                   Register New Athlete
                 </h2>
-                <p className="text-[11px] text-slate-400 leading-tight mt-0.5">
+                <p className="gym-subtext text-[10px] sm:text-[11px] mt-0.5">
                   Basic info &amp; biometrics &bull; Step 1 of 3
                 </p>
               </div>
 
+              <div className="flex items-center gap-2">
+                {isSecondaryAccountAllowed && existingAthlete && (
+                  <span className="hidden sm:inline-flex text-[9px] font-mono px-2 py-0.5 rounded-full bg-[var(--main-color)]/15 border border-[var(--main-color)]/30 text-[var(--main-color)]">
+                    Secondary Account
+                  </span>
+                )}
+                <button
+                  type="button"
+                  onClick={handleClose}
+                  className="w-7 h-7 rounded-lg bg-[var(--card-subtle-bg)] border border-[var(--card-border)] text-slate-400 hover:text-white flex items-center justify-center transition-colors text-sm font-medium cursor-pointer"
+                  title="Close"
+                >
+                  &times;
+                </button>
+              </div>
+            </div>
+
+            {/* Mobile Substep Segmented Navigation (Only on mobile < sm:) */}
+            <div className="sm:hidden grid grid-cols-2 border-b border-[var(--card-border)] bg-[var(--card-subtle-bg)]/80 flex-shrink-0">
               <button
                 type="button"
-                onClick={handleClose}
-                className="w-7 h-7 rounded-lg bg-[#05080e] border border-[#16202e] text-slate-400 hover:text-white flex items-center justify-center transition-colors text-sm font-medium cursor-pointer"
-                title="Close"
+                onClick={() => setMobileTab('info')}
+                className={`py-2 text-[11px] font-semibold text-center border-b-2 transition-all cursor-pointer ${
+                  mobileTab === 'info'
+                    ? 'text-[var(--main-color)] border-[var(--main-color)] bg-[var(--main-color)]/5'
+                    : 'text-slate-400 border-transparent hover:text-slate-200'
+                }`}
               >
-                &times;
+                1. Athlete &amp; Biometrics
+              </button>
+              <button
+                type="button"
+                onClick={() => setMobileTab('membership')}
+                className={`py-2 text-[11px] font-semibold text-center border-b-2 transition-all cursor-pointer ${
+                  mobileTab === 'membership'
+                    ? 'text-[var(--main-color)] border-[var(--main-color)] bg-[var(--main-color)]/5'
+                    : 'text-slate-400 border-transparent hover:text-slate-200'
+                }`}
+              >
+                2. Membership &amp; Notes
               </button>
             </div>
 
-            {/* Compact Form Body - Zero Vertical Scrolling with internal scroll safeguard */}
-            <div className="p-4 sm:p-5 space-y-2.5 max-h-[72vh] overflow-y-auto custom-scrollbar">
-              {/* Row 1: Name & Email */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-                <div>
-                  <div className="flex items-center justify-between mb-1">
-                    <label className="text-[10px] font-mono uppercase tracking-wider text-slate-400 font-semibold">
-                      Full Name <span className="text-rose-400">*</span>
-                    </label>
-                    {errors.name && (
-                      <span className="text-[9px] text-rose-400 font-mono font-medium">{errors.name}</span>
-                    )}
-                  </div>
-                  <input
-                    type="text"
-                    value={name}
-                    onChange={(e) => {
-                      setName(e.target.value);
-                      if (errors.name) setErrors(prev => ({ ...prev, name: '' }));
-                    }}
-                    placeholder="e.g. Youssef Adel"
-                    className={`w-full px-3 py-1.5 rounded-xl bg-[#05080e] border text-xs text-white placeholder-slate-500 focus:outline-none transition-colors ${
-                      errors.name ? 'border-rose-500/70 focus:border-rose-500' : 'border-[#16202e] focus:border-cyan-500/35'
-                    }`}
-                  />
-                </div>
-
-                <div>
-                  <div className="flex items-center justify-between mb-1">
-                    <label className="text-[10px] font-mono uppercase tracking-wider text-slate-400 font-semibold">
-                      Email Address <span className="text-rose-400">*</span>
-                    </label>
-                    {errors.email && (
-                      <span className="text-[9px] text-rose-400 font-mono font-medium">{errors.email}</span>
-                    )}
-                  </div>
-                  <input
-                    type="email"
-                    value={email}
-                    onChange={(e) => {
-                      setEmail(e.target.value);
-                      if (errors.email) setErrors(prev => ({ ...prev, email: '' }));
-                    }}
-                    placeholder="athlete@domain.com"
-                    className={`w-full px-3 py-1.5 rounded-xl bg-[#05080e] border text-xs text-white placeholder-slate-500 focus:outline-none transition-colors ${
-                      errors.email ? 'border-rose-500/70 focus:border-rose-500' : 'border-[#16202e] focus:border-cyan-500/35'
-                    }`}
-                  />
-                </div>
-              </div>
-
-              {/* Row 2: Phone, Gender, Age */}
-              <div className="grid grid-cols-12 gap-2.5">
-                <div className="col-span-6">
-                  <div className="flex items-center justify-between mb-1">
-                    <label className="text-[10px] font-mono uppercase tracking-wider text-slate-400 font-semibold">
-                      Phone / WhatsApp <span className="text-rose-400">*</span>
-                    </label>
-                    {errors.phone && (
-                      <span className="text-[9px] text-rose-400 font-mono font-medium">{errors.phone}</span>
-                    )}
-                  </div>
-                  <input
-                    type="text"
-                    value={phone}
-                    onChange={(e) => {
-                      setPhone(e.target.value);
-                      if (errors.phone) setErrors(prev => ({ ...prev, phone: '' }));
-                    }}
-                    placeholder="+20 101 234 5678"
-                    className={`w-full px-3 py-1.5 rounded-xl bg-[#05080e] border text-xs font-mono text-white placeholder-slate-500 focus:outline-none transition-colors ${
-                      errors.phone ? 'border-rose-500/70 focus:border-rose-500' : 'border-[#16202e] focus:border-cyan-500/35'
-                    }`}
-                  />
-                </div>
-
-                <div className="col-span-3">
-                  <label className="block text-[10px] font-mono uppercase tracking-wider text-slate-400 mb-1 font-semibold">
-                    Gender
-                  </label>
-                  <div className="flex items-center gap-1 p-0.5 rounded-xl bg-[#05080e] border border-[#16202e]">
-                    <button
-                      type="button"
-                      onClick={() => setGender('Male')}
-                      className={`flex-1 py-1 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
-                        gender === 'Male'
-                          ? 'bg-cyan-500/15 border border-cyan-500/35 text-cyan-300 shadow-sm shadow-cyan-950/40'
-                          : 'text-slate-400 hover:text-slate-200 border border-transparent'
-                      }`}
-                    >
-                      Male
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setGender('Female')}
-                      className={`flex-1 py-1 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
-                        gender === 'Female'
-                          ? 'bg-cyan-500/15 border border-cyan-500/35 text-cyan-300 shadow-sm shadow-cyan-950/40'
-                          : 'text-slate-400 hover:text-slate-200 border border-transparent'
-                      }`}
-                    >
-                      Female
-                    </button>
-                  </div>
-                </div>
-
-                <div className="col-span-3">
-                  <div className="flex items-center justify-between mb-1">
-                    <label className="text-[10px] font-mono uppercase tracking-wider text-slate-400 font-semibold">
-                      Age <span className="text-rose-400">*</span>
-                    </label>
-                    {errors.age && (
-                      <span className="text-[9px] text-rose-400 font-mono font-medium">{errors.age}</span>
-                    )}
-                  </div>
-                  <input
-                    type="number"
-                    min="12"
-                    max="100"
-                    value={age}
-                    onChange={(e) => {
-                      setAge(e.target.value);
-                      if (errors.age) setErrors(prev => ({ ...prev, age: '' }));
-                    }}
-                    placeholder="24"
-                    className={`w-full px-2.5 py-1.5 rounded-xl bg-[#05080e] border text-xs text-white focus:outline-none transition-colors text-center ${
-                      errors.age ? 'border-rose-500/70 focus:border-rose-500' : 'border-[#16202e] focus:border-cyan-500/35'
-                    }`}
-                  />
-                </div>
-              </div>
-
-              {/* Row 3: Biometrics (Weight, Target Weight, Height, Body Fat %) */}
-              <div className="grid grid-cols-4 gap-2.5 p-2.5 rounded-2xl bg-[#05080e] border border-[#141b26]">
-                <div>
-                  <label className="block text-[9px] text-slate-400 mb-0.5 font-medium truncate">
-                    Current (kg) <span className="text-rose-400">*</span>
-                  </label>
-                  <input
-                    type="number"
-                    step="0.5"
-                    value={weightKg}
-                    onChange={(e) => {
-                      setWeightKg(e.target.value);
-                      if (errors.weightKg) setErrors(prev => ({ ...prev, weightKg: '' }));
-                    }}
-                    placeholder="75"
-                    className={`w-full px-2 py-1 rounded-lg bg-[#0b101b] border text-xs font-numeric font-medium text-white placeholder-slate-500 focus:outline-none text-center ${
-                      errors.weightKg ? 'border-rose-500/70' : 'border-[#16202e] focus:border-cyan-500/35'
-                    }`}
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-[9px] text-slate-400 mb-0.5 font-medium truncate">
-                    Target (kg) <span className="text-rose-400">*</span>
-                  </label>
-                  <input
-                    type="number"
-                    step="0.5"
-                    value={targetWeightKg}
-                    onChange={(e) => {
-                      setTargetWeightKg(e.target.value);
-                      if (errors.targetWeightKg) setErrors(prev => ({ ...prev, targetWeightKg: '' }));
-                    }}
-                    placeholder="78"
-                    className={`w-full px-2 py-1 rounded-lg bg-[#0b101b] border text-xs font-numeric font-medium text-white placeholder-slate-500 focus:outline-none text-center ${
-                      errors.targetWeightKg ? 'border-rose-500/70' : 'border-[#16202e] focus:border-cyan-500/35'
-                    }`}
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-[9px] text-slate-400 mb-0.5 font-medium truncate">
-                    Height (cm) <span className="text-rose-400">*</span>
-                  </label>
-                  <input
-                    type="number"
-                    value={heightCm}
-                    onChange={(e) => {
-                      setHeightCm(e.target.value);
-                      if (errors.heightCm) setErrors(prev => ({ ...prev, heightCm: '' }));
-                    }}
-                    placeholder="178"
-                    className={`w-full px-2 py-1 rounded-lg bg-[#0b101b] border text-xs font-numeric font-medium text-white placeholder-slate-500 focus:outline-none text-center ${
-                      errors.heightCm ? 'border-rose-500/70' : 'border-[#16202e] focus:border-cyan-500/35'
-                    }`}
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-[9px] text-slate-400 mb-0.5 font-medium truncate">
-                    Body Fat %
-                  </label>
-                  <input
-                    type="number"
-                    step="0.5"
-                    value={bodyFatPercentage}
-                    onChange={(e) => setBodyFatPercentage(e.target.value)}
-                    placeholder="14%"
-                    className="w-full px-2 py-1 rounded-lg bg-[#0b101b] border border-[#16202e] text-xs font-numeric font-medium text-white focus:outline-none focus:border-cyan-500/35 text-center placeholder-slate-600"
-                  />
-                </div>
-              </div>
-
-              {/* Row 4: Primary Goal + Competitor Modern Switch */}
-              <div className="grid grid-cols-12 gap-2.5 items-center">
-                <div className="col-span-7">
-                  <label className="block text-[10px] font-mono uppercase tracking-wider text-slate-400 mb-1 font-semibold">
-                    Primary Goal
-                  </label>
-                  <select
-                    value={goal}
-                    onChange={(e) => handleGoalChange(e.target.value as UserGoal)}
-                    className="w-full px-3 py-1.5 rounded-xl bg-[#05080e] border border-[#16202e] text-xs text-white focus:outline-none focus:border-cyan-500/35 transition-colors"
-                  >
-                    {GOALS.map((g) => (
-                      <option key={g} value={g} className="bg-[#080c14] text-white">
-                        {g}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                <div className="col-span-5 pt-4">
-                  <button
-                    type="button"
-                    onClick={() => setIsCompetitor(!isCompetitor)}
-                    className={`w-full flex items-center justify-between px-3 py-1.5 rounded-xl border transition-all cursor-pointer ${
-                      isCompetitor
-                        ? 'bg-cyan-500/15 border-cyan-500/35 text-cyan-300'
-                        : 'bg-[#05080e] border-[#16202e] text-slate-300 hover:border-[#233146]'
-                    }`}
-                  >
-                    <span className="text-xs font-medium">Competitor</span>
-                    <div className={`w-8 h-4 rounded-full transition-colors relative flex items-center px-0.5 ${isCompetitor ? 'bg-cyan-500/30 border border-cyan-400/50' : 'bg-[#141b26] border border-[#1e293b]'}`}>
-                      <div className={`w-3 h-3 rounded-full transition-transform ${isCompetitor ? 'translate-x-4 bg-cyan-300 shadow-[0_0_8px_rgba(6,182,212,0.8)]' : 'translate-x-0 bg-slate-500'}`} />
+            {/* Form Body: Responsive 2-Column Desktop Grid / 1-Screen Mobile Tabs */}
+            <div className="p-3 sm:p-4.5 space-y-3 overflow-y-auto sm:overflow-hidden custom-scrollbar flex-1">
+              
+              {/* Existing Athlete Duplicate Detection Banner */}
+              {existingAthlete && !isSecondaryAccountAllowed && (
+                <div className="p-2.5 rounded-xl bg-amber-500/10 border border-amber-500/25 flex flex-col gap-2 animate-in fade-in duration-150">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-1.5">
+                      <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
+                      <span className="text-[11px] font-semibold text-amber-300">
+                        Athlete Account Already Exists
+                      </span>
                     </div>
-                  </button>
-                </div>
-              </div>
-
-              {/* Competitor Expand Strip (If Checked) */}
-              {isCompetitor && (
-                <div className="grid grid-cols-2 gap-2.5 p-2 rounded-xl bg-[#05080e] border border-cyan-500/25">
-                  <div>
-                    <label className="block text-[9px] text-slate-400 mb-0.5">Show Name *</label>
-                    <input
-                      type="text"
-                      value={targetShow}
-                      onChange={(e) => {
-                        setTargetShow(e.target.value);
-                        if (errors.targetShow) setErrors(prev => ({ ...prev, targetShow: '' }));
-                      }}
-                      className="w-full px-2 py-1 rounded-lg bg-[#0b101b] border border-[#16202e] text-xs text-white"
-                    />
+                    <span className="text-[9px] font-mono text-slate-400">
+                      Matched by {existingAthlete.email?.toLowerCase() === email.trim().toLowerCase() ? 'Email' : 'Phone'}
+                    </span>
                   </div>
-                  <div>
-                    <label className="block text-[9px] text-slate-400 mb-0.5">Division</label>
-                    <select
-                      value={division}
-                      onChange={(e) => setDivision(e.target.value as CompetitorDivision)}
-                      className="w-full px-2 py-1 rounded-lg bg-[#0b101b] border border-[#16202e] text-xs text-white"
+
+                  <div className="flex items-center justify-between p-2 rounded-lg bg-[var(--card-bg)] border border-white/[0.06]">
+                    <div className="flex items-center gap-2 truncate">
+                      <div className="w-7 h-7 rounded-full bg-[var(--main-color)]/20 border border-[var(--main-color)]/40 flex items-center justify-center text-[11px] font-bold text-[var(--main-color)] font-mono flex-shrink-0">
+                        {clientService.getInitials(existingAthlete.name)}
+                      </div>
+                      <div className="truncate">
+                        <div className="text-xs font-bold text-white flex items-center gap-1.5 truncate">
+                          <span className="truncate">{existingAthlete.name}</span>
+                          <span className="text-[8px] font-mono px-1 py-0.2 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 uppercase flex-shrink-0">
+                            {existingAthlete.status}
+                          </span>
+                        </div>
+                        <div className="text-[10px] text-slate-400 font-mono truncate">
+                          {existingAthlete.phone || 'No phone'} &bull; {existingAthlete.email}
+                        </div>
+                      </div>
+                    </div>
+                    <div className="text-right text-[10px] text-slate-400 flex-shrink-0 pl-2">
+                      <div className="text-white font-medium">{existingAthlete.goal}</div>
+                      <div className="text-[9px] font-mono text-[var(--main-color)]">
+                        {existingAthlete.subscription?.planType || 'Standard Plan'}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-2 pt-0.5">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        handleClose();
+                        if (onNavigateToClient360) onNavigateToClient360(existingAthlete);
+                        else if (onSuccessSelect) onSuccessSelect(existingAthlete.id);
+                        showToast(`Opened existing profile for ${existingAthlete.name}`, 'info');
+                      }}
+                      className="flex-1 py-1.5 px-3 rounded-lg bg-[var(--main-color)] hover:bg-[var(--main-color-hover)] text-white text-xs font-bold transition-all cursor-pointer shadow-sm text-center"
                     >
-                      {COMPETITOR_DIVISIONS.map((d) => (
-                        <option key={d} value={d} className="bg-[#080c14] text-white">{d}</option>
-                      ))}
-                    </select>
+                      Continue with Existing Profile
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setIsSecondaryAccountAllowed(true);
+                        setErrors(prev => ({ ...prev, duplicate: '' }));
+                        showToast('Secondary account mode enabled', 'info');
+                      }}
+                      className="py-1.5 px-3 rounded-lg bg-white/[0.06] hover:bg-white/[0.1] text-slate-300 hover:text-white border border-white/[0.1] text-xs font-semibold transition-all cursor-pointer"
+                    >
+                      Create Secondary Account
+                    </button>
                   </div>
                 </div>
               )}
 
-              {/* Row 5: Membership & Subscription Plan */}
-              <div className="p-2.5 rounded-2xl bg-[#05080e] border border-[#141b26] space-y-2">
-                <div className="flex items-center justify-between">
-                  <span className="text-[10px] font-mono uppercase tracking-wider text-cyan-400 font-semibold">
-                    Subscription Plan &amp; Membership
-                  </span>
-                  <span className="text-[10px] font-mono text-slate-400">
-                    {durationMonths} Months &bull; {subscriptionPrice} {coachSettings?.currency || 'EGP'}
-                  </span>
-                </div>
-
-                {/* Plan Type Selector */}
-                <div>
-                  <label className="block text-[9px] text-slate-400 mb-1 font-medium">
-                    Package Type
-                  </label>
-                  <div className="flex flex-wrap items-center gap-1">
-                    {SUBSCRIPTION_PLANS.map((plan) => (
-                      <button
-                        key={plan}
-                        type="button"
-                        onClick={() => handleSelectPlanType(plan)}
-                        className={`px-2 py-1 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
-                          subscriptionPlan === plan
-                            ? 'bg-cyan-500/15 border border-cyan-500/35 text-cyan-300 shadow-sm shadow-cyan-950/40'
-                            : 'bg-[#0b101b] border border-[#16202e] text-slate-400 hover:text-slate-200'
-                        }`}
-                      >
-                        {plan}
-                      </button>
-                    ))}
+              {/* 2-Column Responsive Layout */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 items-start">
+                
+                {/* ========================================================================= */}
+                {/* COLUMN 1: ATHLETE IDENTITY, BIOMETRICS & GOAL                            */}
+                {/* ========================================================================= */}
+                <div className={`space-y-2.5 ${mobileTab === 'info' ? 'block' : 'hidden sm:block'}`}>
+                  {/* Full Name */}
+                  <div>
+                    <div className="flex items-center justify-between mb-1">
+                      <label className="text-[10px] font-mono uppercase tracking-wider text-slate-400 font-semibold">
+                        Full Name <span className="text-rose-400">*</span>
+                      </label>
+                      {errors.name && (
+                        <span className="text-[9px] text-rose-400 font-mono font-medium">{errors.name}</span>
+                      )}
+                    </div>
+                    <input
+                      type="text"
+                      value={name}
+                      onChange={(e) => {
+                        setName(e.target.value);
+                        if (errors.name) setErrors(prev => ({ ...prev, name: '' }));
+                      }}
+                      placeholder="e.g. Youssef Adel"
+                      className={`w-full px-3 py-1.5 rounded-xl bg-[var(--input-bg)] border text-xs text-white placeholder-slate-500 focus:outline-none transition-colors h-8 ${
+                        errors.name ? 'border-rose-500/70 focus:border-rose-500' : 'border-[var(--input-border)] focus:border-[var(--main-color)]'
+                      }`}
+                    />
                   </div>
-                </div>
 
-                {/* Duration Pills + Dates + Price */}
-                <div className="grid grid-cols-12 gap-2 pt-1">
-                  {/* Duration Pills */}
-                  <div className="col-span-12 sm:col-span-4">
-                    <label className="block text-[9px] text-slate-400 mb-1 font-medium">
-                      Duration
-                    </label>
-                    <div className="flex items-center gap-1 p-0.5 rounded-xl bg-[#0b101b] border border-[#16202e]">
-                      {[1, 3, 6, 12].map((m) => (
+                  {/* Phone & Email side-by-side */}
+                  <div className="grid grid-cols-2 gap-2">
+                    <div>
+                      <div className="flex items-center justify-between mb-1">
+                        <label className="text-[10px] font-mono uppercase tracking-wider text-slate-400 font-semibold truncate">
+                          Phone / WhatsApp <span className="text-rose-400">*</span>
+                        </label>
+                      </div>
+                      <input
+                        type="text"
+                        value={phone}
+                        onChange={(e) => {
+                          setPhone(e.target.value);
+                          if (errors.phone) setErrors(prev => ({ ...prev, phone: '' }));
+                        }}
+                        placeholder="+20 101 234 5678"
+                        className={`w-full px-2.5 py-1.5 rounded-xl bg-[var(--input-bg)] border text-xs font-mono text-white placeholder-slate-500 focus:outline-none transition-colors h-8 ${
+                          errors.phone ? 'border-rose-500/70 focus:border-rose-500' : 'border-[var(--input-border)] focus:border-[var(--main-color)]'
+                        }`}
+                      />
+                    </div>
+
+                    <div>
+                      <div className="flex items-center justify-between mb-1">
+                        <label className="text-[10px] font-mono uppercase tracking-wider text-slate-400 font-semibold truncate">
+                          Email Address <span className="text-rose-400">*</span>
+                        </label>
+                      </div>
+                      <input
+                        type="email"
+                        value={email}
+                        onChange={(e) => {
+                          setEmail(e.target.value);
+                          if (errors.email) setErrors(prev => ({ ...prev, email: '' }));
+                        }}
+                        placeholder="athlete@domain.com"
+                        className={`w-full px-2.5 py-1.5 rounded-xl bg-[var(--input-bg)] border text-xs text-white placeholder-slate-500 focus:outline-none transition-colors h-8 ${
+                          errors.email ? 'border-rose-500/70 focus:border-rose-500' : 'border-[var(--input-border)] focus:border-[var(--main-color)]'
+                        }`}
+                      />
+                    </div>
+                  </div>
+
+                  {/* Gender & Age side-by-side (Gender 60%, Age 40% - No Text Truncation!) */}
+                  <div className="grid grid-cols-12 gap-2 items-center">
+                    <div className="col-span-7">
+                      <label className="block text-[10px] font-mono uppercase tracking-wider text-slate-400 mb-1 font-semibold">
+                        Gender
+                      </label>
+                      <div className="flex items-center gap-1 p-0.5 rounded-xl bg-[var(--input-bg)] border border-[var(--input-border)] h-8">
                         <button
-                          key={m}
                           type="button"
-                          onClick={() => handleSelectDuration(m)}
-                          className={`flex-1 py-1 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
-                            durationMonths === m
-                              ? 'bg-cyan-500/15 border border-cyan-500/35 text-cyan-300 shadow-sm'
+                          onClick={() => setGender('Male')}
+                          className={`flex-1 h-6 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
+                            gender === 'Male'
+                              ? 'bg-[var(--main-color)]/15 border border-[var(--main-color)]/35 text-[var(--main-color)] shadow-sm'
                               : 'text-slate-400 hover:text-slate-200 border border-transparent'
                           }`}
                         >
-                          {m}m
+                          Male
                         </button>
-                      ))}
+                        <button
+                          type="button"
+                          onClick={() => setGender('Female')}
+                          className={`flex-1 h-6 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
+                            gender === 'Female'
+                              ? 'bg-[var(--main-color)]/15 border border-[var(--main-color)]/35 text-[var(--main-color)] shadow-sm'
+                              : 'text-slate-400 hover:text-slate-200 border border-transparent'
+                          }`}
+                        >
+                          Female
+                        </button>
+                      </div>
+                    </div>
+
+                    <div className="col-span-5">
+                      <div className="flex items-center justify-between mb-1">
+                        <label className="text-[10px] font-mono uppercase tracking-wider text-slate-400 font-semibold truncate">
+                          Age <span className="text-rose-400">*</span>
+                        </label>
+                        {errors.age && (
+                          <span className="text-[9px] text-rose-400 font-mono">{errors.age}</span>
+                        )}
+                      </div>
+                      <input
+                        type="number"
+                        min="12"
+                        max="100"
+                        value={age}
+                        onChange={(e) => {
+                          setAge(e.target.value);
+                          if (errors.age) setErrors(prev => ({ ...prev, age: '' }));
+                        }}
+                        placeholder="24"
+                        className={`w-full px-2.5 py-1.5 rounded-xl bg-[var(--input-bg)] border text-xs text-white focus:outline-none transition-colors text-center h-8 font-mono ${
+                          errors.age ? 'border-rose-500/70 focus:border-rose-500' : 'border-[var(--input-border)] focus:border-[var(--main-color)]'
+                        }`}
+                      />
                     </div>
                   </div>
 
-                  {/* Start Date */}
-                  <div className="col-span-6 sm:col-span-3">
-                    <div className="flex items-center justify-between mb-1">
-                      <label className="text-[9px] text-slate-400 font-medium">
-                        Start Date *
-                      </label>
-                      {errors.startDate && (
-                        <span className="text-[8px] text-rose-400 font-mono">{errors.startDate}</span>
+                  {/* Biometrics Card with Dynamic Trajectory Badge */}
+                  <div className="p-2.5 rounded-xl bg-[var(--card-subtle-bg)] border border-[var(--card-border)] space-y-1.5">
+                    <div className="flex items-center justify-between">
+                      <span className="text-[10px] font-mono uppercase tracking-wider text-slate-400 font-semibold">
+                        Biometrics &amp; Weight
+                      </span>
+                      {weightKg && targetWeightKg && !isNaN(parseFloat(weightKg)) && !isNaN(parseFloat(targetWeightKg)) && (
+                        <span className={`text-[9px] font-mono font-bold px-1.5 py-0.2 rounded ${
+                          !goalWeightValidation.isValid
+                            ? 'bg-rose-500/15 text-rose-400 border border-rose-500/30'
+                            : goalWeightValidation.trend === 'loss'
+                            ? 'bg-emerald-500/15 text-emerald-400 border border-emerald-500/30'
+                            : goalWeightValidation.trend === 'gain'
+                            ? 'bg-[var(--main-color)]/15 text-[var(--main-color)] border border-[var(--main-color)]/30'
+                            : 'bg-white/[0.06] text-slate-400 border border-white/[0.08]'
+                        }`}>
+                          {goalWeightValidation.deltaKg > 0 ? `+${goalWeightValidation.deltaKg}` : goalWeightValidation.deltaKg} kg
+                          {' '}({goalWeightValidation.trend === 'loss' ? 'Loss' : goalWeightValidation.trend === 'gain' ? 'Gain' : 'Maintain'})
+                        </span>
                       )}
                     </div>
-                    <input
-                      type="date"
-                      value={startDate}
-                      onChange={(e) => handleStartDateChange(e.target.value)}
-                      className="w-full px-2 py-1 rounded-lg bg-[#0b101b] border border-[#16202e] text-xs font-mono text-white focus:outline-none focus:border-cyan-500/35 text-center"
-                    />
-                  </div>
 
-                  {/* End Date */}
-                  <div className="col-span-6 sm:col-span-3">
-                    <div className="flex items-center justify-between mb-1">
-                      <label className="text-[9px] text-slate-400 font-medium">
-                        End Date *
-                      </label>
-                      {errors.endDate && (
-                        <span className="text-[8px] text-rose-400 font-mono">{errors.endDate}</span>
-                      )}
+                    {/* 4 Cells: 2x2 on Mobile, 4 in 1 row on Desktop */}
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                      <div>
+                        <label className="block text-[9px] text-slate-400 mb-0.5 font-medium truncate">
+                          Current (kg) <span className="text-rose-400">*</span>
+                        </label>
+                        <input
+                          type="number"
+                          step="0.5"
+                          value={weightKg}
+                          onChange={(e) => {
+                            setWeightKg(e.target.value);
+                            if (errors.weightKg) setErrors(prev => ({ ...prev, weightKg: '' }));
+                          }}
+                          placeholder="75"
+                          className={`w-full px-2 py-1 rounded-lg bg-[var(--input-bg)] border text-xs font-numeric font-medium text-white placeholder-slate-500 focus:outline-none text-center h-7.5 ${
+                            errors.weightKg ? 'border-rose-500/70' : 'border-[var(--input-border)] focus:border-[var(--main-color)]'
+                          }`}
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-[9px] text-slate-400 mb-0.5 font-medium truncate">
+                          Target (kg) <span className="text-rose-400">*</span>
+                        </label>
+                        <input
+                          type="number"
+                          step="0.5"
+                          value={targetWeightKg}
+                          onChange={(e) => {
+                            setTargetWeightKg(e.target.value);
+                            if (errors.targetWeightKg) setErrors(prev => ({ ...prev, targetWeightKg: '' }));
+                          }}
+                          placeholder="78"
+                          className={`w-full px-2 py-1 rounded-lg bg-[var(--input-bg)] border text-xs font-numeric font-medium text-white placeholder-slate-500 focus:outline-none text-center h-7.5 ${
+                            errors.targetWeightKg || !goalWeightValidation.isValid ? 'border-rose-500/70 focus:border-rose-500' : 'border-[var(--input-border)] focus:border-[var(--main-color)]'
+                          }`}
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-[9px] text-slate-400 mb-0.5 font-medium truncate">
+                          Height (cm) <span className="text-rose-400">*</span>
+                        </label>
+                        <input
+                          type="number"
+                          value={heightCm}
+                          onChange={(e) => {
+                            setHeightCm(e.target.value);
+                            if (errors.heightCm) setErrors(prev => ({ ...prev, heightCm: '' }));
+                          }}
+                          placeholder="178"
+                          className={`w-full px-2 py-1 rounded-lg bg-[var(--input-bg)] border text-xs font-numeric font-medium text-white placeholder-slate-500 focus:outline-none text-center h-7.5 ${
+                            errors.heightCm ? 'border-rose-500/70' : 'border-[var(--input-border)] focus:border-[var(--main-color)]'
+                          }`}
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-[9px] text-slate-400 mb-0.5 font-medium truncate">
+                          Body Fat %
+                        </label>
+                        <input
+                          type="number"
+                          step="0.5"
+                          value={bodyFatPercentage}
+                          onChange={(e) => setBodyFatPercentage(e.target.value)}
+                          placeholder="14%"
+                          className="w-full px-2 py-1 rounded-lg bg-[var(--input-bg)] border border-[var(--input-border)] text-xs font-numeric font-medium text-white focus:outline-none focus:border-[var(--main-color)] text-center placeholder-slate-600 h-7.5"
+                        />
+                      </div>
                     </div>
-                    <input
-                      type="date"
-                      value={endDate}
-                      onChange={(e) => setEndDate(e.target.value)}
-                      className="w-full px-2 py-1 rounded-lg bg-[#0b101b] border border-[#16202e] text-xs font-mono text-white focus:outline-none focus:border-cyan-500/35 text-center"
+
+                    {/* Conflict Error Message below biometrics */}
+                    {!goalWeightValidation.isValid && goalWeightValidation.error && (
+                      <p className="text-[9px] text-rose-400 font-mono mt-1 font-medium">
+                        &bull; {goalWeightValidation.error}
+                      </p>
+                    )}
+                  </div>
+
+                  {/* Primary Goal (Template SelectDropdown - Zero HTML Native Select!) */}
+                  <div>
+                    <SelectDropdown
+                      label="Primary Goal"
+                      required
+                      value={goal}
+                      onChange={(val) => handleGoalChange(val as UserGoal)}
+                      options={GOALS}
                     />
                   </div>
 
-                  {/* Fee */}
-                  <div className="col-span-12 sm:col-span-2">
-                    <label className="block text-[9px] text-slate-400 mb-1 font-medium truncate">
-                      Fee ({coachSettings?.currency || 'EGP'})
-                    </label>
-                    <input
-                      type="number"
-                      value={subscriptionPrice}
-                      onChange={(e) => setSubscriptionPrice(e.target.value)}
-                      placeholder="4500"
-                      className="w-full px-2 py-1 rounded-lg bg-[#0b101b] border border-[#16202e] text-xs font-numeric font-medium text-white focus:outline-none focus:border-cyan-500/35 text-center"
-                    />
+                  {/* Competitor Modern Switch */}
+                  <div>
+                    <button
+                      type="button"
+                      onClick={() => setIsCompetitor(!isCompetitor)}
+                      className={`w-full flex items-center justify-between px-3 py-1.5 rounded-xl border transition-all cursor-pointer h-8 ${
+                        isCompetitor
+                          ? 'bg-[var(--main-color)]/15 border-[var(--main-color)]/35 text-[var(--main-color)]'
+                          : 'bg-[var(--card-subtle-bg)] border-[var(--card-border)] text-slate-300 hover:border-zinc-700'
+                      }`}
+                    >
+                      <span className="text-xs font-medium">Competitor Athlete</span>
+                      <div className={`w-8 h-4 rounded-full transition-colors relative flex items-center px-0.5 ${isCompetitor ? 'bg-[var(--main-color)]/30 border border-[var(--main-color)]/50' : 'bg-[var(--card-subtle-bg)] border border-[var(--card-border)]'}`}>
+                        <div className={`w-3 h-3 rounded-full transition-transform ${isCompetitor ? 'translate-x-4 bg-[var(--main-color)] shadow-[0_0_8px_var(--main-color-glow)]' : 'translate-x-0 bg-slate-500'}`} />
+                      </div>
+                    </button>
+                  </div>
+
+                  {/* Competitor Expand Strip */}
+                  {isCompetitor && (
+                    <div className="grid grid-cols-2 gap-2 p-2 rounded-xl bg-[var(--card-subtle-bg)] border border-[var(--main-color)]/25 animate-in fade-in duration-150">
+                      <div>
+                        <label className="block text-[9px] text-slate-400 mb-0.5 font-medium">Show Name *</label>
+                        <input
+                          type="text"
+                          value={targetShow}
+                          onChange={(e) => {
+                            setTargetShow(e.target.value);
+                            if (errors.targetShow) setErrors(prev => ({ ...prev, targetShow: '' }));
+                          }}
+                          className="w-full px-2 py-1 rounded-lg bg-[var(--input-bg)] border border-[var(--input-border)] text-xs text-white h-7.5"
+                        />
+                      </div>
+                      <div>
+                        <SelectDropdown
+                          label="Division"
+                          size="sm"
+                          value={division}
+                          onChange={(val) => setDivision(val as CompetitorDivision)}
+                          options={COMPETITOR_DIVISIONS}
+                        />
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Mobile Navigation Button to Next Substep */}
+                  <div className="sm:hidden pt-2 flex flex-col gap-1.5">
+                    <button
+                      type="button"
+                      onClick={() => setMobileTab('membership')}
+                      className="w-full gym-btn-primary text-xs py-2 h-9"
+                    >
+                      Next: Membership &amp; Notes &rarr;
+                    </button>
+                    <button
+                      type="submit"
+                      disabled={isSubmitting}
+                      className="text-center text-[10px] text-slate-400 hover:text-white underline cursor-pointer py-1"
+                    >
+                      Or Quick Save with Default VIP Membership
+                    </button>
                   </div>
                 </div>
-              </div>
 
-              {/* Row 6: Coach Notes */}
-              <div>
-                <label className="block text-[10px] font-mono uppercase tracking-wider text-slate-400 mb-1 font-semibold">
-                  Injuries, Medical Conditions &amp; Coach Notes
-                </label>
-                <input
-                  type="text"
-                  value={notes}
-                  onChange={(e) => setNotes(e.target.value)}
-                  placeholder="e.g. Mild right knee sensitivity on squats, prefers morning sessions..."
-                  className="w-full px-3 py-1.5 rounded-xl bg-[#05080e] border border-[#16202e] text-xs text-white placeholder-slate-500 focus:outline-none focus:border-cyan-500/35 transition-colors"
-                />
+                {/* ========================================================================= */}
+                {/* COLUMN 2: SUBSCRIPTION PLAN, MEMBERSHIP & COACH NOTES                     */}
+                {/* ========================================================================= */}
+                <div className={`space-y-2.5 ${mobileTab === 'membership' ? 'block' : 'hidden sm:block'}`}>
+                  {/* Membership Card */}
+                  <div className="p-3 rounded-xl bg-[var(--card-subtle-bg)] border border-[var(--card-border)] space-y-2.5">
+                    <div className="flex items-center justify-between">
+                      <span className="text-[10px] font-mono uppercase tracking-wider text-[var(--main-color)] font-semibold">
+                        Subscription &amp; Membership
+                      </span>
+                      <span className="text-[10px] font-mono text-slate-400">
+                        {durationMonths}m &bull; {subscriptionPrice} {coachSettings?.currency || 'EGP'}
+                      </span>
+                    </div>
+
+                    {/* Package Type Template Choice Dropdown */}
+                    <div>
+                      <SelectDropdown
+                        label="Package Type"
+                        value={subscriptionPlan}
+                        onChange={(val) => handleSelectPlanType(val as SubscriptionPlanType)}
+                        options={SUBSCRIPTION_PLANS}
+                      />
+                    </div>
+
+                    {/* Duration Pills */}
+                    <div>
+                      <label className="block text-[9px] font-mono uppercase tracking-wider text-slate-400 mb-1 font-semibold">
+                        Duration
+                      </label>
+                      <div className="flex items-center gap-1 p-0.5 rounded-xl bg-[var(--input-bg)] border border-[var(--input-border)] h-8">
+                        {[1, 3, 6, 12].map((m) => (
+                          <button
+                            key={m}
+                            type="button"
+                            onClick={() => handleSelectDuration(m)}
+                            className={`flex-1 h-6 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
+                              durationMonths === m
+                                ? 'bg-[var(--main-color)]/15 border border-[var(--main-color)]/35 text-[var(--main-color)] shadow-sm'
+                                : 'text-slate-400 hover:text-slate-200 border border-transparent'
+                            }`}
+                          >
+                            {m}m
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Dates & Fee Strip */}
+                    <div className="grid grid-cols-12 gap-2 pt-0.5">
+                      {/* Start Date */}
+                      <div className="col-span-6">
+                        <DatePicker
+                          label="Start Date"
+                          required
+                          value={startDate}
+                          onChange={(val) => handleStartDateChange(val)}
+                          error={errors.startDate}
+                          align="left"
+                        />
+                      </div>
+
+                      {/* End Date */}
+                      <div className="col-span-6">
+                        <DatePicker
+                          label="End Date"
+                          required
+                          value={endDate}
+                          onChange={(val) => setEndDate(val)}
+                          error={errors.endDate}
+                          align="right"
+                        />
+                      </div>
+
+                      {/* Fee */}
+                      <div className="col-span-12">
+                        <label className="block text-[9px] text-slate-400 mb-0.5 font-medium">
+                          Total Membership Fee ({coachSettings?.currency || 'EGP'})
+                        </label>
+                        <input
+                          type="number"
+                          value={subscriptionPrice}
+                          onChange={(e) => setSubscriptionPrice(e.target.value)}
+                          placeholder="6000"
+                          className="w-full px-2.5 py-1 rounded-lg bg-[var(--input-bg)] border border-[var(--input-border)] text-xs font-numeric font-medium text-white focus:outline-none focus:border-[var(--main-color)] text-center h-8"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Coach Notes & Medical Conditions */}
+                  <div>
+                    <label className="block text-[10px] font-mono uppercase tracking-wider text-slate-400 mb-1 font-semibold">
+                      Injuries, Medical Conditions &amp; Notes
+                    </label>
+                    <textarea
+                      rows={2}
+                      value={notes}
+                      onChange={(e) => setNotes(e.target.value)}
+                      placeholder="e.g. Mild right knee sensitivity on squats, prefers morning sessions..."
+                      className="w-full px-3 py-1.5 rounded-xl bg-[var(--input-bg)] border border-[var(--input-border)] text-xs text-white placeholder-slate-500 focus:outline-none focus:border-[var(--main-color)] transition-colors resize-none custom-scrollbar"
+                    />
+                  </div>
+
+                  {/* Mobile Navigation Buttons in Membership Substep */}
+                  <div className="sm:hidden pt-2 flex items-center justify-between gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setMobileTab('info')}
+                      className="gym-btn-secondary text-xs flex-1 h-9"
+                    >
+                      &larr; Back to Profile
+                    </button>
+                    <button
+                      type="submit"
+                      disabled={isSubmitting}
+                      className="gym-btn-primary text-xs flex-1 h-9"
+                    >
+                      Save &amp; Continue
+                    </button>
+                  </div>
+                </div>
+
               </div>
             </div>
 
-            {/* Footer */}
-            <div className="px-5 py-3 bg-[#0b101b] border-t border-[#141b26] flex items-center justify-between flex-shrink-0">
+            {/* Desktop Locked Footer (Zero Scroll, Always Anchored) */}
+            <div className="hidden sm:flex px-5 py-2.5 bg-[var(--card-subtle-bg)] border-t border-[var(--card-border)] items-center justify-between flex-shrink-0">
               <button
                 type="button"
                 onClick={handleClose}
-                className="px-3 py-1.5 rounded-lg text-xs font-medium text-slate-400 hover:text-white transition-colors cursor-pointer"
+                className="gym-btn-ghost text-xs"
               >
                 Cancel
               </button>
 
-              <button
-                type="submit"
-                disabled={isSubmitting}
-                className="py-1.5 px-5 rounded-xl bg-white hover:bg-slate-100 text-[#080c14] text-xs font-bold transition-all cursor-pointer inline-flex items-center active:scale-95 shadow-sm disabled:opacity-50"
-              >
-                Save &amp; Continue
-              </button>
+              <div className="flex items-center gap-2">
+                <button
+                  type="submit"
+                  disabled={isSubmitting}
+                  className="gym-btn-primary text-xs inline-flex items-center"
+                >
+                  Save &amp; Continue
+                </button>
+              </div>
             </div>
           </form>
         )}
@@ -811,17 +1002,17 @@ export const NewTraineeModal: React.FC<NewTraineeModalProps> = ({
         {currentStep === 'workout' && createdAthlete && (
           <div className="flex flex-col animate-in fade-in duration-150">
             {/* Header */}
-            <div className="px-5 py-3.5 bg-[#0b101b] border-b border-[#141b26] flex items-center justify-between flex-shrink-0">
+            <div className="px-5 py-3.5 bg-[var(--card-subtle-bg)] border-b border-[var(--card-border)] flex items-center justify-between flex-shrink-0">
               <div>
                 <div className="flex items-center gap-2">
-                  <h2 className="text-sm font-semibold text-white tracking-tight">
+                  <h2 className="gym-heading-card">
                     Step 2: Build Custom Workout Plan
                   </h2>
-                  <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-cyan-500/15 border border-cyan-500/35 text-cyan-300 font-bold">
+                  <span className="gym-delta-blue">
                     {createdAthlete.name}
                   </span>
                 </div>
-                <p className="text-[11px] text-slate-400 mt-0.5">
+                <p className="gym-subtext mt-0.5">
                   Design a personalized training split and exercises for this athlete
                 </p>
               </div>
@@ -829,7 +1020,7 @@ export const NewTraineeModal: React.FC<NewTraineeModalProps> = ({
               <button
                 type="button"
                 onClick={handleClose}
-                className="w-7 h-7 rounded-lg bg-[#05080e] border border-[#16202e] text-slate-400 hover:text-white flex items-center justify-center transition-colors text-sm font-medium cursor-pointer"
+                className="w-7 h-7 rounded-lg bg-[var(--card-subtle-bg)] border border-[var(--card-border)] text-slate-400 hover:text-white flex items-center justify-center transition-colors text-sm font-medium cursor-pointer"
                 title="Finish Later"
               >
                 &times;
@@ -838,12 +1029,12 @@ export const NewTraineeModal: React.FC<NewTraineeModalProps> = ({
 
             {/* Body */}
             <div className="p-5 space-y-4">
-              <div className="p-4 rounded-2xl bg-[#0b101b] border border-cyan-500/30 space-y-3">
+              <div className="p-4 rounded-xl gym-card space-y-3">
                 <div>
-                  <h3 className="text-xs font-semibold text-white tracking-tight">
+                  <h3 className="gym-heading-card">
                     Build Routine in Splits Studio
                   </h3>
-                  <p className="text-[11px] text-slate-400 leading-relaxed mt-1">
+                  <p className="gym-subtext mt-1">
                     Launch Splits Studio to craft a tailored workout routine, muscle split, exercise selection, sets, reps, and rest periods specifically for {createdAthlete.name}.
                   </p>
                 </div>
@@ -851,7 +1042,7 @@ export const NewTraineeModal: React.FC<NewTraineeModalProps> = ({
                 <button
                   type="button"
                   onClick={handleOpenSplitsStudio}
-                  className="w-full py-2.5 px-4 rounded-xl bg-white hover:bg-slate-100 text-[#080c14] text-xs font-bold transition-all cursor-pointer text-center active:scale-98 shadow-sm"
+                  className="gym-btn-primary w-full py-2.5 px-4 text-xs font-bold text-center"
                 >
                   Open Splits Studio
                 </button>
@@ -859,7 +1050,7 @@ export const NewTraineeModal: React.FC<NewTraineeModalProps> = ({
             </div>
 
             {/* Footer */}
-            <div className="px-5 py-3 bg-[#0b101b] border-t border-[#141b26] flex items-center justify-between flex-shrink-0">
+            <div className="px-5 py-3 bg-[var(--card-subtle-bg)] border-t border-[var(--card-border)] flex items-center justify-between flex-shrink-0">
               <button
                 type="button"
                 onClick={handleSkipWorkout}
@@ -885,17 +1076,17 @@ export const NewTraineeModal: React.FC<NewTraineeModalProps> = ({
         {currentStep === 'diet' && createdAthlete && (
           <div className="flex flex-col animate-in fade-in duration-150">
             {/* Header */}
-            <div className="px-5 py-3.5 bg-[#0b101b] border-b border-[#141b26] flex items-center justify-between flex-shrink-0">
+            <div className="px-5 py-3.5 bg-[var(--card-subtle-bg)] border-b border-[var(--card-border)] flex items-center justify-between flex-shrink-0">
               <div>
                 <div className="flex items-center gap-2">
-                  <h2 className="text-sm font-semibold text-white tracking-tight">
+                  <h2 className="gym-heading-card">
                     Step 3: Build Custom Nutrition
                   </h2>
-                  <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-cyan-500/15 border border-cyan-500/35 text-cyan-300 font-bold">
+                  <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-[var(--main-color)]/15 border border-[var(--main-color)]/35 text-[var(--main-color)] font-bold">
                     {createdAthlete.name}
                   </span>
                 </div>
-                <p className="text-[11px] text-slate-400 mt-0.5">
+                <p className="gym-subtext mt-0.5">
                   Calculate target calories, macros, and scheduled meals
                 </p>
               </div>
@@ -903,7 +1094,7 @@ export const NewTraineeModal: React.FC<NewTraineeModalProps> = ({
               <button
                 type="button"
                 onClick={handleClose}
-                className="w-7 h-7 rounded-lg bg-[#05080e] border border-[#16202e] text-slate-400 hover:text-white flex items-center justify-center transition-colors text-sm font-medium cursor-pointer"
+                className="w-7 h-7 rounded-lg bg-[var(--card-subtle-bg)] border border-[var(--card-border)] text-slate-400 hover:text-white flex items-center justify-center transition-colors text-sm font-medium cursor-pointer"
                 title="Finish Setup"
               >
                 &times;
@@ -912,12 +1103,12 @@ export const NewTraineeModal: React.FC<NewTraineeModalProps> = ({
 
             {/* Body */}
             <div className="p-5 space-y-4">
-              <div className="p-4 rounded-2xl bg-[#0b101b] border border-cyan-500/30 space-y-3">
+              <div className="p-4 rounded-2xl bg-[var(--card-bg)] border border-[var(--main-color)]/30 space-y-3">
                 <div>
-                  <h3 className="text-xs font-semibold text-white tracking-tight">
+                  <h3 className="gym-heading-card">
                     Formulate Diet in Diet Studio
                   </h3>
-                  <p className="text-[11px] text-slate-400 leading-relaxed mt-1">
+                  <p className="gym-subtext mt-1">
                     Launch Diet Studio to calculate daily calorie targets, macros (Protein, Carbs, Fats), and scheduled meals for {createdAthlete.name}.
                   </p>
                 </div>
@@ -925,7 +1116,7 @@ export const NewTraineeModal: React.FC<NewTraineeModalProps> = ({
                 <button
                   type="button"
                   onClick={handleOpenDietStudio}
-                  className="w-full py-2.5 px-4 rounded-xl bg-white hover:bg-slate-100 text-[#080c14] text-xs font-bold transition-all cursor-pointer text-center active:scale-98 shadow-sm"
+                  className="gym-btn-primary w-full py-2.5 px-4 text-xs font-bold text-center"
                 >
                   Open Diet Studio
                 </button>
@@ -933,11 +1124,11 @@ export const NewTraineeModal: React.FC<NewTraineeModalProps> = ({
             </div>
 
             {/* Footer */}
-            <div className="px-5 py-3 bg-[#0b101b] border-t border-[#141b26] flex items-center justify-between flex-shrink-0">
+            <div className="px-5 py-3 bg-[var(--card-subtle-bg)] border-t border-[var(--card-border)] flex items-center justify-between flex-shrink-0">
               <button
                 type="button"
                 onClick={handleCompleteSetup}
-                className="text-xs text-slate-400 hover:text-white transition-colors cursor-pointer"
+                className="gym-btn-ghost text-xs"
               >
                 Skip Diet Plan
               </button>
@@ -945,7 +1136,7 @@ export const NewTraineeModal: React.FC<NewTraineeModalProps> = ({
               <button
                 type="button"
                 onClick={handleCompleteSetup}
-                className="py-1.5 px-5 rounded-xl bg-white hover:bg-slate-100 text-[#080c14] text-xs font-bold transition-all cursor-pointer inline-flex items-center active:scale-95 shadow-sm"
+                className="gym-btn-primary text-xs inline-flex items-center"
               >
                 Finish Setup
               </button>

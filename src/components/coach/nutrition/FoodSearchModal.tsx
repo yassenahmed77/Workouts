@@ -282,25 +282,25 @@ export const FoodSearchModal: React.FC<FoodSearchModalProps> = ({
         }}
       >
         <div 
-          className={`w-full ${isCustomFoodOpen ? 'max-w-2xl max-h-[92vh]' : 'max-w-5xl h-[90vh] max-h-[820px]'} bg-[#080c14] border border-[#141b26] rounded-2xl overflow-hidden shadow-2xl flex flex-col transition-all`}
+          className={`w-full ${isCustomFoodOpen ? 'max-w-2xl max-h-[92vh]' : 'max-w-5xl h-[90vh] max-h-[820px]'} bg-[var(--card-bg)] border border-[var(--card-border)] rounded-2xl overflow-hidden shadow-2xl flex flex-col transition-all`}
           onClick={(e) => e.stopPropagation()}
         >
           {isCustomFoodOpen ? (
             /* ========================================================= */
             /* 1. DEDICATED FULL-SPACE VIEW: CREATE CUSTOM FOOD          */
             /* ========================================================= */
-            <div className="flex flex-col flex-1 min-h-0 bg-[#080c14]">
+            <div className="flex flex-col flex-1 min-h-0 bg-[var(--card-bg)]">
               {/* Header */}
-              <div className="flex items-center justify-between p-3 sm:px-5 border-b border-[#141b26] bg-[#070a0f] flex-shrink-0">
+              <div className="flex items-center justify-between p-3 sm:px-5 border-b border-[var(--card-border)] bg-[var(--card-subtle-bg)] flex-shrink-0">
                 <div className="flex items-center gap-2.5">
                   <button
                     type="button"
                     onClick={() => setIsCustomFoodOpen(false)}
-                    className="py-1 px-2.5 rounded-lg bg-[#05080e] hover:bg-white/[0.06] border border-[#16202e] hover:border-white/20 text-slate-300 hover:text-white text-xs font-medium transition-all cursor-pointer"
+                    className="py-1 px-2.5 rounded-lg bg-[var(--card-bg)] hover:bg-white/[0.06] border border-[var(--card-border)] hover:border-white/20 text-slate-300 hover:text-white text-xs font-medium transition-all cursor-pointer"
                   >
                     Back to Library
                   </button>
-                  <div className="h-4 w-px bg-[#16202e] hidden sm:block" />
+                  <div className="h-4 w-px bg-[var(--card-border)] hidden sm:block" />
                   <div>
                     <h3 className="text-sm font-bold text-white tracking-tight leading-tight">
                       Create Custom Food
@@ -314,7 +314,7 @@ export const FoodSearchModal: React.FC<FoodSearchModalProps> = ({
                 <button
                   type="button"
                   onClick={() => setIsCustomFoodOpen(false)}
-                  className="w-8 h-8 rounded-lg bg-[#05080e] border border-[#16202e] text-slate-400 hover:text-white flex items-center justify-center transition-colors cursor-pointer hover:border-white/20"
+                  className="w-8 h-8 rounded-lg bg-[var(--card-bg)] border border-[var(--card-border)] text-slate-400 hover:text-white flex items-center justify-center transition-colors cursor-pointer hover:border-white/20"
                 >
                   <X className="w-4 h-4" />
                 </button>
@@ -326,7 +326,7 @@ export const FoodSearchModal: React.FC<FoodSearchModalProps> = ({
                 className="flex-1 min-h-0 overflow-y-auto custom-scrollbar p-3.5 sm:p-5 space-y-3 max-w-2xl mx-auto w-full"
               >
                 {/* Section 1: Basic Information */}
-                <div className="relative z-20 p-3 sm:p-3.5 rounded-xl bg-[#090e17] border border-[#141b26] space-y-2.5 shadow-xs">
+                <div className="relative z-20 p-3 sm:p-3.5 rounded-xl bg-[var(--card-subtle-bg)] border border-[var(--card-border)] space-y-2.5 shadow-xs">
                   <span className="text-[10px] font-mono uppercase tracking-wider text-slate-400 font-semibold block">
                     Product Identification
                   </span>
@@ -342,7 +342,7 @@ export const FoodSearchModal: React.FC<FoodSearchModalProps> = ({
                         required
                         value={customNameEn}
                         onChange={(e) => setCustomNameEn(e.target.value)}
-                        className="w-full px-2.5 py-1.5 rounded-lg bg-[#05080e] border border-[#16202e] text-xs text-white placeholder-slate-500 focus:outline-none focus:border-slate-400 transition-colors"
+                        className="w-full px-2.5 py-1.5 rounded-lg bg-[var(--input-bg)] border border-[var(--input-border)] text-xs text-white placeholder-slate-500 focus:outline-none focus:border-[var(--main-color)] transition-colors"
                       />
                     </div>
 
@@ -355,7 +355,7 @@ export const FoodSearchModal: React.FC<FoodSearchModalProps> = ({
                         placeholder="e.g. Brand Name (Optional)"
                         value={customBrand}
                         onChange={(e) => setCustomBrand(e.target.value)}
-                        className="w-full px-2.5 py-1.5 rounded-lg bg-[#05080e] border border-[#16202e] text-xs text-white placeholder-slate-500 focus:outline-none focus:border-slate-400 transition-colors"
+                        className="w-full px-2.5 py-1.5 rounded-lg bg-[var(--input-bg)] border border-[var(--input-border)] text-xs text-white placeholder-slate-500 focus:outline-none focus:border-[var(--main-color)] transition-colors"
                       />
                     </div>
                   </div>
@@ -401,13 +401,13 @@ export const FoodSearchModal: React.FC<FoodSearchModalProps> = ({
                 </div>
 
                 {/* Section 2: Portion & Serving Basis */}
-                <div className="relative z-10 p-3 sm:p-3.5 rounded-xl bg-[#090e17] border border-[#141b26] space-y-2.5 shadow-xs">
+                <div className="relative z-10 p-3 sm:p-3.5 rounded-xl bg-[var(--card-subtle-bg)] border border-[var(--card-border)] space-y-2.5 shadow-xs">
                   <div className="flex items-center justify-between">
                     <span className="text-[10px] font-mono uppercase tracking-wider text-slate-400 font-semibold">
                       Portion Basis
                     </span>
                     {/* Segmented Toggle: By Weight (g) vs By Serving / Piece */}
-                    <div className="flex items-center gap-1 p-0.5 rounded-lg bg-[#05080e] border border-[#16202e]">
+                    <div className="flex items-center gap-1 p-0.5 rounded-lg bg-[var(--input-bg)] border border-[var(--input-border)]">
                       <button
                         type="button"
                         onClick={() => setCustomPortionType('grams')}
@@ -445,7 +445,7 @@ export const FoodSearchModal: React.FC<FoodSearchModalProps> = ({
                         placeholder="100"
                         value={customWeightGrams}
                         onChange={(e) => setCustomWeightGrams(e.target.value)}
-                        className="w-full px-2.5 py-1.5 rounded-lg bg-[#05080e] border border-[#16202e] text-xs font-bold text-white font-numeric focus:outline-none focus:border-slate-400 transition-colors"
+                        className="w-full px-2.5 py-1.5 rounded-lg bg-[var(--input-bg)] border border-[var(--input-border)] text-xs font-bold text-white font-numeric focus:outline-none focus:border-[var(--main-color)] transition-colors"
                       />
                     </div>
                   ) : (
@@ -459,7 +459,7 @@ export const FoodSearchModal: React.FC<FoodSearchModalProps> = ({
                           placeholder="e.g. 1 Scoop, 1 Bar, 1 Bottle, 1 Slice"
                           value={customServingName}
                           onChange={(e) => setCustomServingName(e.target.value)}
-                          className="w-full px-2.5 py-1.5 rounded-lg bg-[#05080e] border border-[#16202e] text-xs text-white placeholder-slate-500 focus:outline-none focus:border-slate-400 transition-colors"
+                          className="w-full px-2.5 py-1.5 rounded-lg bg-[var(--input-bg)] border border-[var(--input-border)] text-xs text-white placeholder-slate-500 focus:outline-none focus:border-[var(--main-color)] transition-colors"
                         />
                       </div>
                       <div>
@@ -473,7 +473,7 @@ export const FoodSearchModal: React.FC<FoodSearchModalProps> = ({
                           placeholder="e.g. 30, 60"
                           value={customServingGramsWeight}
                           onChange={(e) => setCustomServingGramsWeight(e.target.value)}
-                          className="w-full px-2.5 py-1.5 rounded-lg bg-[#05080e] border border-[#16202e] text-xs font-bold text-white font-numeric focus:outline-none focus:border-slate-400 transition-colors"
+                          className="w-full px-2.5 py-1.5 rounded-lg bg-[var(--input-bg)] border border-[var(--input-border)] text-xs font-bold text-white font-numeric focus:outline-none focus:border-[var(--main-color)] transition-colors"
                         />
                       </div>
                     </div>
@@ -481,7 +481,7 @@ export const FoodSearchModal: React.FC<FoodSearchModalProps> = ({
                 </div>
 
                 {/* Section 3: Nutritional Values */}
-                <div className="relative z-0 p-3 sm:p-3.5 rounded-xl bg-[#090e17] border border-[#141b26] space-y-2.5 shadow-xs">
+                <div className="relative z-0 p-3 sm:p-3.5 rounded-xl bg-[var(--card-subtle-bg)] border border-[var(--card-border)] space-y-2.5 shadow-xs">
                   <span className="text-[10px] font-mono uppercase tracking-wider text-slate-400 font-semibold block">
                     {customPortionType === 'grams'
                       ? `Nutritional Values (${customWeightGrams ? customWeightGrams + 'g' : '100g'})`
@@ -489,7 +489,7 @@ export const FoodSearchModal: React.FC<FoodSearchModalProps> = ({
                   </span>
 
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-                    <div className="p-2 rounded-lg bg-[#05080e] border border-[#16202e]">
+                    <div className="p-2 rounded-lg bg-[var(--input-bg)] border border-[var(--input-border)]">
                       <label className="text-[10px] font-mono uppercase text-slate-400 block font-semibold mb-0.5">
                         Calories (kcal)
                       </label>
@@ -500,11 +500,11 @@ export const FoodSearchModal: React.FC<FoodSearchModalProps> = ({
                         placeholder="0"
                         value={customCalories}
                         onChange={(e) => setCustomCalories(e.target.value)}
-                        className="w-full px-2 py-1 rounded bg-[#070a0f] border border-[#16202e] text-sm font-bold text-white font-numeric focus:outline-none focus:border-slate-400"
+                        className="w-full px-2 py-1 rounded bg-[var(--card-bg)] border border-[var(--input-border)] text-sm font-bold text-white font-numeric focus:outline-none focus:border-[var(--main-color)]"
                       />
                     </div>
 
-                    <div className="p-2 rounded-lg bg-[#05080e] border border-[#16202e]">
+                    <div className="p-2 rounded-lg bg-[var(--input-bg)] border border-[var(--input-border)]">
                       <label className="text-[10px] font-mono uppercase text-slate-400 block font-semibold mb-0.5">
                         Protein (g)
                       </label>
@@ -516,11 +516,11 @@ export const FoodSearchModal: React.FC<FoodSearchModalProps> = ({
                         placeholder="0"
                         value={customProtein}
                         onChange={(e) => setCustomProtein(e.target.value)}
-                        className="w-full px-2 py-1 rounded bg-[#070a0f] border border-[#16202e] text-sm font-bold text-white font-numeric focus:outline-none focus:border-slate-400"
+                        className="w-full px-2 py-1 rounded bg-[var(--card-bg)] border border-[var(--input-border)] text-sm font-bold text-white font-numeric focus:outline-none focus:border-[var(--main-color)]"
                       />
                     </div>
 
-                    <div className="p-2 rounded-lg bg-[#05080e] border border-[#16202e]">
+                    <div className="p-2 rounded-lg bg-[var(--input-bg)] border border-[var(--input-border)]">
                       <label className="text-[10px] font-mono uppercase text-slate-400 block font-semibold mb-0.5">
                         Carbs (g)
                       </label>
@@ -532,11 +532,11 @@ export const FoodSearchModal: React.FC<FoodSearchModalProps> = ({
                         placeholder="0"
                         value={customCarbs}
                         onChange={(e) => setCustomCarbs(e.target.value)}
-                        className="w-full px-2 py-1 rounded bg-[#070a0f] border border-[#16202e] text-sm font-bold text-white font-numeric focus:outline-none focus:border-slate-400"
+                        className="w-full px-2 py-1 rounded bg-[var(--card-bg)] border border-[var(--input-border)] text-sm font-bold text-white font-numeric focus:outline-none focus:border-[var(--main-color)]"
                       />
                     </div>
 
-                    <div className="p-2 rounded-lg bg-[#05080e] border border-[#16202e]">
+                    <div className="p-2 rounded-lg bg-[var(--input-bg)] border border-[var(--input-border)]">
                       <label className="text-[10px] font-mono uppercase text-slate-400 block font-semibold mb-0.5">
                         Fats (g)
                       </label>
@@ -548,25 +548,25 @@ export const FoodSearchModal: React.FC<FoodSearchModalProps> = ({
                         placeholder="0"
                         value={customFats}
                         onChange={(e) => setCustomFats(e.target.value)}
-                        className="w-full px-2 py-1 rounded bg-[#070a0f] border border-[#16202e] text-sm font-bold text-white font-numeric focus:outline-none focus:border-slate-400"
+                        className="w-full px-2 py-1 rounded bg-[var(--card-bg)] border border-[var(--input-border)] text-sm font-bold text-white font-numeric focus:outline-none focus:border-[var(--main-color)]"
                       />
                     </div>
                   </div>
                 </div>
 
                 {/* Form Action Buttons */}
-                <div className="flex items-center justify-end gap-2.5 pt-2 border-t border-[#141b26]">
+                <div className="flex items-center justify-end gap-2.5 pt-2 border-t border-[var(--card-border)]">
                   <button
                     type="button"
                     onClick={() => setIsCustomFoodOpen(false)}
-                    className="py-1.5 px-4 rounded-xl bg-[#05080e] hover:bg-white/[0.06] border border-[#16202e] text-slate-300 hover:text-white text-xs font-medium transition-all cursor-pointer"
+                    className="py-1.5 px-4 rounded-xl bg-[var(--card-bg)] hover:bg-white/[0.06] border border-[var(--card-border)] text-slate-300 hover:text-white text-xs font-medium transition-all cursor-pointer"
                   >
                     Cancel
                   </button>
 
                   <button
                     type="submit"
-                    className="py-1.5 px-5 rounded-xl bg-white hover:bg-slate-100 text-[#080c14] text-xs font-bold transition-all shadow-xs active:scale-95 cursor-pointer"
+                    className="gym-btn-primary text-xs"
                   >
                     Save to Library & Use
                   </button>
@@ -579,7 +579,7 @@ export const FoodSearchModal: React.FC<FoodSearchModalProps> = ({
             /* ========================================================= */
             <>
               {/* 1. Modal Top Bar - Obsidian Clean */}
-              <div className="flex items-center justify-between p-3.5 sm:px-5 border-b border-[#141b26] bg-[#070a0f] flex-shrink-0">
+              <div className="flex items-center justify-between p-3.5 sm:px-5 border-b border-[var(--card-border)] bg-[var(--card-subtle-bg)] flex-shrink-0">
                 <div>
                   <div className="flex items-center gap-2">
                     <h3 className="text-sm font-bold text-white tracking-tight leading-tight">
@@ -598,7 +598,7 @@ export const FoodSearchModal: React.FC<FoodSearchModalProps> = ({
                   <button
                     type="button"
                     onClick={() => setIsBarcodeModalOpen(true)}
-                    className="py-1.5 px-3 rounded-lg bg-[#05080e] hover:bg-white/[0.06] border border-[#16202e] hover:border-white/20 text-slate-300 hover:text-white text-xs font-medium transition-all cursor-pointer shadow-xs active:scale-95"
+                    className="py-1.5 px-3 rounded-lg bg-[var(--card-bg)] hover:bg-white/[0.06] border border-[var(--card-border)] hover:border-white/20 text-slate-300 hover:text-white text-xs font-medium transition-all cursor-pointer shadow-xs active:scale-95"
                   >
                     Scan Barcode
                   </button>
@@ -607,7 +607,7 @@ export const FoodSearchModal: React.FC<FoodSearchModalProps> = ({
                     ref={customFoodBtnRef}
                     type="button"
                     onClick={() => setIsCustomFoodOpen(true)}
-                    className="py-1.5 px-3 rounded-lg bg-[#05080e] hover:bg-white/[0.06] border border-[#16202e] hover:border-white/20 text-slate-300 hover:text-white text-xs font-medium transition-all cursor-pointer active:scale-95"
+                    className="py-1.5 px-3 rounded-lg bg-[var(--card-bg)] hover:bg-white/[0.06] border border-[var(--card-border)] hover:border-white/20 text-slate-300 hover:text-white text-xs font-medium transition-all cursor-pointer active:scale-95"
                   >
                     Add Custom Food
                   </button>
@@ -615,7 +615,7 @@ export const FoodSearchModal: React.FC<FoodSearchModalProps> = ({
                   <button
                     type="button"
                     onClick={onClose}
-                    className="w-8 h-8 rounded-lg bg-[#05080e] border border-[#16202e] text-slate-400 hover:text-white flex items-center justify-center transition-colors cursor-pointer hover:border-white/20"
+                    className="w-8 h-8 rounded-lg bg-[var(--card-bg)] border border-[var(--card-border)] text-slate-400 hover:text-white flex items-center justify-center transition-colors cursor-pointer hover:border-white/20"
                   >
                     <X className="w-4 h-4" />
                   </button>
@@ -623,7 +623,7 @@ export const FoodSearchModal: React.FC<FoodSearchModalProps> = ({
               </div>
 
               {/* 2. Filters & Search Bar */}
-              <div className="p-3 sm:px-5 border-b border-[#141b26] bg-[#070a0f] space-y-2 flex-shrink-0">
+              <div className="p-3 sm:px-5 border-b border-[var(--card-border)] bg-[var(--card-bg)] space-y-2 flex-shrink-0">
                 {/* Search Input */}
                 <div className="relative">
                   <input
@@ -635,13 +635,13 @@ export const FoodSearchModal: React.FC<FoodSearchModalProps> = ({
                       if (activeIsolatedFood) setActiveIsolatedFood(null);
                     }}
                     autoFocus
-                    className="w-full px-3 py-2 rounded-xl bg-[#05080e] border border-[#16202e] text-xs text-white placeholder-slate-500 focus:outline-none focus:border-slate-400 transition-colors"
+                    className="w-full px-3 py-2 rounded-xl bg-[var(--input-bg)] border border-[var(--input-border)] text-xs text-white placeholder-slate-500 focus:outline-none focus:border-[var(--main-color)] transition-colors"
                   />
                 </div>
 
                 {/* Category Pills & Preparation Toggle - Unified Design */}
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                  <div className="flex items-center gap-1 p-0.5 rounded-lg bg-[#05080e] border border-[#16202e] overflow-x-auto custom-scrollbar pb-1 sm:pb-0.5">
+                  <div className="flex items-center gap-1 p-0.5 rounded-lg bg-[var(--card-subtle-bg)] border border-[var(--card-border)] overflow-x-auto custom-scrollbar pb-1 sm:pb-0.5">
                     {categories.map((cat) => {
                       const isActive = selectedCategory === cat.id && !activeIsolatedFood;
                       return (
@@ -665,7 +665,7 @@ export const FoodSearchModal: React.FC<FoodSearchModalProps> = ({
                   </div>
 
                   {/* Cooked vs Raw Filter - Unified Design */}
-                  <div className="flex items-center gap-1 p-0.5 rounded-lg bg-[#05080e] border border-[#16202e] self-start sm:self-auto flex-shrink-0">
+                  <div className="flex items-center gap-1 p-0.5 rounded-lg bg-[var(--card-subtle-bg)] border border-[var(--card-border)] self-start sm:self-auto flex-shrink-0">
                     {(['all', 'cooked', 'raw'] as const).map((prep) => {
                       const isActive = selectedPrep === prep;
                       return (
@@ -688,10 +688,10 @@ export const FoodSearchModal: React.FC<FoodSearchModalProps> = ({
               </div>
 
               {/* 3. Main Split View: Left Food List & Right Grams Engine */}
-              <div className="flex-1 min-h-0 flex flex-col md:flex-row overflow-hidden bg-[#05080e]">
+              <div className="flex-1 min-h-0 flex flex-col md:flex-row overflow-hidden bg-[var(--card-bg)]">
                 
                 {/* Left Column: Food List */}
-                <div className="flex-1 min-h-0 overflow-y-auto custom-scrollbar p-3 space-y-1.5 border-r border-[#141b26]">
+                <div className="flex-1 min-h-0 overflow-y-auto custom-scrollbar p-3 space-y-1.5 border-r border-[var(--card-border)]">
                   {/* Isolated Action Banner (When scanned or custom added) */}
                   {activeIsolatedFood && (
                     <div className="flex items-center justify-between p-2.5 rounded-xl bg-white/[0.05] border border-white/15 mb-2">
@@ -707,7 +707,7 @@ export const FoodSearchModal: React.FC<FoodSearchModalProps> = ({
                           setActiveIsolatedFood(null);
                           setSearchQuery('');
                         }}
-                        className="text-[11px] font-medium text-slate-300 hover:text-white px-2.5 py-1 rounded-lg bg-[#05080e] border border-[#16202e] hover:border-white/20 transition-all cursor-pointer"
+                        className="text-[11px] font-medium text-slate-300 hover:text-white px-2.5 py-1 rounded-lg bg-[var(--card-subtle-bg)] border border-[var(--card-border)] hover:border-white/20 transition-all cursor-pointer"
                       >
                         View All Foods
                       </button>
@@ -722,7 +722,7 @@ export const FoodSearchModal: React.FC<FoodSearchModalProps> = ({
                       <button
                         type="button"
                         onClick={() => setIsCustomFoodOpen(true)}
-                        className="px-3.5 py-1.5 rounded-xl bg-[#090e17] border border-[#16202e] text-slate-200 text-xs font-medium hover:border-white/20 cursor-pointer"
+                        className="px-3.5 py-1.5 rounded-xl bg-[var(--card-subtle-bg)] border border-[var(--card-border)] text-slate-200 text-xs font-medium hover:border-white/20 cursor-pointer"
                       >
                         Add as Custom Food
                       </button>
@@ -736,8 +736,8 @@ export const FoodSearchModal: React.FC<FoodSearchModalProps> = ({
                           onClick={() => handleSelectFoodItem(food)}
                           className={`p-2.5 rounded-xl border transition-all cursor-pointer flex items-center justify-between gap-2.5 ${
                             isSelected
-                              ? 'bg-[#0c1424] border-white/25 text-white shadow-xs'
-                              : 'bg-[#070a10] border-[#141b26] hover:bg-[#0a0f1a] hover:border-white/10 text-slate-300'
+                              ? 'bg-[var(--card-subtle-bg)] border-[var(--main-color)] text-white shadow-xs'
+                              : 'bg-[var(--card-subtle-bg)]/60 border-[var(--card-border)] hover:bg-[var(--card-subtle-bg)] hover:border-white/10 text-slate-300'
                           }`}
                         >
                           <div className="min-w-0 space-y-0.5">
@@ -747,7 +747,7 @@ export const FoodSearchModal: React.FC<FoodSearchModalProps> = ({
                               </span>
                               
                               {/* Preparation State Badge */}
-                              <span className="text-[9.5px] font-mono px-1.5 py-0.5 rounded border bg-[#05080e] border-[#16202e] text-slate-400 font-medium">
+                              <span className="text-[9.5px] font-mono px-1.5 py-0.5 rounded border bg-[var(--card-bg)] border-[var(--card-border)] text-slate-400 font-medium">
                                 {food.preparation === 'cooked' ? 'Cooked' : food.preparation === 'raw' ? 'Raw' : food.preparation}
                               </span>
 
@@ -759,7 +759,7 @@ export const FoodSearchModal: React.FC<FoodSearchModalProps> = ({
                               )}
 
                               {food.barcode && (
-                                <span className="text-[9.5px] font-mono px-1.5 py-0.5 rounded bg-white/[0.04] text-slate-400 border border-[#16202e]">
+                                <span className="text-[9.5px] font-mono px-1.5 py-0.5 rounded bg-white/[0.04] text-slate-400 border border-[var(--card-border)]">
                                   Barcode
                                 </span>
                               )}
@@ -783,12 +783,12 @@ export const FoodSearchModal: React.FC<FoodSearchModalProps> = ({
 
                 {/* Right Column: Instant Grams Engine */}
                 {activeFood && (
-                  <div className="w-full md:w-80 min-h-0 bg-[#070a0f] flex flex-col flex-shrink-0 border-t md:border-t-0 md:border-l border-[#141b26] overflow-y-auto custom-scrollbar">
+                  <div className="w-full md:w-80 min-h-0 bg-[var(--card-subtle-bg)] flex flex-col flex-shrink-0 border-t md:border-t-0 md:border-l border-[var(--card-border)] overflow-y-auto custom-scrollbar">
                     <div className="p-3.5 flex flex-col justify-between flex-1 space-y-3 min-h-min">
                       <div className="space-y-3">
                         
                         {/* Selected Food Header */}
-                        <div className="space-y-0.5 pb-2 border-b border-[#141b26]">
+                        <div className="space-y-0.5 pb-2 border-b border-[var(--card-border)]">
                           <span className="text-[9.5px] font-mono uppercase tracking-wider text-slate-400 font-semibold block">
                             Configuring Portion
                           </span>
@@ -821,7 +821,7 @@ export const FoodSearchModal: React.FC<FoodSearchModalProps> = ({
                           </div>
 
                           {/* Mode Toggle: Manual vs Preset - Unified Design */}
-                          <div className="grid grid-cols-2 p-0.5 rounded-lg bg-[#05080e] border border-[#16202e]">
+                          <div className="grid grid-cols-2 p-0.5 rounded-lg bg-[var(--input-bg)] border border-[var(--input-border)]">
                             <button
                               type="button"
                               onClick={() => setPortionMode('manual')}
@@ -864,7 +864,7 @@ export const FoodSearchModal: React.FC<FoodSearchModalProps> = ({
                                     }
                                   }}
                                   placeholder="Enter grams..."
-                                  className="w-full px-3 py-1.5 rounded-lg bg-[#05080e] border border-[#16202e] focus:border-slate-400 text-sm font-bold text-white font-numeric focus:outline-none transition-all"
+                                  className="w-full px-3 py-1.5 rounded-lg bg-[var(--input-bg)] border border-[var(--input-border)] focus:border-[var(--main-color)] text-sm font-bold text-white font-numeric focus:outline-none transition-all"
                                 />
                                 <span className="text-xs font-mono text-slate-400 font-bold absolute right-3 top-1/2 -translate-y-1/2">
                                   grams
@@ -878,7 +878,7 @@ export const FoodSearchModal: React.FC<FoodSearchModalProps> = ({
                                     key={delta}
                                     type="button"
                                     onClick={() => handleAdjustManualGrams(delta)}
-                                    className="flex-1 py-1 rounded-md bg-[#05080e] hover:bg-white/[0.06] border border-[#16202e] hover:border-white/20 text-[10px] font-mono font-medium text-slate-300 hover:text-white transition-all cursor-pointer active:scale-95"
+                                    className="flex-1 py-1 rounded-md bg-[var(--card-bg)] hover:bg-white/[0.06] border border-[var(--card-border)] hover:border-white/20 text-[10px] font-mono font-medium text-slate-300 hover:text-white transition-all cursor-pointer active:scale-95"
                                   >
                                     {delta > 0 ? `+${delta}` : delta}g
                                   </button>
@@ -901,7 +901,7 @@ export const FoodSearchModal: React.FC<FoodSearchModalProps> = ({
                                   className={`py-1.5 rounded-lg text-xs font-mono font-semibold transition-all cursor-pointer ${
                                     portionGrams === g
                                       ? 'bg-white/[0.1] border border-white/20 text-white font-bold shadow-xs'
-                                      : 'bg-[#05080e] border border-[#16202e] text-slate-400 hover:text-white hover:border-white/10'
+                                      : 'bg-[var(--card-bg)] border border-[var(--card-border)] text-slate-400 hover:text-white hover:border-white/10'
                                   }`}
                                 >
                                   {g}g
@@ -912,8 +912,8 @@ export const FoodSearchModal: React.FC<FoodSearchModalProps> = ({
                         </div>
 
                         {/* Real-time Calculated Nutrition Facts */}
-                        <div className="p-2.5 rounded-xl bg-[#05080e] border border-[#141b26] space-y-2">
-                          <div className="flex items-baseline justify-between border-b border-[#141b26] pb-1.5">
+                        <div className="p-2.5 rounded-xl bg-[var(--card-bg)] border border-[var(--card-border)] space-y-2">
+                          <div className="flex items-baseline justify-between border-b border-[var(--card-border)] pb-1.5">
                             <span className="text-[10px] font-mono uppercase text-slate-400 font-semibold">
                               Energy Yield
                             </span>
@@ -926,7 +926,7 @@ export const FoodSearchModal: React.FC<FoodSearchModalProps> = ({
                           </div>
 
                           <div className="grid grid-cols-3 gap-1.5 text-center">
-                            <div className="p-1.5 rounded-lg bg-[#070a0f] border border-[#16202e]">
+                            <div className="p-1.5 rounded-lg bg-[var(--card-subtle-bg)] border border-[var(--card-border)]">
                               <span className="text-[9px] font-mono uppercase text-slate-400 block font-medium">
                                 Protein
                               </span>
@@ -935,7 +935,7 @@ export const FoodSearchModal: React.FC<FoodSearchModalProps> = ({
                               </span>
                             </div>
 
-                            <div className="p-1.5 rounded-lg bg-[#070a0f] border border-[#16202e]">
+                            <div className="p-1.5 rounded-lg bg-[var(--card-subtle-bg)] border border-[var(--card-border)]">
                               <span className="text-[9px] font-mono uppercase text-slate-400 block font-medium">
                                 Carbs
                               </span>
@@ -944,7 +944,7 @@ export const FoodSearchModal: React.FC<FoodSearchModalProps> = ({
                               </span>
                             </div>
 
-                            <div className="p-1.5 rounded-lg bg-[#070a0f] border border-[#16202e]">
+                            <div className="p-1.5 rounded-lg bg-[var(--card-subtle-bg)] border border-[var(--card-border)]">
                               <span className="text-[9px] font-mono uppercase text-slate-400 block font-medium">
                                 Fats
                               </span>
@@ -958,11 +958,11 @@ export const FoodSearchModal: React.FC<FoodSearchModalProps> = ({
                       </div>
 
                       {/* Confirm Add Button Sticky at Bottom */}
-                      <div className="pt-2 sticky bottom-0 bg-[#070a0f]/95 backdrop-blur-sm -mx-3.5 -mb-3.5 p-3.5 border-t border-[#141b26] flex-shrink-0 z-10">
+                      <div className="pt-2 sticky bottom-0 bg-[var(--card-subtle-bg)]/95 backdrop-blur-sm -mx-3.5 -mb-3.5 p-3.5 border-t border-[var(--card-border)] flex-shrink-0 z-10">
                         <button
                           type="button"
                           onClick={handleConfirmAdd}
-                          className="w-full py-2.5 px-4 rounded-xl bg-white hover:bg-slate-100 text-[#080c14] text-xs font-bold transition-all shadow-xs active:scale-95 cursor-pointer text-center"
+                          className="gym-btn-primary w-full py-2.5 px-4 text-xs font-bold text-center"
                         >
                           Add {portionGrams || activeFood.defaultServingGrams || 100}g to {targetMealName}
                         </button>

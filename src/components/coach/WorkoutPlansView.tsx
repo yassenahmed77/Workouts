@@ -97,36 +97,36 @@ export const WorkoutPlansView: React.FC<WorkoutPlansViewProps> = ({
 
   return (
     <div className="space-y-3 w-full max-w-none pb-4 select-none">
-      {/* 1. Ultra-Clean Executive Header (Text-Only, No Icons, Obsidian) */}
-      <div className="p-3 sm:p-3.5 rounded-xl bg-[#090e17] border border-[#141b26] flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-xs">
+      {/* 1. Ultra-Clean Executive Header */}
+      <div className="gym-card flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div className="space-y-1">
           <div className="flex items-center gap-2 flex-wrap">
-            <h1 className="text-base sm:text-lg font-bold text-white tracking-tight leading-none">
+            <h1 className="gym-heading-page">
               Athletes Training Hub
             </h1>
-            <span className="text-[11px] font-mono px-2 py-0.5 rounded-md bg-white/[0.04] text-slate-300 border border-white/10 font-bold">
+            <span className="gym-delta-blue">
               {stats.total} Athletes
             </span>
-            <span className="text-[11px] font-mono px-2 py-0.5 rounded-md bg-white/[0.04] text-slate-300 border border-white/10">
+            <span className="gym-delta-pos">
               {stats.active} Active Routines
             </span>
-            <span className="text-[11px] font-mono px-2 py-0.5 rounded-md bg-white/[0.04] text-slate-400 border border-white/10">
+            <span className="gym-delta-warn">
               {stats.needs} Awaiting Program
             </span>
             {stats.competitors > 0 && (
-              <span className="text-[11px] font-mono px-2 py-0.5 rounded-md bg-white/[0.04] text-slate-300 border border-white/10">
+              <span className="gym-delta-neutral">
                 {stats.competitors} Prep
               </span>
             )}
           </div>
-          <p className="text-xs text-slate-400 font-sans">
+          <p className="gym-subtext">
             Personalized 1-on-1 athlete training routines, customized periodization, and split progress.
           </p>
         </div>
 
         <div className="flex items-center gap-2 flex-wrap flex-shrink-0">
           {/* View Mode Toggle: Cards vs Table */}
-          <div className="flex items-center p-0.5 rounded-lg bg-[#05080e] border border-[#16202e] text-xs font-semibold">
+          <div className="flex items-center p-0.5 rounded-lg bg-[var(--gym-surface-base)] border border-[var(--gym-border-base)] text-xs font-semibold">
             <button
               type="button"
               onClick={() => setViewMode('cards')}
@@ -154,7 +154,7 @@ export const WorkoutPlansView: React.FC<WorkoutPlansViewProps> = ({
           <button
             type="button"
             onClick={() => onOpenCreatePlanModal()}
-            className="py-1.5 px-3.5 rounded-lg bg-white hover:bg-slate-100 active:scale-95 text-[#080c14] text-xs font-bold cursor-pointer shadow-xs transition-all whitespace-nowrap"
+            className="gym-btn-primary text-xs whitespace-nowrap"
           >
             + Build Workout Plan
           </button>
@@ -162,7 +162,7 @@ export const WorkoutPlansView: React.FC<WorkoutPlansViewProps> = ({
       </div>
 
       {/* 2. Operational Control Strip: Search & Filter Tabs */}
-      <div className="p-2.5 sm:p-3 rounded-xl bg-[#090e17] border border-[#141b26] flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5 shadow-xs">
+      <div className="p-2.5 sm:p-3 rounded-xl bg-[var(--card-bg)] border border-[var(--card-border)] flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5 shadow-xs">
         {/* Search Input */}
         <div className="flex-1 max-w-md">
           <input
@@ -170,12 +170,12 @@ export const WorkoutPlansView: React.FC<WorkoutPlansViewProps> = ({
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search athlete, goal, or routine title..."
-            className="w-full px-3 py-1.5 rounded-lg bg-[#05080e] border border-[#16202e] text-xs text-white placeholder-slate-500 focus:outline-none focus:border-slate-400 font-sans transition-colors"
+            className="w-full px-3 py-1.5 rounded-lg bg-[var(--card-subtle-bg)] border border-[var(--card-border)] text-xs text-white placeholder-slate-500 focus:outline-none focus:border-[var(--main-color)] font-sans transition-colors"
           />
         </div>
 
         {/* Filter Tabs */}
-        <div className="flex items-center gap-1 overflow-x-auto custom-scrollbar p-0.5 rounded-lg bg-[#05080e] border border-[#16202e] text-xs font-semibold flex-shrink-0">
+        <div className="flex items-center gap-1 overflow-x-auto custom-scrollbar p-0.5 rounded-lg bg-[var(--card-subtle-bg)] border border-[var(--card-border)] text-xs font-semibold flex-shrink-0">
           <button
             type="button"
             onClick={() => setSelectedFilter('All')}
@@ -225,7 +225,7 @@ export const WorkoutPlansView: React.FC<WorkoutPlansViewProps> = ({
 
       {/* 3. Athlete Workouts Content */}
       {filteredAthletes.length === 0 ? (
-        <div className="py-12 px-4 text-center rounded-xl bg-[#090e17] border border-[#141b26] space-y-2">
+        <div className="py-12 px-4 text-center rounded-xl bg-[var(--card-bg)] border border-[var(--card-border)] space-y-2">
           <h3 className="text-sm font-bold text-white">No Athletes Found</h3>
           <p className="text-xs text-slate-400 max-w-sm mx-auto font-sans">
             No athletes match your current search and filter settings.
@@ -253,7 +253,7 @@ export const WorkoutPlansView: React.FC<WorkoutPlansViewProps> = ({
             return (
               <div
                 key={athlete.id}
-                className="p-3.5 rounded-xl bg-[#090e17] border border-[#141b26] hover:border-[#1e293b] transition-all shadow-xs flex flex-col justify-between space-y-3"
+                className="p-3.5 rounded-xl bg-[var(--card-bg)] border border-[var(--card-border)] hover:border-white/20 transition-all shadow-xs flex flex-col justify-between space-y-3"
               >
                 <div className="space-y-3">
                   {/* Athlete Header Row */}
@@ -297,7 +297,7 @@ export const WorkoutPlansView: React.FC<WorkoutPlansViewProps> = ({
 
                   {/* Routine Details OR Call-to-Action */}
                   {plan ? (
-                    <div className="space-y-2.5 pt-2 border-t border-[#141b26]">
+                    <div className="space-y-2.5 pt-2 border-t border-[var(--card-border)]">
                       {/* Routine Title & Metrics */}
                       <div>
                         <span className="text-[9px] font-mono uppercase tracking-wider text-slate-500 font-bold block mb-0.5">
@@ -309,12 +309,12 @@ export const WorkoutPlansView: React.FC<WorkoutPlansViewProps> = ({
                       </div>
 
                       {/* Metrics Pill Grid */}
-                      <div className="grid grid-cols-3 gap-1.5 p-2 rounded-lg bg-[#05080e] border border-[#16202e] text-center font-mono text-xs">
+                      <div className="grid grid-cols-3 gap-1.5 p-2 rounded-lg bg-[var(--card-subtle-bg)] border border-[var(--card-border)] text-center font-mono text-xs">
                         <div>
                           <span className="block text-[9px] uppercase tracking-wider text-slate-500 font-semibold">Days/Wk</span>
                           <span className="font-bold text-white text-[11px] font-numeric">{plan.daysPerWeek}d</span>
                         </div>
-                        <div className="border-x border-[#16202e]">
+                        <div className="border-x border-[var(--card-border)]">
                           <span className="block text-[9px] uppercase tracking-wider text-slate-500 font-semibold">Duration</span>
                           <span className="font-bold text-white text-[11px] font-numeric">{plan.durationWeeks}w</span>
                         </div>
@@ -333,7 +333,7 @@ export const WorkoutPlansView: React.FC<WorkoutPlansViewProps> = ({
                           {plan.days.map((day, idx) => (
                             <div
                               key={day.id || idx}
-                              className="px-2 py-0.5 rounded bg-[#05080e] border border-[#16202e] text-[10px] font-mono whitespace-nowrap text-slate-300 flex-shrink-0"
+                              className="px-2 py-0.5 rounded bg-[var(--card-subtle-bg)] border border-[var(--card-border)] text-[10px] font-mono whitespace-nowrap text-slate-300 flex-shrink-0"
                             >
                               {day.isRestDay ? (
                                 <span className="text-slate-500">Rest</span>
@@ -347,14 +347,14 @@ export const WorkoutPlansView: React.FC<WorkoutPlansViewProps> = ({
                     </div>
                   ) : (
                     /* Athlete Without Routine: Call To Action */
-                    <div className="p-3 rounded-lg bg-[#05080e] border border-[#16202e] text-center space-y-2">
+                    <div className="p-3 rounded-lg bg-[var(--card-subtle-bg)] border border-[var(--card-border)] text-center space-y-2">
                       <p className="text-xs text-slate-400 font-medium">
                         No customized routine built for {athlete.name} yet.
                       </p>
                       <button
                         type="button"
                         onClick={() => onOpenCreatePlanModal(athlete.id)}
-                        className="w-full py-1.5 px-3 rounded-lg bg-white hover:bg-slate-100 text-[#080c14] font-bold text-xs transition-all active:scale-95 cursor-pointer shadow-xs"
+                        className="gym-btn-primary w-full text-xs"
                       >
                         + Build Custom Program
                       </button>
@@ -363,7 +363,7 @@ export const WorkoutPlansView: React.FC<WorkoutPlansViewProps> = ({
                 </div>
 
                 {/* Footer Action Bar */}
-                <div className="pt-2.5 border-t border-[#141b26] flex items-center justify-between gap-2 text-xs">
+                <div className="pt-2.5 border-t border-[var(--card-border)] flex items-center justify-between gap-2 text-xs">
                   {plan ? (
                     <>
                       <div className="flex items-center gap-1.5">
@@ -416,11 +416,11 @@ export const WorkoutPlansView: React.FC<WorkoutPlansViewProps> = ({
         </div>
       ) : (
         /* COMPACT ROSTER TABLE VIEW */
-        <div className="rounded-xl bg-[#090e17] border border-[#141b26] overflow-hidden shadow-xs">
+        <div className="rounded-xl bg-[var(--card-bg)] border border-[var(--card-border)] overflow-hidden shadow-xs">
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs border-collapse">
               <thead>
-                <tr className="border-b border-[#141b26] bg-[#070a0f] text-[10px] font-mono uppercase text-slate-400">
+                <tr className="border-b border-[var(--card-border)] bg-[var(--card-subtle-bg)] text-[10px] font-mono uppercase text-slate-400">
                   <th className="py-2.5 px-3 font-semibold">Athlete</th>
                   <th className="py-2.5 px-3 font-semibold">Active Routine</th>
                   <th className="py-2.5 px-3 font-semibold">Days/Wk</th>
@@ -430,7 +430,7 @@ export const WorkoutPlansView: React.FC<WorkoutPlansViewProps> = ({
                   <th className="py-2.5 px-3 text-right font-semibold">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-[#141b26]">
+              <tbody className="divide-y divide-[var(--card-border)]">
                 {filteredAthletes.map((athlete) => {
                   const plan = getPlanForUser(athlete.id);
                   const totalExercises = plan
@@ -501,7 +501,7 @@ export const WorkoutPlansView: React.FC<WorkoutPlansViewProps> = ({
                             <button
                               type="button"
                               onClick={() => onOpenCreatePlanModal(athlete.id)}
-                              className="px-2.5 py-1 rounded bg-white hover:bg-slate-100 text-[11px] font-bold text-[#080c14] shadow-xs active:scale-95"
+                              className="gym-btn-primary text-[11px] py-1 px-2.5"
                             >
                               + Build Plan
                             </button>
@@ -540,7 +540,7 @@ export const WorkoutPlansView: React.FC<WorkoutPlansViewProps> = ({
         >
           <div className="space-y-3 p-1">
             {/* Day Selector Pills */}
-            <div className="flex items-center gap-1.5 overflow-x-auto custom-scrollbar pb-1 border-b border-[#141b26]">
+            <div className="flex items-center gap-1.5 overflow-x-auto custom-scrollbar pb-1 border-b border-[var(--card-border)]">
               {previewPlan.plan.days.map((day, idx) => (
                 <button
                   key={day.id || idx}
@@ -564,21 +564,21 @@ export const WorkoutPlansView: React.FC<WorkoutPlansViewProps> = ({
 
             {/* Selected Day Movements Table */}
             {previewPlan.plan.days[previewDayIndex]?.isRestDay ? (
-              <div className="p-8 text-center rounded-xl bg-[#05080e] border border-[#16202e] space-y-1">
+              <div className="p-8 text-center rounded-xl bg-[var(--card-subtle-bg)] border border-[var(--card-border)] space-y-1">
                 <span className="text-xs font-bold text-white">Scheduled Active Recovery / Rest Day</span>
                 <p className="text-[11px] text-slate-400">
                   Targeted CNS recovery and muscular glycogen replenishment.
                 </p>
               </div>
             ) : previewPlan.plan.days[previewDayIndex]?.exercises.length === 0 ? (
-              <div className="p-8 text-center rounded-xl bg-[#05080e] border border-[#16202e]">
+              <div className="p-8 text-center rounded-xl bg-[var(--card-subtle-bg)] border border-[var(--card-border)]">
                 <span className="text-xs text-slate-400">No exercises added to this training day yet.</span>
               </div>
             ) : (
-              <div className="rounded-xl bg-[#05080e] border border-[#16202e] overflow-hidden">
+              <div className="rounded-xl bg-[var(--card-subtle-bg)] border border-[var(--card-border)] overflow-hidden">
                 <table className="w-full text-left text-xs border-collapse">
                   <thead>
-                    <tr className="border-b border-[#16202e] bg-[#070a0f] text-[10px] font-mono uppercase text-slate-400">
+                    <tr className="border-b border-[var(--card-border)] bg-[var(--card-subtle-bg)] text-[10px] font-mono uppercase text-slate-400">
                       <th className="py-2 px-3">Movement</th>
                       <th className="py-2 px-3">Muscle</th>
                       <th className="py-2 px-3">Sets</th>
@@ -588,7 +588,7 @@ export const WorkoutPlansView: React.FC<WorkoutPlansViewProps> = ({
                       <th className="py-2 px-3 text-right">Guide</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-[#16202e]">
+                  <tbody className="divide-y divide-[var(--card-border)]">
                     {previewPlan.plan.days[previewDayIndex]?.exercises.map((item, idx) => (
                       <tr key={item.id || idx} className="hover:bg-white/[0.02]">
                         <td className="py-2 px-3 font-bold text-white whitespace-nowrap">
@@ -637,7 +637,7 @@ export const WorkoutPlansView: React.FC<WorkoutPlansViewProps> = ({
             )}
 
             {/* Modal Bottom Actions */}
-            <div className="flex items-center justify-between pt-2 border-t border-[#141b26]">
+            <div className="flex items-center justify-between pt-2 border-t border-[var(--card-border)]">
               <button
                 type="button"
                 onClick={() => setPreviewPlan(null)}
@@ -654,7 +654,7 @@ export const WorkoutPlansView: React.FC<WorkoutPlansViewProps> = ({
                     setPreviewPlan(null);
                     onOpenEditPlanModal(plan, athlete.id);
                   }}
-                  className="px-4 py-1.5 rounded-lg bg-white text-[#080c14] font-bold text-xs hover:bg-slate-100 transition-all cursor-pointer shadow-xs active:scale-95"
+                  className="px-4 py-1.5 rounded-lg bg-white text-[var(--card-bg)] font-bold text-xs hover:bg-slate-100 transition-all cursor-pointer shadow-xs active:scale-95"
                 >
                   Edit Program in Builder
                 </button>

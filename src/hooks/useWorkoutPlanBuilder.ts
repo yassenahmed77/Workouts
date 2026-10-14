@@ -5,6 +5,7 @@ import { useGym } from '@/context/GymContext';
 import { useToast } from '@/context/ToastContext';
 import { WorkoutPlan, WorkoutDay, RoutineExercise, MuscleGroup, EquipmentType } from '@/types';
 import { workoutService } from '@/services/workoutService';
+import { ExerciseFormData } from '@/components/coach/exercises/ExerciseFormModal';
 
 export interface UseWorkoutPlanBuilderProps {
   isOpen: boolean;
@@ -467,8 +468,27 @@ export function useWorkoutPlanBuilder({
     handleUpdateActiveDay({ exercises: nextExercises });
   };
 
-  const handleCreateNewExerciseSubmit = async (e: FormEvent) => {
-    e.preventDefault();
+  const handleCreateNewExerciseSubmit = async (data?: ExerciseFormData | FormEvent) => {
+    if (data && 'name' in data) {
+      if (!data.name.trim()) return;
+      const created = await addExercise({
+        name: data.name.trim(),
+        targetMuscle: data.targetMuscle,
+        equipment: data.equipment,
+        category: data.category,
+        videoUrl: data.videoUrl?.trim() || undefined,
+        alternativeExercise: data.alternativeExercise?.trim() || undefined,
+        alternativeVideoUrl: data.alternativeVideoUrl?.trim() || undefined,
+        executionCue: data.executionCue?.trim() || 'Execute with strict form.',
+        tips: data.tips && data.tips.length > 0 ? data.tips : ['Maintain control', 'Keep core tight']
+      });
+
+      handleAddExerciseToActiveDay(created);
+      setIsNewMovementModalOpen(false);
+      showToast(`Created & added ${created.name}`, 'success');
+      return;
+    }
+
     if (!newExName.trim()) return;
 
     const created = await addExercise({

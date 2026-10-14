@@ -5,12 +5,21 @@ import { useGym } from '@/context/GymContext';
 import { useToast } from '@/context/ToastContext';
 import { CoachSettings, CoachPackage } from '@/types';
 import { coachSettingsService } from '@/services/coachSettingsService';
+import { PanelLeft } from 'lucide-react';
 
 const CURRENCY_OPTIONS = ['EGP', 'USD', 'SAR', 'AED', 'EUR', 'GBP'];
 const REMINDER_DAYS_OPTIONS = [1, 3, 5, 7, 14];
 const WEEK_DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 
-export const CoachSettingsView: React.FC = () => {
+interface CoachSettingsViewProps {
+  isSidebarOpen?: boolean;
+  onToggleSidebar?: () => void;
+}
+
+export const CoachSettingsView: React.FC<CoachSettingsViewProps> = ({
+  isSidebarOpen,
+  onToggleSidebar
+}) => {
   const { coachSettings, updateCoachSettings } = useGym();
   const { showToast } = useToast();
 
@@ -169,17 +178,28 @@ export const CoachSettingsView: React.FC = () => {
   return (
     <div className="flex flex-col h-full space-y-4 select-none overflow-hidden">
       {/* 1. Header & Primary Save Strip */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 flex-shrink-0">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-2 border-b border-[var(--card-border)] flex-shrink-0">
         <div>
           <div className="flex items-center gap-2">
-            <h1 className="text-xl font-bold tracking-tight text-white">
+            {onToggleSidebar && (
+              <button
+                type="button"
+                onClick={onToggleSidebar}
+                className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-white/[0.06] border border-white/[0.08] transition-colors flex items-center justify-center cursor-pointer shrink-0 min-[1025px]:hidden"
+                title={isSidebarOpen ? "Collapse sidebar (Ctrl+B)" : "Expand sidebar (Ctrl+B)"}
+                aria-label="Toggle Navigation Sidebar"
+              >
+                <PanelLeft className="w-4 h-4 text-slate-300" />
+              </button>
+            )}
+            <h1 className="gym-heading-page">
               Coach OS &bull; White-Label Settings
             </h1>
-            <span className="px-2 py-0.5 rounded-md text-[10px] font-mono font-bold bg-cyan-500/10 border border-cyan-500/25 text-cyan-300">
+            <span className="gym-delta-blue">
               Commercial Edition
             </span>
           </div>
-          <p className="text-xs text-slate-400 mt-0.5">
+          <p className="gym-subtext mt-0.5">
             Configure coach brand identity, commercial pricing packages, currency, and client operation rules.
           </p>
         </div>
@@ -187,7 +207,7 @@ export const CoachSettingsView: React.FC = () => {
         <button
           type="button"
           onClick={handleSaveAllSettings}
-          className="py-2 px-6 rounded-xl bg-white hover:bg-slate-100 text-[#080c14] text-xs font-bold transition-all shadow-sm active:scale-95 cursor-pointer self-start sm:self-auto"
+          className="gym-btn-primary text-xs self-start sm:self-auto"
         >
           Save All Changes
         </button>
@@ -200,9 +220,9 @@ export const CoachSettingsView: React.FC = () => {
         <div className="lg:col-span-6 space-y-3.5">
           
           {/* Card 1: Brand & Coach Identity */}
-          <div className="p-4 rounded-2xl bg-[#080c14] border border-[#141b26] space-y-3 shadow-md">
-            <div className="border-b border-[#141b26] pb-2.5">
-              <span className="text-[10px] font-mono uppercase tracking-wider text-cyan-400 font-bold block">
+          <div className="p-4 rounded-2xl bg-[var(--card-bg)] border border-[var(--card-border)] space-y-3 shadow-md">
+            <div className="border-b border-[var(--card-border)] pb-2.5">
+              <span className="text-[10px] font-mono uppercase tracking-wider text-[var(--main-color)] font-bold block">
                 Brand &bull; Identity
               </span>
               <h3 className="text-sm font-bold text-white tracking-tight mt-0.5">
@@ -222,7 +242,7 @@ export const CoachSettingsView: React.FC = () => {
                     value={coachName}
                     onChange={(e) => setCoachName(e.target.value)}
                     placeholder="e.g. Captain Yassen Ahmed"
-                    className="w-full px-3 py-1.5 rounded-xl bg-[#05080e] border border-[#16202e] text-xs text-white placeholder-slate-500 focus:outline-none focus:border-cyan-500/35 transition-colors"
+                    className="w-full px-3 py-1.5 rounded-xl bg-[var(--input-bg)] border border-[var(--input-border)] text-xs text-white placeholder-slate-500 focus:outline-none focus:border-[var(--main-color)] transition-colors"
                   />
                 </div>
 
@@ -235,7 +255,7 @@ export const CoachSettingsView: React.FC = () => {
                     value={brandName}
                     onChange={(e) => setBrandName(e.target.value)}
                     placeholder="e.g. IRON FORGE ELITE"
-                    className="w-full px-3 py-1.5 rounded-xl bg-[#05080e] border border-[#16202e] text-xs text-white placeholder-slate-500 focus:outline-none focus:border-cyan-500/35 transition-colors"
+                    className="w-full px-3 py-1.5 rounded-xl bg-[var(--input-bg)] border border-[var(--input-border)] text-xs text-white placeholder-slate-500 focus:outline-none focus:border-[var(--main-color)] transition-colors"
                   />
                 </div>
               </div>
@@ -250,7 +270,7 @@ export const CoachSettingsView: React.FC = () => {
                   value={tagline}
                   onChange={(e) => setTagline(e.target.value)}
                   placeholder="e.g. Championship Bodybuilding &amp; High-Performance Systems"
-                  className="w-full px-3 py-1.5 rounded-xl bg-[#05080e] border border-[#16202e] text-xs text-white placeholder-slate-500 focus:outline-none focus:border-cyan-500/35 transition-colors"
+                  className="w-full px-3 py-1.5 rounded-xl bg-[var(--input-bg)] border border-[var(--input-border)] text-xs text-white placeholder-slate-500 focus:outline-none focus:border-[var(--main-color)] transition-colors"
                 />
               </div>
 
@@ -265,7 +285,7 @@ export const CoachSettingsView: React.FC = () => {
                     value={whatsappNumber}
                     onChange={(e) => setWhatsappNumber(e.target.value)}
                     placeholder="+201023456789"
-                    className="w-full px-3 py-1.5 rounded-xl bg-[#05080e] border border-[#16202e] text-xs font-mono text-white placeholder-slate-500 focus:outline-none focus:border-cyan-500/35 transition-colors"
+                    className="w-full px-3 py-1.5 rounded-xl bg-[var(--input-bg)] border border-[var(--input-border)] text-xs font-mono text-white placeholder-slate-500 focus:outline-none focus:border-[var(--main-color)] transition-colors"
                   />
                 </div>
 
@@ -278,7 +298,7 @@ export const CoachSettingsView: React.FC = () => {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="coach@fitness.io"
-                    className="w-full px-3 py-1.5 rounded-xl bg-[#05080e] border border-[#16202e] text-xs text-white placeholder-slate-500 focus:outline-none focus:border-cyan-500/35 transition-colors"
+                    className="w-full px-3 py-1.5 rounded-xl bg-[var(--input-bg)] border border-[var(--input-border)] text-xs text-white placeholder-slate-500 focus:outline-none focus:border-[var(--main-color)] transition-colors"
                   />
                 </div>
               </div>
@@ -288,7 +308,7 @@ export const CoachSettingsView: React.FC = () => {
                 <label className="block text-[10px] font-mono uppercase tracking-wider text-slate-400 mb-1.5 font-semibold">
                   Primary Operating Currency
                 </label>
-                <div className="flex flex-wrap items-center gap-1 p-0.5 rounded-xl bg-[#05080e] border border-[#16202e]">
+                <div className="flex flex-wrap items-center gap-1 p-0.5 rounded-xl bg-[var(--input-bg)] border border-[var(--input-border)]">
                   {CURRENCY_OPTIONS.map((c) => (
                     <button
                       key={c}
@@ -296,7 +316,7 @@ export const CoachSettingsView: React.FC = () => {
                       onClick={() => setCurrency(c)}
                       className={`flex-1 min-w-[50px] py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
                         currency === c
-                          ? 'bg-cyan-500/15 border border-cyan-500/35 text-cyan-300 shadow-sm'
+                          ? 'bg-[var(--main-color)]/15 border border-[var(--main-color)]/35 text-[var(--main-color)] shadow-sm'
                           : 'text-slate-400 hover:text-slate-200 border border-transparent'
                       }`}
                     >
@@ -309,9 +329,9 @@ export const CoachSettingsView: React.FC = () => {
           </div>
 
           {/* Card 2: Operations & Check-in Rules */}
-          <div className="p-4 rounded-2xl bg-[#080c14] border border-[#141b26] space-y-3 shadow-md">
-            <div className="border-b border-[#141b26] pb-2.5">
-              <span className="text-[10px] font-mono uppercase tracking-wider text-cyan-400 font-bold block">
+          <div className="p-4 rounded-2xl bg-[var(--card-bg)] border border-[var(--card-border)] space-y-3 shadow-md">
+            <div className="border-b border-[var(--card-border)] pb-2.5">
+              <span className="text-[10px] font-mono uppercase tracking-wider text-[var(--main-color)] font-bold block">
                 Operations &bull; Automation Rules
               </span>
               <h3 className="text-sm font-bold text-white tracking-tight mt-0.5">
@@ -325,7 +345,7 @@ export const CoachSettingsView: React.FC = () => {
                 <label className="block text-[10px] font-mono uppercase tracking-wider text-slate-400 mb-1.5 font-semibold">
                   Renewal Reminder Lead Time (Days Before Expiry)
                 </label>
-                <div className="flex items-center gap-1 p-0.5 rounded-xl bg-[#05080e] border border-[#16202e]">
+                <div className="flex items-center gap-1 p-0.5 rounded-xl bg-[var(--input-bg)] border border-[var(--input-border)]">
                   {REMINDER_DAYS_OPTIONS.map((days) => (
                     <button
                       key={days}
@@ -333,7 +353,7 @@ export const CoachSettingsView: React.FC = () => {
                       onClick={() => setRenewalReminderDaysBefore(days)}
                       className={`flex-1 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
                         renewalReminderDaysBefore === days
-                          ? 'bg-cyan-500/15 border border-cyan-500/35 text-cyan-300 shadow-sm'
+                          ? 'bg-[var(--main-color)]/15 border border-[var(--main-color)]/35 text-[var(--main-color)] shadow-sm'
                           : 'text-slate-400 hover:text-slate-200 border border-transparent'
                       }`}
                     >
@@ -358,8 +378,8 @@ export const CoachSettingsView: React.FC = () => {
                         onClick={() => toggleCheckInDay(day)}
                         className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer border ${
                           isSelected
-                            ? 'bg-cyan-500/15 border-cyan-500/35 text-cyan-300 shadow-sm'
-                            : 'bg-[#05080e] border-[#16202e] text-slate-400 hover:text-slate-200'
+                            ? 'bg-[var(--main-color)]/15 border-[var(--main-color)]/35 text-[var(--main-color)] shadow-sm'
+                            : 'bg-[var(--input-bg)] border border-[var(--input-border)] text-slate-400 hover:text-slate-200'
                         }`}
                       >
                         {day}
@@ -378,7 +398,7 @@ export const CoachSettingsView: React.FC = () => {
                   rows={3}
                   value={whatsappTemplate}
                   onChange={(e) => setWhatsappTemplate(e.target.value)}
-                  className="w-full p-2.5 rounded-xl bg-[#05080e] border border-[#16202e] text-xs text-white placeholder-slate-500 focus:outline-none focus:border-cyan-500/35 transition-colors leading-relaxed font-sans resize-none"
+                  className="w-full p-2.5 rounded-xl bg-[var(--input-bg)] border border-[var(--input-border)] text-xs text-white placeholder-slate-500 focus:outline-none focus:border-[var(--main-color)] transition-colors leading-relaxed font-sans resize-none"
                 />
                 <span className="text-[10px] text-slate-500 font-mono block mt-1">
                   Variables available: {'{clientName}'}, {'{planName}'}, {'{endDate}'}, {'{daysLeft}'}, {'{coachName}'}, {'{brandName}'}
@@ -392,10 +412,10 @@ export const CoachSettingsView: React.FC = () => {
         {/* Right Column: Coaching Packages & Pricing Builder (Col span 6) */}
         <div className="lg:col-span-6 space-y-3.5">
           
-          <div className="p-4 rounded-2xl bg-[#080c14] border border-[#141b26] space-y-3 shadow-md">
-            <div className="flex items-center justify-between border-b border-[#141b26] pb-2.5">
+          <div className="p-4 rounded-2xl bg-[var(--card-bg)] border border-[var(--card-border)] space-y-3 shadow-md">
+            <div className="flex items-center justify-between border-b border-[var(--card-border)] pb-2.5">
               <div>
-                <span className="text-[10px] font-mono uppercase tracking-wider text-cyan-400 font-bold block">
+                <span className="text-[10px] font-mono uppercase tracking-wider text-[var(--main-color)] font-bold block">
                   Commercialization &bull; Packages
                 </span>
                 <h3 className="text-sm font-bold text-white tracking-tight mt-0.5">
@@ -417,7 +437,7 @@ export const CoachSettingsView: React.FC = () => {
               {packages.map((pkg) => (
                 <div
                   key={pkg.id}
-                  className="p-3 rounded-xl bg-[#05080e] border border-[#141b26] hover:border-[#233146] transition-all space-y-2"
+                  className="p-3 rounded-xl bg-[var(--card-subtle-bg)] border border-[var(--card-border)] hover:border-[var(--card-border)] transition-all space-y-2"
                 >
                   <div className="flex items-start justify-between gap-2">
                     <div>
@@ -425,11 +445,11 @@ export const CoachSettingsView: React.FC = () => {
                         <h4 className="text-xs sm:text-sm font-bold text-white tracking-tight">
                           {pkg.name}
                         </h4>
-                        <span className="px-2 py-0.2 rounded-full text-[10px] font-mono font-bold bg-[#0b101b] border border-[#16202e] text-slate-300">
+                        <span className="px-2 py-0.2 rounded-full text-[10px] font-mono font-bold bg-[var(--card-bg)] border border-[var(--card-border)] text-slate-300">
                           {pkg.durationMonths}m
                         </span>
                         {pkg.isPopular && (
-                          <span className="px-1.5 py-0.2 rounded text-[9px] font-mono font-bold bg-cyan-500/20 text-cyan-300 border border-cyan-500/30">
+                          <span className="px-1.5 py-0.2 rounded text-[9px] font-mono font-bold bg-[var(--main-color)]/20 text-[var(--main-color)] border border-[var(--main-color)]/30">
                             POPULAR
                           </span>
                         )}
@@ -467,7 +487,7 @@ export const CoachSettingsView: React.FC = () => {
               ))}
 
               {packages.length === 0 && (
-                <div className="p-6 text-center rounded-xl bg-[#05080e] border border-[#141b26] text-slate-400 text-xs font-mono">
+                <div className="p-6 text-center rounded-xl bg-[var(--card-subtle-bg)] border border-[var(--card-border)] text-slate-400 text-xs font-mono">
                   No custom coaching packages configured. Click Add Package to create offerings.
                 </div>
               )}
@@ -487,12 +507,12 @@ export const CoachSettingsView: React.FC = () => {
           }}
         >
           <div 
-            className="w-full max-w-md bg-[#080c14] border border-[#141b26] rounded-3xl shadow-2xl overflow-hidden animate-in zoom-in-95 duration-150"
+            className="w-full max-w-md bg-[var(--card-bg)] border border-[var(--card-border)] rounded-3xl shadow-2xl overflow-hidden animate-in zoom-in-95 duration-150"
             onClick={(e) => e.stopPropagation()}
           >
             <form onSubmit={handleSavePackageModal} className="flex flex-col">
               {/* Header */}
-              <div className="px-5 py-3.5 bg-[#0b101b] border-b border-[#141b26] flex items-center justify-between">
+              <div className="px-5 py-3.5 bg-[var(--card-subtle-bg)] border-b border-[var(--card-border)] flex items-center justify-between">
                 <div>
                   <h3 className="text-sm font-semibold text-white tracking-tight">
                     {editingPackageId ? 'Edit Coaching Package' : 'Create Coaching Package'}
@@ -504,7 +524,7 @@ export const CoachSettingsView: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => setIsPackageModalOpen(false)}
-                  className="w-7 h-7 rounded-lg bg-[#05080e] border border-[#16202e] text-slate-400 hover:text-white flex items-center justify-center text-sm cursor-pointer"
+                  className="w-7 h-7 rounded-lg bg-[var(--card-bg)] border border-[var(--card-border)] text-slate-400 hover:text-white flex items-center justify-center text-sm cursor-pointer"
                 >
                   &times;
                 </button>
@@ -521,7 +541,7 @@ export const CoachSettingsView: React.FC = () => {
                     value={pkgName}
                     onChange={(e) => setPkgName(e.target.value)}
                     placeholder="e.g. Full VIP Coaching"
-                    className="w-full px-3 py-1.5 rounded-xl bg-[#05080e] border border-[#16202e] text-xs text-white focus:outline-none focus:border-cyan-500/35"
+                    className="w-full px-3 py-1.5 rounded-xl bg-[var(--input-bg)] border border-[var(--input-border)] text-xs text-white focus:outline-none focus:border-[var(--main-color)]"
                   />
                 </div>
 
@@ -533,12 +553,12 @@ export const CoachSettingsView: React.FC = () => {
                     <select
                       value={pkgDuration}
                       onChange={(e) => setPkgDuration(e.target.value)}
-                      className="w-full px-3 py-1.5 rounded-xl bg-[#05080e] border border-[#16202e] text-xs text-white focus:outline-none focus:border-cyan-500/35"
+                      className="w-full px-3 py-1.5 rounded-xl bg-[var(--input-bg)] border border-[var(--input-border)] text-xs text-white focus:outline-none focus:border-[var(--main-color)]"
                     >
-                      <option value="1" className="bg-[#080c14] text-white">1 Month</option>
-                      <option value="3" className="bg-[#080c14] text-white">3 Months</option>
-                      <option value="6" className="bg-[#080c14] text-white">6 Months</option>
-                      <option value="12" className="bg-[#080c14] text-white">12 Months</option>
+                      <option value="1" className="bg-[var(--card-bg)] text-white">1 Month</option>
+                      <option value="3" className="bg-[var(--card-bg)] text-white">3 Months</option>
+                      <option value="6" className="bg-[var(--card-bg)] text-white">6 Months</option>
+                      <option value="12" className="bg-[var(--card-bg)] text-white">12 Months</option>
                     </select>
                   </div>
 
@@ -551,7 +571,7 @@ export const CoachSettingsView: React.FC = () => {
                       value={pkgPrice}
                       onChange={(e) => setPkgPrice(e.target.value)}
                       placeholder="6000"
-                      className="w-full px-3 py-1.5 rounded-xl bg-[#05080e] border border-[#16202e] text-xs font-numeric text-white focus:outline-none focus:border-cyan-500/35 text-center"
+                      className="w-full px-3 py-1.5 rounded-xl bg-[var(--input-bg)] border border-[var(--input-border)] text-xs font-numeric text-white focus:outline-none focus:border-[var(--main-color)] text-center"
                     />
                   </div>
                 </div>
@@ -565,7 +585,7 @@ export const CoachSettingsView: React.FC = () => {
                     value={pkgDescription}
                     onChange={(e) => setPkgDescription(e.target.value)}
                     placeholder="Custom workout split, periodized hypertrophy program, nutrition audit &amp; weekly check-ins..."
-                    className="w-full p-2.5 rounded-xl bg-[#05080e] border border-[#16202e] text-xs text-white focus:outline-none focus:border-cyan-500/35 resize-none leading-relaxed"
+                    className="w-full p-2.5 rounded-xl bg-[var(--input-bg)] border border-[var(--input-border)] text-xs text-white focus:outline-none focus:border-[var(--main-color)] resize-none leading-relaxed"
                   />
                 </div>
 
@@ -575,7 +595,7 @@ export const CoachSettingsView: React.FC = () => {
                       type="checkbox"
                       checked={pkgIsPopular}
                       onChange={(e) => setPkgIsPopular(e.target.checked)}
-                      className="rounded border-[#16202e] bg-[#05080e] text-cyan-500 focus:ring-0 cursor-pointer"
+                      className="rounded border-[var(--card-border)] bg-[var(--input-bg)] text-[var(--main-color)] focus:ring-0 cursor-pointer"
                     />
                     <span className="text-xs text-slate-300 font-medium">Highlight as Most Popular Package</span>
                   </label>
@@ -583,17 +603,17 @@ export const CoachSettingsView: React.FC = () => {
               </div>
 
               {/* Footer */}
-              <div className="px-5 py-3 bg-[#0b101b] border-t border-[#141b26] flex items-center justify-between">
+              <div className="px-5 py-3 bg-[var(--card-subtle-bg)] border-t border-[var(--card-border)] flex items-center justify-between">
                 <button
                   type="button"
                   onClick={() => setIsPackageModalOpen(false)}
-                  className="px-3 py-1.5 rounded-lg text-xs font-medium text-slate-400 hover:text-white transition-colors cursor-pointer"
+                  className="gym-btn-ghost text-xs"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="py-1.5 px-5 rounded-xl bg-white hover:bg-slate-100 text-[#080c14] text-xs font-bold transition-all cursor-pointer active:scale-95 shadow-sm"
+                  className="gym-btn-primary text-xs"
                 >
                   Save Package
                 </button>

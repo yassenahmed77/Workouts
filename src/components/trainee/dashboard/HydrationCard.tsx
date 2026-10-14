@@ -21,18 +21,18 @@ export const HydrationCard: React.FC<HydrationCardProps> = React.memo(({
   if (!hasWaterTarget) return null;
 
   return (
-    <div className="p-4 sm:p-5 rounded-3xl bg-[#18191e] border border-[#24262e] shadow-sm space-y-2.5">
+    <div className="gym-card space-y-2.5">
       <div className="flex items-center justify-between">
-        <span className="text-xs font-bold text-white">Hydration Tracker</span>
+        <span className="gym-heading-card">Hydration Tracker</span>
         <span className="text-xs font-mono font-bold text-white tabular-nums">
-          {currentWaterLiters.toFixed(1)} <span className="text-[10px] text-[#8e8e93]">/ {targetWaterLiters}L</span>
+          {currentWaterLiters.toFixed(1)} <span className="text-[10px] text-[var(--gym-text-muted)]">/ {targetWaterLiters}L</span>
         </span>
       </div>
 
       {/* Progress Bar */}
-      <div className="w-full h-1.5 rounded-full bg-[#15161a] overflow-hidden">
+      <div className="w-full h-1.5 rounded-full bg-[var(--gym-surface-base)] overflow-hidden">
         <div 
-          className="h-full bg-gradient-to-r from-[#2563eb] to-[#2f80ed] rounded-full transition-all duration-300"
+          className="h-full bg-gradient-to-r from-blue-600 to-[var(--main-color)] rounded-full transition-all duration-300"
           style={{ width: `${waterPercent}%` }}
         />
       </div>
@@ -42,24 +42,24 @@ export const HydrationCard: React.FC<HydrationCardProps> = React.memo(({
         <button
           type="button"
           onClick={() => onWaterStep(-0.25)}
-          className="px-2.5 py-1 rounded-lg bg-[#15161a] hover:bg-[#1c1d22] border border-[#24262e] text-xs font-mono text-[#8e8e93] hover:text-white flex items-center gap-1 cursor-pointer transition-colors active:scale-95"
+          className="gym-btn-secondary text-xs px-2.5 py-1"
           aria-label="Decrease water by 250ml"
         >
           <Minus className="w-3 h-3" />
           <span>250ml</span>
         </button>
 
-        <span className="text-[10px] font-mono text-[#2f80ed] font-semibold">
+        <span className="text-[10px] font-mono text-[var(--gym-accent-primary)] font-semibold">
           {waterPercent}% Goal
         </span>
 
         <button
           type="button"
           onClick={() => onWaterStep(0.25)}
-          className="px-2.5 py-1 rounded-lg bg-[#1c1d22] hover:bg-[#22242b] border border-[#2f80ed]/40 text-xs font-mono text-white flex items-center gap-1 cursor-pointer transition-colors active:scale-95 shadow-sm"
+          className="gym-btn-primary text-xs px-2.5 py-1"
           aria-label="Increase water by 250ml"
         >
-          <Plus className="w-3 h-3 text-[#2f80ed]" />
+          <Plus className="w-3 h-3" />
           <span>250ml</span>
         </button>
       </div>

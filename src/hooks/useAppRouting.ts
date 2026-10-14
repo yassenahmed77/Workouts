@@ -20,6 +20,7 @@ export const COACH_TABS = [
 export const TRAINEE_TABS = [
   'today',
   'split',
+  'diet',
   'habits',
   'history',
   'profile'

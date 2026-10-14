@@ -39,6 +39,7 @@ export const RoutineExerciseSchema = z.object({
   restSeconds: z.number().int().min(0).max(1800).default(90),
   notes: z.string().max(1000).optional().transform((val) => val ? sanitizeNotes(val) : undefined),
   alternativeExercise: z.string().optional().transform((val) => val ? sanitizeString(val) : undefined),
+  alternativeVideoUrl: z.string().optional().transform((v) => (v ? sanitizeUrl(v) : '')),
   alternatives: z.array(ExerciseAlternativeSchema).optional(),
   videoUrl: z.string().optional().transform((v) => (v ? sanitizeUrl(v) : '')),
   tips: z.array(z.string()).optional()

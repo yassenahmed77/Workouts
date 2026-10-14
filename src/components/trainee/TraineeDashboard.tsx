@@ -39,12 +39,14 @@ interface TraineeDashboardProps {
   onNavigateToSplit: () => void;
   onNavigateToHistory: () => void;
   onNavigateToHabits: () => void;
+  onNavigateToDiet?: () => void;
 }
 
 export const TraineeDashboard: React.FC<TraineeDashboardProps> = ({
   onNavigateToSplit,
   onNavigateToHistory,
-  onNavigateToHabits
+  onNavigateToHabits,
+  onNavigateToDiet
 }) => {
   const { currentUser, getPlanForUser, getUserLogs, deleteWorkoutLog, getDietPlanForUser } = useGym();
   const { showToast } = useToast();
@@ -536,103 +538,113 @@ export const TraineeDashboard: React.FC<TraineeDashboardProps> = ({
   }
 
   return (
-    <div className="w-full max-w-md md:max-w-4xl lg:max-w-5xl mx-auto space-y-3.5 pb-6 md:pb-8 px-0 select-none animate-in fade-in duration-200">
+    <div className="w-full max-w-md lg:max-w-5xl mx-auto pb-6 md:pb-8 px-0 select-none animate-in fade-in duration-200">
       
-      {/* 1. Dynamic 7-Day Interactive Calendar Strip */}
-      <CalendarStrip
-        weekHeaderLabel={weekHeaderLabel}
-        calendarDays={calendarDays}
-        selectedDate={selectedDate}
-        onPrevWeek={() => setWeekOffset((prev) => prev - 1)}
-        onNextWeek={() => setWeekOffset((prev) => prev + 1)}
-        onSelectDate={setSelectedDate}
-      />
+      {/* Responsive Grid: Frozen single column on mobile (< 1024px), Pro 2-Column Split on Desktop (>= 1024px) */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-3 sm:gap-3.5">
+        
+        {/* Left Column (lg:col-span-7): Calendar, Protocol Readiness & Today's Workout */}
+        <div className="lg:col-span-7 space-y-3 sm:space-y-3.5">
+          {/* 1. Dynamic 7-Day Interactive Calendar Strip */}
+          <CalendarStrip
+            weekHeaderLabel={weekHeaderLabel}
+            calendarDays={calendarDays}
+            selectedDate={selectedDate}
+            onPrevWeek={() => setWeekOffset((prev) => prev - 1)}
+            onNextWeek={() => setWeekOffset((prev) => prev + 1)}
+            onSelectDate={setSelectedDate}
+          />
 
-      {/* 2. Ambient Sunrise Horizon Arc Card (Daily Protocol Readiness) */}
-      <ProtocolReadinessCard
-        isSelectedDateToday={isSelectedDateToday}
-        selectedDate={selectedDate}
-        isEffectiveRestDay={isEffectiveRestDay}
-        onToggleRestDay={handleToggleRestDay}
-        adherenceScore={selectedDateAdherence.score}
-        motivationalQuote={motivationalQuote}
-        isSelectedDateWorkoutCompleted={isSelectedDateWorkoutCompleted}
-        selectedDateWorkoutLog={selectedDateWorkoutLog}
-        targetExercisesCount={targetExercisesCount}
-        habitsCompletedCount={selectedDateHabitsStatus.completedCount}
-        habitsTotalCount={selectedDateHabitsStatus.totalCount}
-      />
+          {/* 2. Ambient Sunrise Horizon Arc Card (Daily Protocol Readiness) */}
+          <ProtocolReadinessCard
+            isSelectedDateToday={isSelectedDateToday}
+            selectedDate={selectedDate}
+            isEffectiveRestDay={isEffectiveRestDay}
+            onToggleRestDay={handleToggleRestDay}
+            adherenceScore={selectedDateAdherence.score}
+            motivationalQuote={motivationalQuote}
+            isSelectedDateWorkoutCompleted={isSelectedDateWorkoutCompleted}
+            selectedDateWorkoutLog={selectedDateWorkoutLog}
+            targetExercisesCount={targetExercisesCount}
+            habitsCompletedCount={selectedDateHabitsStatus.completedCount}
+            habitsTotalCount={selectedDateHabitsStatus.totalCount}
+          />
 
+          {/* 3. Hero Workout Card: Today's Training Protocol */}
+          <TodayWorkoutCard
+            activeDay={activeDay}
+            plan={plan}
+            selectedDate={selectedDate}
+            todayDateStr={todayDateStr}
+            isSelectedDateToday={isSelectedDateToday}
+            isEffectiveRestDay={isEffectiveRestDay}
+            isSelectedDateWorkoutCompleted={isSelectedDateWorkoutCompleted}
+            selectedDateWorkoutLog={selectedDateWorkoutLog}
+            isDraftInProgress={isDraftInProgress}
+            activeDraft={activeDraft}
+            onSelectSessionDay={(day) => {
+              window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+              setActiveSessionDay(day);
+            }}
+            onNavigateToSplit={onNavigateToSplit}
+            onRestartWorkout={() => setShowRestartConfirmModal(true)}
+            onDeleteLog={() => setShowDeleteLogConfirm(true)}
+            onResumeWorkout={() => {
+              window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+              setActiveSessionDay(activeDay || null);
+            }}
+            onResetDraftAndStartFresh={() => {
+              if (activeDay && currentUser) {
+                clearActiveWorkoutDraft(currentUser.id, activeDay.id);
+                clearUnfinishedStatus(currentUser.id, activeDay.id);
+                showToast('Workout draft reset. Ready to start fresh!', 'info');
+              }
+            }}
+            onStartWorkout={() => {
+              if (activeDay && plan) {
+                window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+                setActiveSessionDay(activeDay);
+              } else {
+                onNavigateToSplit();
+              }
+            }}
+          />
+        </div>
 
-      {/* 3. Hero Workout Card: Today's Training Protocol */}
-      <TodayWorkoutCard
-        activeDay={activeDay}
-        plan={plan}
-        selectedDate={selectedDate}
-        todayDateStr={todayDateStr}
-        isSelectedDateToday={isSelectedDateToday}
-        isEffectiveRestDay={isEffectiveRestDay}
-        isSelectedDateWorkoutCompleted={isSelectedDateWorkoutCompleted}
-        selectedDateWorkoutLog={selectedDateWorkoutLog}
-        isDraftInProgress={isDraftInProgress}
-        activeDraft={activeDraft}
-        onSelectSessionDay={(day) => {
-          window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
-          setActiveSessionDay(day);
-        }}
-        onNavigateToSplit={onNavigateToSplit}
-        onRestartWorkout={() => setShowRestartConfirmModal(true)}
-        onDeleteLog={() => setShowDeleteLogConfirm(true)}
-        onResumeWorkout={() => {
-          window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
-          setActiveSessionDay(activeDay || null);
-        }}
-        onResetDraftAndStartFresh={() => {
-          if (activeDay && currentUser) {
-            clearActiveWorkoutDraft(currentUser.id, activeDay.id);
-            clearUnfinishedStatus(currentUser.id, activeDay.id);
-            showToast('Workout draft reset. Ready to start fresh!', 'info');
-          }
-        }}
-        onStartWorkout={() => {
-          if (activeDay && plan) {
-            window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
-            setActiveSessionDay(activeDay);
-          } else {
-            onNavigateToSplit();
-          }
-        }}
-      />
+        {/* Right Column (lg:col-span-5): Daily Nutrition, Hydration & Habits */}
+        <div className="lg:col-span-5 space-y-3 sm:space-y-3.5">
+          {/* 5. Modern Daily Meals Checklist */}
+          <DailyMealsChecklist
+            dietPlan={dietPlan}
+            planMeals={planMeals}
+            completedMealIds={completedMealIds}
+            onToggleMealCompleted={handleToggleMealCompleted}
+            onSelectMealDetail={setSelectedMealDetail}
+            onOpenFullDietModal={() => setShowFullDietModal(true)}
+            onNavigateToDiet={onNavigateToDiet}
+          />
 
-      {/* 5. Modern Daily Meals Checklist */}
-      <DailyMealsChecklist
-        dietPlan={dietPlan}
-        planMeals={planMeals}
-        completedMealIds={completedMealIds}
-        onToggleMealCompleted={handleToggleMealCompleted}
-        onSelectMealDetail={setSelectedMealDetail}
-        onOpenFullDietModal={() => setShowFullDietModal(true)}
-      />
+          {/* 6. Quick Hydration Tracker (+250ml Stepper) */}
+          <HydrationCard
+            hasWaterTarget={hasWaterTarget}
+            currentWaterLiters={currentWaterLiters}
+            targetWaterLiters={targetWaterLiters}
+            waterPercent={waterPercent}
+            onWaterStep={handleWaterStep}
+          />
 
-      {/* 6. Quick Hydration Tracker (+250ml Stepper) */}
-      <HydrationCard
-        hasWaterTarget={hasWaterTarget}
-        currentWaterLiters={currentWaterLiters}
-        targetWaterLiters={targetWaterLiters}
-        waterPercent={waterPercent}
-        onWaterStep={handleWaterStep}
-      />
-
-      {/* 7. Habits Preview (If Active Habits Exist) */}
-      <DailyHabitsSection
-        userHabits={userHabits}
-        currentUser={currentUser}
-        onNavigateToHabits={onNavigateToHabits}
-        onToggleHabit={handleToggleHabit}
-        calculateQuitLiveStats={calculateQuitLiveStats}
-        getTodayRecordForHabit={getTodayRecordForHabit}
-        calculateHabitStreak={calculateHabitStreak}
-      />
+          {/* 7. Habits Preview (If Active Habits Exist) */}
+          <DailyHabitsSection
+            userHabits={userHabits}
+            currentUser={currentUser}
+            onNavigateToHabits={onNavigateToHabits}
+            onToggleHabit={handleToggleHabit}
+            calculateQuitLiveStats={calculateQuitLiveStats}
+            getTodayRecordForHabit={getTodayRecordForHabit}
+            calculateHabitStreak={calculateHabitStreak}
+          />
+        </div>
+      </div>
 
       {/* Individual Meal Details Modal */}
       <MealDetailModal

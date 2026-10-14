@@ -214,16 +214,16 @@ export const ClientMembershipModal: React.FC<ClientMembershipModalProps> = ({
       }}
     >
       <div
-        className="w-full max-w-lg rounded-2xl bg-[#0b0f17] border border-white/[0.12] shadow-2xl overflow-hidden flex flex-col relative animate-in zoom-in-95 duration-150 max-h-[92vh]"
+        className="w-full max-w-lg rounded-2xl bg-[var(--card-bg)] border border-[var(--card-border)] shadow-2xl overflow-hidden flex flex-col relative animate-in zoom-in-95 duration-150 max-h-[92vh]"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="p-3.5 sm:p-4 bg-gradient-to-r from-[#0d1420] via-[#101826] to-[#0d1420] border-b border-white/[0.08] flex items-center justify-between flex-shrink-0">
+        <div className="p-3.5 sm:p-4 bg-[var(--card-subtle-bg)] border-b border-[var(--card-border)] flex items-center justify-between flex-shrink-0">
           <div>
             <h3 className="text-sm font-bold text-white tracking-wide">
               Manage Membership
             </h3>
-            <p className="text-[11px] font-mono text-cyan-300/90 font-medium">
+            <p className="text-[11px] font-mono text-[var(--main-color)] font-medium">
               {client.name} &bull; Athlete Subscription Hub
             </p>
           </div>
@@ -248,9 +248,9 @@ export const ClientMembershipModal: React.FC<ClientMembershipModalProps> = ({
           )}
 
           {/* Quick Extend Presets Banner */}
-          <div className="p-2.5 rounded-xl bg-gradient-to-r from-cyan-500/[0.08] via-emerald-500/[0.05] to-transparent border border-cyan-500/20 flex flex-wrap items-center justify-between gap-2">
+          <div className="p-2.5 rounded-xl bg-gradient-to-r from-[var(--main-color)]/[0.08] via-emerald-500/[0.05] to-transparent border border-[var(--main-color)]/20 flex flex-wrap items-center justify-between gap-2">
             <div className="flex items-center gap-1.5 text-xs text-slate-200">
-              <Sparkles className="w-3.5 h-3.5 text-cyan-400 flex-shrink-0" />
+              <Sparkles className="w-3.5 h-3.5 text-[var(--main-color)] flex-shrink-0" />
               <span className="font-semibold text-[11px]">Quick Extend:</span>
             </div>
             <div className="flex items-center gap-1.5">
@@ -271,7 +271,7 @@ export const ClientMembershipModal: React.FC<ClientMembershipModalProps> = ({
               <button
                 type="button"
                 onClick={() => handleQuickExtend(6)}
-                className="px-2 py-0.5 rounded-md bg-cyan-500/20 hover:bg-cyan-500/30 border border-cyan-500/30 text-[11px] font-mono font-medium text-cyan-300 transition-colors cursor-pointer"
+                className="px-2 py-0.5 rounded-md bg-[var(--main-color)]/20 hover:bg-[var(--main-color)]/30 border border-[var(--main-color)]/30 text-[11px] font-mono font-medium text-[var(--main-color)] transition-colors cursor-pointer"
               >
                 +6 Months
               </button>
@@ -293,8 +293,8 @@ export const ClientMembershipModal: React.FC<ClientMembershipModalProps> = ({
                     onClick={() => handlePlanChange(plan)}
                     className={`py-1.5 px-2 rounded-lg text-left text-xs font-medium border transition-all cursor-pointer truncate ${
                       isSelected
-                        ? 'bg-cyan-500/15 border-cyan-500/40 text-cyan-200 font-semibold shadow-sm'
-                        : 'bg-[#05080e] border-white/[0.06] text-slate-400 hover:text-slate-200 hover:border-white/10'
+                        ? 'bg-[var(--main-color)]/15 border-[var(--main-color)]/40 text-[var(--main-color)] font-semibold shadow-sm'
+                        : 'bg-[var(--input-bg)] border-[var(--input-border)] text-slate-400 hover:text-slate-200 hover:border-white/10'
                     }`}
                   >
                     {plan}
@@ -310,7 +310,7 @@ export const ClientMembershipModal: React.FC<ClientMembershipModalProps> = ({
               <label className="text-[11px] font-mono uppercase tracking-wider text-slate-400 font-semibold">
                 Duration (Months)
               </label>
-              <span className="text-[10px] font-mono text-cyan-400/90 font-medium">
+              <span className="text-[10px] font-mono text-[var(--main-color)] font-medium">
                 {durationMonths} Month{durationMonths > 1 ? 's' : ''} Selected
               </span>
             </div>
@@ -324,8 +324,8 @@ export const ClientMembershipModal: React.FC<ClientMembershipModalProps> = ({
                     onClick={() => handleDurationChange(m)}
                     className={`py-1.5 rounded-lg text-center text-xs font-mono font-semibold border transition-all cursor-pointer ${
                       isSelected
-                        ? 'bg-white text-[#080c14] border-white shadow-sm'
-                        : 'bg-[#05080e] border-white/[0.06] text-slate-300 hover:text-white hover:border-white/10'
+                        ? 'bg-white text-[var(--card-bg)] border-white shadow-sm'
+                        : 'bg-[var(--input-bg)] border-[var(--input-border)] text-slate-300 hover:text-white hover:border-white/10'
                     }`}
                   >
                     {m} Month{m > 1 ? 's' : ''}
@@ -345,7 +345,7 @@ export const ClientMembershipModal: React.FC<ClientMembershipModalProps> = ({
                 type="date"
                 value={startDate}
                 onChange={(e) => handleStartDateChange(e.target.value)}
-                className="w-full py-1.5 px-2.5 rounded-lg bg-[#05080e] border border-white/[0.08] text-xs font-mono text-slate-200 focus:outline-none focus:border-cyan-500/40"
+                className="w-full py-1.5 px-2.5 rounded-lg bg-[var(--input-bg)] border border-[var(--input-border)] text-xs font-mono text-slate-200 focus:outline-none focus:border-[var(--main-color)]"
               />
             </div>
             <div className="space-y-1">
@@ -356,7 +356,7 @@ export const ClientMembershipModal: React.FC<ClientMembershipModalProps> = ({
                 type="date"
                 value={endDate}
                 onChange={(e) => setEndDate(e.target.value)}
-                className="w-full py-1.5 px-2.5 rounded-lg bg-[#05080e] border border-white/[0.08] text-xs font-mono text-slate-200 focus:outline-none focus:border-cyan-500/40"
+                className="w-full py-1.5 px-2.5 rounded-lg bg-[var(--input-bg)] border border-[var(--input-border)] text-xs font-mono text-slate-200 focus:outline-none focus:border-[var(--main-color)]"
               />
             </div>
           </div>
@@ -372,7 +372,7 @@ export const ClientMembershipModal: React.FC<ClientMembershipModalProps> = ({
                 value={price}
                 onChange={(e) => setPrice(e.target.value)}
                 placeholder="6000"
-                className="w-full py-1.5 px-2.5 rounded-lg bg-[#05080e] border border-white/[0.08] text-xs font-mono text-white focus:outline-none focus:border-cyan-500/40"
+                className="w-full py-1.5 px-2.5 rounded-lg bg-[var(--input-bg)] border border-[var(--input-border)] text-xs font-mono text-white focus:outline-none focus:border-[var(--main-color)]"
               />
             </div>
 
@@ -383,10 +383,10 @@ export const ClientMembershipModal: React.FC<ClientMembershipModalProps> = ({
               <select
                 value={currency}
                 onChange={(e) => setCurrency(e.target.value)}
-                className="w-full py-1.5 px-2.5 rounded-lg bg-[#05080e] border border-white/[0.08] text-xs font-mono text-slate-200 focus:outline-none focus:border-cyan-500/40 cursor-pointer"
+                className="w-full py-1.5 px-2.5 rounded-lg bg-[var(--input-bg)] border border-[var(--input-border)] text-xs font-mono text-slate-200 focus:outline-none focus:border-[var(--main-color)] cursor-pointer"
               >
                 {CURRENCIES.map((c) => (
-                  <option key={c} value={c} className="bg-[#0b0f17] text-white">
+                  <option key={c} value={c} className="bg-[var(--card-bg)] text-white">
                     {c}
                   </option>
                 ))}
@@ -400,15 +400,15 @@ export const ClientMembershipModal: React.FC<ClientMembershipModalProps> = ({
               <select
                 value={status}
                 onChange={(e) => setStatus(e.target.value as any)}
-                className="w-full py-1.5 px-2 rounded-lg bg-[#05080e] border border-white/[0.08] text-xs font-mono text-slate-200 focus:outline-none focus:border-cyan-500/40 cursor-pointer capitalize"
+                className="w-full py-1.5 px-2 rounded-lg bg-[var(--input-bg)] border border-[var(--input-border)] text-xs font-mono text-slate-200 focus:outline-none focus:border-[var(--main-color)] cursor-pointer capitalize"
               >
-                <option value="active" className="bg-[#0b0f17] text-emerald-400">
+                <option value="active" className="bg-[var(--card-bg)] text-emerald-400">
                   Active
                 </option>
-                <option value="expiring_soon" className="bg-[#0b0f17] text-amber-400">
+                <option value="expiring_soon" className="bg-[var(--card-bg)] text-amber-400">
                   Expiring Soon
                 </option>
-                <option value="expired" className="bg-[#0b0f17] text-rose-400">
+                <option value="expired" className="bg-[var(--card-bg)] text-rose-400">
                   Expired
                 </option>
               </select>
@@ -425,7 +425,7 @@ export const ClientMembershipModal: React.FC<ClientMembershipModalProps> = ({
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               placeholder="e.g. Paid in cash at gym / InstaPay transaction..."
-              className="w-full py-1.5 px-2.5 rounded-lg bg-[#05080e] border border-white/[0.08] text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-cyan-500/40"
+              className="w-full py-1.5 px-2.5 rounded-lg bg-[var(--input-bg)] border border-[var(--input-border)] text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-[var(--main-color)]"
             />
           </div>
 
@@ -434,14 +434,14 @@ export const ClientMembershipModal: React.FC<ClientMembershipModalProps> = ({
             <button
               type="button"
               onClick={onClose}
-              className="px-3 py-1.5 rounded-lg bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] text-slate-300 hover:text-white text-xs font-semibold cursor-pointer transition-colors"
+              className="gym-btn-ghost text-xs"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={isSubmitting}
-              className="px-4 py-1.5 rounded-lg bg-white hover:bg-slate-100 active:scale-95 text-[#080c14] text-xs font-bold flex items-center gap-1.5 cursor-pointer disabled:opacity-50 transition-all shadow-sm"
+              className="gym-btn-primary text-xs"
             >
               <span>{isSubmitting ? 'Saving...' : 'Save Membership'}</span>
             </button>

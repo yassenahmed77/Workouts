@@ -41,17 +41,17 @@ export const ClientWeightTrajectoryCard: React.FC<ClientWeightTrajectoryCardProp
   onOpenMembership
 }) => {
   return (
-    <div className="p-3 rounded-xl bg-[#18191e] border border-[#24262e] space-y-2">
-      <div className="flex items-center justify-between pb-1 border-b border-[#24262e]">
+    <div className="gym-card space-y-2">
+      <div className="flex items-center justify-between pb-1.5 border-b border-white/[0.07]">
         <div>
           <div className="flex items-center gap-2">
-            <h3 className="text-sm sm:text-base font-bold text-white tracking-tight">
+            <h3 className="gym-heading-card">
               Weight Trajectory Curve
             </h3>
 
             {/* Pager if more than 4 points */}
             {hasWeighIns && totalTrajectoryPages > 1 && (
-              <div className="flex items-center gap-1 bg-[#141519] rounded-md px-1.5 py-0.5 border border-[#24262e]">
+              <div className="flex items-center gap-1 bg-[var(--card-subtle-bg)] rounded-md px-1.5 py-0.5 border border-[var(--card-border)]">
                 <button
                   type="button"
                   onClick={() => {
@@ -83,7 +83,7 @@ export const ClientWeightTrajectoryCard: React.FC<ClientWeightTrajectoryCardProp
             )}
           </div>
 
-          <span className="text-[10px] font-mono text-slate-400 block mt-0.5">
+          <span className="gym-subtext font-mono block mt-0.5">
             {hasWeighIns
               ? `${allWeightEntries.length} ${allWeightEntries.length === 1 ? 'weigh-in' : 'weigh-ins'} recorded${totalTrajectoryPages > 1 ? ` • Showing ${visibleWeightPoints.length} points` : ''}`
               : '0 weigh-ins recorded • Awaiting first check-in'}
@@ -97,7 +97,7 @@ export const ClientWeightTrajectoryCard: React.FC<ClientWeightTrajectoryCardProp
                 <span className="text-base font-bold text-white block">
                   {trajectorySvgData.points[hoveredTrajectoryIndex].weightKg} kg
                 </span>
-                <span className="text-[11px] text-[#2f80ed] block font-semibold">
+                <span className="text-[11px] text-[var(--main-color)] block font-semibold">
                   {trajectorySvgData.points[hoveredTrajectoryIndex].dateFormatted} • {trajectorySvgData.points[hoveredTrajectoryIndex].deltaText}
                 </span>
               </>
@@ -106,7 +106,7 @@ export const ClientWeightTrajectoryCard: React.FC<ClientWeightTrajectoryCardProp
                 <span className="text-base font-bold text-white block">
                   {client.weightKg} kg
                 </span>
-                <span className={`text-[11px] block font-semibold ${overallWeightStats.totalDropped > 0 ? 'text-[#2f80ed]' : overallWeightStats.totalDropped < 0 ? 'text-amber-400' : 'text-slate-400'}`}>
+                <span className={`text-[11px] block font-semibold ${overallWeightStats.totalDropped > 0 ? 'text-[var(--main-color)]' : overallWeightStats.totalDropped < 0 ? 'text-amber-400' : 'text-slate-400'}`}>
                   {overallWeightStats.totalDropped !== 0 ? `${overallWeightStats.totalDropped > 0 ? '-' : '+'}${Math.abs(overallWeightStats.totalDropped)} kg total` : '0.0 kg'}
                 </span>
               </>
@@ -125,13 +125,13 @@ export const ClientWeightTrajectoryCard: React.FC<ClientWeightTrajectoryCardProp
       </div>
 
       {/* SVG Sparkline Area Chart */}
-      <div className="relative w-full h-28 bg-[#141519] rounded-lg border border-[#24262e] overflow-hidden px-2 py-1 flex flex-col justify-between">
+      <div className="relative w-full h-28 bg-[var(--card-subtle-bg)] rounded-lg border border-[var(--card-border)] overflow-hidden px-2 py-1 flex flex-col justify-between">
         {hasWeighIns ? (
           <svg viewBox="0 0 440 95" className="w-full h-full overflow-visible select-none">
             <defs>
               <linearGradient id="weightGradExact" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor="#2f80ed" stopOpacity="0.25" />
-                <stop offset="100%" stopColor="#2f80ed" stopOpacity="0.0" />
+                <stop offset="0%" stopColor="var(--main-color)" stopOpacity="0.25" />
+                <stop offset="100%" stopColor="var(--main-color)" stopOpacity="0.0" />
               </linearGradient>
             </defs>
 
@@ -166,7 +166,7 @@ export const ClientWeightTrajectoryCard: React.FC<ClientWeightTrajectoryCardProp
               <path
                 d={trajectorySvgData.svgPath}
                 fill="none"
-                stroke="#2f80ed"
+                stroke="var(--main-color)"
                 strokeWidth="2.5"
                 strokeLinecap="round"
                 strokeLinejoin="round"
@@ -190,7 +190,8 @@ export const ClientWeightTrajectoryCard: React.FC<ClientWeightTrajectoryCardProp
                       y1={12}
                       x2={pt.x}
                       y2={73}
-                      stroke="rgba(47, 128, 237, 0.4)"
+                      stroke="var(--main-color)"
+                      strokeOpacity="0.4"
                       strokeWidth="1"
                       strokeDasharray="2 2"
                     />
@@ -205,7 +206,7 @@ export const ClientWeightTrajectoryCard: React.FC<ClientWeightTrajectoryCardProp
                     cy={pt.y}
                     r={isHovered ? 5.5 : 4}
                     fill="#ffffff"
-                    stroke="#2f80ed"
+                    stroke="var(--main-color)"
                     strokeWidth={isHovered ? 2.5 : 2}
                     className="transition-all duration-150"
                   />
@@ -215,7 +216,7 @@ export const ClientWeightTrajectoryCard: React.FC<ClientWeightTrajectoryCardProp
                     x={pt.x}
                     y="88"
                     textAnchor="middle"
-                    fill={isHovered ? '#2f80ed' : '#64748b'}
+                    fill={isHovered ? 'var(--main-color)' : '#64748b'}
                     fontSize="8"
                     fontFamily="monospace"
                     className="transition-colors duration-150"
@@ -231,8 +232,8 @@ export const ClientWeightTrajectoryCard: React.FC<ClientWeightTrajectoryCardProp
           <svg viewBox="0 0 440 95" className="w-full h-full overflow-visible select-none">
             <defs>
               <linearGradient id="ghostGrad" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor="#2f80ed" stopOpacity="0.08" />
-                <stop offset="100%" stopColor="#2f80ed" stopOpacity="0.0" />
+                <stop offset="0%" stopColor="var(--main-color)" stopOpacity="0.08" />
+                <stop offset="100%" stopColor="var(--main-color)" stopOpacity="0.0" />
               </linearGradient>
             </defs>
 
@@ -269,7 +270,8 @@ export const ClientWeightTrajectoryCard: React.FC<ClientWeightTrajectoryCardProp
             <path
               d="M 35,32 L 155,46 L 275,58 L 405,68"
               fill="none"
-              stroke="rgba(47, 128, 237, 0.22)"
+              stroke="var(--main-color)"
+              strokeOpacity="0.22"
               strokeWidth="1.5"
               strokeDasharray="4 4"
               strokeLinecap="round"
@@ -289,7 +291,8 @@ export const ClientWeightTrajectoryCard: React.FC<ClientWeightTrajectoryCardProp
                 cy={pt.y}
                 r="3.5"
                 fill="rgba(255, 255, 255, 0.08)"
-                stroke="rgba(47, 128, 237, 0.3)"
+                stroke="var(--main-color)"
+                strokeOpacity="0.3"
                 strokeWidth="1"
               />
             ))}
@@ -310,23 +313,23 @@ export const ClientWeightTrajectoryCard: React.FC<ClientWeightTrajectoryCardProp
       </div>
 
       {/* 2 High-Impact Coaching Metric Cards (Target Goal + Membership Card) */}
-      <div className="grid grid-cols-3 gap-1.5 pt-1 border-t border-[#24262e]">
+      <div className="grid grid-cols-3 gap-1.5 pt-1 border-t border-white/[0.07]">
         {/* Card 1 (col-span-1): Target Goal */}
-        <div className="p-2.5 rounded-lg bg-[#141519] border border-[#24262e] text-center flex flex-col justify-between">
+        <div className="gym-card-subtle text-center flex flex-col justify-between">
           <div className="flex items-center justify-between">
-            <span className="text-[9px] font-mono text-slate-400 uppercase tracking-wider block">
+            <span className="gym-label-mono">
               TARGET GOAL
             </span>
-            <span className="text-[9px] font-mono text-[#2f80ed] font-semibold">
+            <span className="text-[9px] font-mono text-[var(--main-color)] font-semibold">
               {targetWeight} kg
             </span>
           </div>
           <div className="my-auto py-0.5">
-            <span className="text-xs sm:text-sm font-bold text-white font-mono block">
+            <span className="gym-heading-card block">
               {weightToGoal > 0 ? `${weightToGoal} kg to go` : 'Goal Reached'}
             </span>
           </div>
-          <span className="text-[9px] font-mono text-slate-400 block truncate">
+          <span className="gym-subtext font-mono block truncate">
             Current: {client.weightKg} kg
           </span>
         </div>
@@ -334,13 +337,13 @@ export const ClientWeightTrajectoryCard: React.FC<ClientWeightTrajectoryCardProp
         {/* Card 2 (col-span-2): Clean Minimal Membership Card with Simple Remaining Bar */}
         <div
           onClick={onOpenMembership}
-          className="col-span-2 p-2.5 rounded-lg bg-[#141519] border border-[#24262e] hover:border-zinc-700 cursor-pointer transition-colors flex flex-col justify-between group"
+          className="col-span-2 gym-card-subtle hover:border-white/20 cursor-pointer transition-colors flex flex-col justify-between group"
           title="Click to manage subscription"
         >
           {/* Top: Plan Name & Remaining Days */}
           <div className="flex items-center justify-between gap-2">
             <div className="flex items-center gap-1.5 min-w-0">
-              <span className="text-[9px] font-mono text-slate-400 uppercase tracking-wider">
+              <span className="gym-label-mono">
                 MEMBERSHIP
               </span>
               <span className="text-slate-600 text-[10px]">&bull;</span>
@@ -378,7 +381,7 @@ export const ClientWeightTrajectoryCard: React.FC<ClientWeightTrajectoryCardProp
                 ? `${subscriptionInfo.startDateFormatted} → ${subscriptionInfo.endDateFormatted}`
                 : 'Click to assign plan'}
             </span>
-            <span className="hover:text-[#2f80ed] transition-colors">
+            <span className="hover:text-[var(--main-color)] transition-colors">
               {subscriptionInfo.hasSubscription
                 ? `${subscriptionInfo.price.toLocaleString()} ${subscriptionInfo.currency} (${subscriptionInfo.durationMonths}m)`
                 : '+ Add Membership'}

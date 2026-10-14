@@ -86,19 +86,19 @@ export const ClientFormChecksTab: React.FC<ClientFormChecksTabProps> = ({ client
   return (
     <div className="space-y-3 select-none">
       {/* 1. Summary Bar & Controls */}
-      <div className="p-3 rounded-xl bg-[#090d14] border border-white/[0.07] flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-sm">
+      <div className="gym-card flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-sm">
         <div className="flex items-center gap-3">
           <div className="w-9 h-9 rounded-xl bg-white/[0.04] border border-white/10 flex items-center justify-center">
-            <Video className="w-5 h-5 text-cyan-400" />
+            <Video className="w-5 h-5 text-[var(--main-color)]" />
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <h2 className="text-sm sm:text-base font-bold text-white tracking-tight">
+              <h2 className="gym-heading-card text-sm">
                 Technique Vault &bull; Form Check Archive
               </h2>
               <span className="text-xs text-slate-400 font-mono">({allVideos.length})</span>
             </div>
-            <p className="text-[11px] text-slate-400 font-mono">
+            <p className="gym-subtext font-mono">
               {pendingCount} Pending Coach Review &bull; {reviewedCount} Completed
             </p>
           </div>
@@ -139,7 +139,7 @@ export const ClientFormChecksTab: React.FC<ClientFormChecksTabProps> = ({ client
           <button
             type="button"
             onClick={() => setIsRecordModalOpen(true)}
-            className="py-1.5 px-3 rounded-lg bg-white hover:bg-slate-100 text-black font-bold text-xs inline-flex items-center gap-1.5 shadow active:scale-95 transition-all cursor-pointer"
+            className="gym-btn-primary gym-btn-sm"
           >
             <Plus className="w-3.5 h-3.5 stroke-[3]" />
             <span>Record / Upload</span>
@@ -155,16 +155,16 @@ export const ClientFormChecksTab: React.FC<ClientFormChecksTabProps> = ({ client
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           placeholder="Filter by exercise name (e.g. Squat, Deadlift, Bench Press)..."
-          className="w-full pl-9 pr-3 py-2 rounded-xl bg-[#090d14] border border-white/[0.07] text-xs text-white placeholder-slate-500 focus:outline-none focus:border-cyan-500/50"
+          className="gym-input w-full pl-9"
         />
       </div>
 
       {/* Videos Grid */}
       {filteredVideos.length === 0 ? (
-        <div className="py-12 text-center rounded-xl bg-[#090d14] border border-white/[0.07] space-y-2">
+        <div className="py-12 text-center rounded-xl gym-card space-y-2">
           <Dumbbell className="w-8 h-8 text-slate-500 mx-auto" />
-          <p className="text-xs font-semibold text-slate-200">No form check videos found</p>
-          <p className="text-[11px] text-slate-400 font-mono">
+          <p className="gym-heading-card">No form check videos found</p>
+          <p className="gym-subtext font-mono">
             {searchQuery ? 'Try matching another exercise keyword.' : 'Upload or film your first technique check.'}
           </p>
         </div>
@@ -178,7 +178,7 @@ export const ClientFormChecksTab: React.FC<ClientFormChecksTabProps> = ({ client
               <div
                 key={video.id}
                 onClick={() => setSelectedVideo(video)}
-                className="p-3 rounded-xl bg-[#090d14] hover:bg-white/[0.03] border border-white/[0.07] hover:border-white/15 transition-all cursor-pointer group flex flex-col justify-between gap-3 shadow-sm"
+                className="gym-card-interactive flex flex-col justify-between gap-3 shadow-sm group"
               >
                 <div className="flex items-start gap-3">
                   {/* Thumbnail */}
@@ -204,7 +204,7 @@ export const ClientFormChecksTab: React.FC<ClientFormChecksTabProps> = ({ client
                   {/* Info */}
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-1.5 flex-wrap">
-                      <h4 className="text-sm font-bold text-white group-hover:text-cyan-300 transition-colors truncate">
+                      <h4 className="gym-heading-card group-hover:text-[var(--main-color)] transition-colors truncate">
                         {video.exerciseName}
                       </h4>
                       {video.targetMuscle && (

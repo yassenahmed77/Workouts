@@ -372,7 +372,7 @@ export const RecordFormCheckModal: React.FC<RecordFormCheckModalProps> = ({
                 className="hidden"
               />
               <div className="w-12 h-12 rounded-xl bg-white/[0.05] border border-white/10 flex items-center justify-center">
-                <FileVideo className="w-6 h-6 text-cyan-400" />
+                <FileVideo className="w-6 h-6 text-[var(--main-color)]" />
               </div>
               <div className="text-center">
                 <span className="text-xs font-bold text-white block">
@@ -399,14 +399,14 @@ export const RecordFormCheckModal: React.FC<RecordFormCheckModalProps> = ({
             <select
               value={selectedExercise}
               onChange={(e) => handleSelectExercise(e.target.value)}
-              className="w-full p-2 rounded-lg bg-black border border-white/10 text-xs text-white focus:outline-none focus:border-cyan-500 font-sans"
+              className="w-full p-2 rounded-lg bg-[var(--input-bg)] border border-[var(--input-border)] text-xs text-white focus:outline-none focus:border-[var(--main-color)] font-sans"
             >
               {availableExercises.map((ex) => (
-                <option key={ex.name} value={ex.name} className="bg-[#090d14] text-white">
+                <option key={ex.name} value={ex.name} className="bg-[var(--card-bg)] text-white">
                   {ex.name} ({ex.target})
                 </option>
               ))}
-              <option value="custom" className="bg-[#090d14] text-cyan-400">
+              <option value="custom" className="bg-[var(--card-bg)] text-[var(--main-color)]">
                 + Other / Custom Exercise...
               </option>
             </select>
@@ -417,7 +417,7 @@ export const RecordFormCheckModal: React.FC<RecordFormCheckModalProps> = ({
                 value={customExercise}
                 onChange={(e) => setCustomExercise(e.target.value)}
                 placeholder="Type exercise name..."
-                className="w-full p-2 mt-1 rounded-lg bg-black border border-white/20 text-xs text-white focus:outline-none focus:border-cyan-500"
+                className="w-full p-2 mt-1 rounded-lg bg-[var(--input-bg)] border border-[var(--input-border)] text-xs text-white focus:outline-none focus:border-[var(--main-color)]"
                 required
               />
             )}
@@ -433,7 +433,7 @@ export const RecordFormCheckModal: React.FC<RecordFormCheckModalProps> = ({
               value={setDetails}
               onChange={(e) => setSetDetails(e.target.value)}
               placeholder="e.g. Set 3 • 120 kg × 6 reps"
-              className="w-full p-2 rounded-lg bg-black border border-white/10 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-cyan-500 font-mono"
+              className="w-full p-2 rounded-lg bg-[var(--input-bg)] border border-[var(--input-border)] text-xs text-white placeholder-slate-500 focus:outline-none focus:border-[var(--main-color)] font-mono"
             />
           </div>
         </div>
@@ -448,7 +448,7 @@ export const RecordFormCheckModal: React.FC<RecordFormCheckModalProps> = ({
             value={notes}
             onChange={(e) => setNotes(e.target.value)}
             placeholder="e.g. Did I hit parallel on the 4th rep? Felt my right knee caving slightly..."
-            className="w-full p-2 rounded-lg bg-black border border-white/10 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-cyan-500 resize-none font-sans"
+            className="w-full p-2 rounded-lg bg-[var(--input-bg)] border border-[var(--input-border)] text-xs text-white placeholder-slate-500 focus:outline-none focus:border-[var(--main-color)] resize-none font-sans"
           />
         </div>
 
@@ -467,7 +467,7 @@ export const RecordFormCheckModal: React.FC<RecordFormCheckModalProps> = ({
           <button
             type="submit"
             disabled={!videoUrl || isSubmitting}
-            className="px-4 py-1.5 rounded-lg bg-white hover:bg-slate-100 disabled:opacity-40 text-black font-bold text-xs inline-flex items-center gap-1.5 shadow transition-all active:scale-95 cursor-pointer"
+            className="gym-btn-primary text-xs inline-flex items-center gap-1.5"
           >
             {isSubmitting ? (
               <span>Saving...</span>

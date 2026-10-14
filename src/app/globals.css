@@ -1,69 +1,149 @@
 @import "tailwindcss";
 
 :root {
-  /* TitanFit Modern Obsidian & Matte Dark Foundation */
-  --bg-main: #0a0a0c;
-  --bg-card: #18191e;
-  --bg-card-hover: #1c1d22;
-  --bg-subtle: #141519;
-  --bg-surface-elevated: #1c1d22;
-  --border-dim: #24262e;
-  --border-subtle: rgba(255, 255, 255, 0.06);
-  --border-strong: #2f80ed;
-  
-  --text-primary: #f5f7fa;
-  --text-secondary: #94a3b8;
-  --text-muted: #8e8e93;
-  
-  /* Primary Accent: Electric Sapphire Blue for Navigation, Buttons & Visualizations */
-  --accent-cyan: #2f80ed;
-  --accent-cyan-dark: #2563eb;
-  --accent-cyan-muted: rgba(47, 128, 237, 0.12);
-  --accent-cyan-glow: rgba(47, 128, 237, 0.35);
-  
-  /* Primary Action: High-Performance Electric Blue */
-  --accent-action: #2f80ed;
-  --accent-action-hover: #3897f0;
-  --accent-action-muted: rgba(47, 128, 237, 0.14);
+  /* Enforce browser dark mode on all native controls (calendar pickers, selects, date inputs) */
+  color-scheme: dark;
 
-  /* Semantic Accents */
+  /* =========================================================================
+     DESIGN SYSTEM TOKENS — SINGLE SOURCE OF TRUTH (CSS VARIABLES)
+     Change any value here to instantly propagate across the entire website!
+     ========================================================================= */
+
+  /* 1. Brand Main Color & Accents */
+  --main-color: #2f80ed;
+  --main-color-hover: #3897f0;
+  --main-color-dark: #2563eb;
+  --main-color-glow: rgba(47, 128, 237, 0.35);
+  --main-color-muted: rgba(47, 128, 237, 0.12);
+  --main-color-border: rgba(47, 128, 237, 0.24);
+
+  /* 2. Typography Colors */
+  --heading-color: #ffffff;
+  --subheading-color: #94a3b8;
+  --muted-color: #64748b;
+
+  /* 3. Fluid Typography Sizing Hierarchy (Fluid clamp + rem) */
+  --heading-page-size: clamp(0.9rem, 0.82rem + 0.35vw, 1.05rem);
+  --heading-page-size-sm: clamp(1rem, 0.92rem + 0.4vw, 1.18rem);
+  --heading-section-size: clamp(0.75rem, 0.7rem + 0.2vw, 0.85rem);
+  --heading-card-size: clamp(0.7rem, 0.66rem + 0.15vw, 0.78rem);
+  --subheading-size: clamp(0.65rem, 0.62rem + 0.12vw, 0.72rem);
+  --label-mono-size: clamp(0.575rem, 0.54rem + 0.1vw, 0.65rem);
+  --delta-badge-size: clamp(0.6rem, 0.56rem + 0.12vw, 0.68rem);
+  --btn-size: clamp(0.7rem, 0.66rem + 0.15vw, 0.78rem);
+  --btn-sm-size: clamp(0.625rem, 0.59rem + 0.12vw, 0.7rem);
+  --btn-lg-size: clamp(0.75rem, 0.71rem + 0.18vw, 0.85rem);
+
+  /* Fluid Spacing & Viewport Adaptive Sizing (clamp + rem + dvh) */
+  --fluid-space-page-px: clamp(0.75rem, 0.5rem + 0.7vw, 1.5rem);
+  --fluid-space-card-p: clamp(0.5rem, 0.4rem + 0.4vw, 0.85rem);
+  --fluid-gap-controls: clamp(0.35rem, 0.3rem + 0.25vw, 0.65rem);
+  --fluid-table-row-h: clamp(2.45rem, 4.3vh, 3.15rem);
+  --fluid-table-cell-py: clamp(0.35rem, 0.6vh, 0.6rem);
+  --fluid-table-cell-px: clamp(0.35rem, 0.25rem + 0.25vw, 0.75rem);
+
+  /* 4. Canvas & Card Surfaces */
+  --bg-page: #0a0a0c;
+  --card-bg: #13151b;
+  --card-bg-hover: #181b23;
+  --card-bg-elevated: #1a1d26;
+  --card-bg-subtle: #0f1015;
+  --card-border: rgba(255, 255, 255, 0.07);
+  --card-border-subtle: rgba(255, 255, 255, 0.05);
+  --card-border-elevated: rgba(255, 255, 255, 0.1);
+
+  /* 5. Inputs & Controls */
+  --input-bg: #0f1015;
+  --input-border: rgba(255, 255, 255, 0.08);
+  --input-border-focus: var(--main-color);
+
+  /* Aliases for legacy component compatibility */
+  --bg-main: var(--bg-page);
+  --bg-card: var(--card-bg);
+  --bg-card-hover: var(--card-bg-hover);
+  --bg-subtle: var(--card-bg-subtle);
+  --bg-surface-elevated: var(--card-bg-elevated);
+  --border-dim: #24262e;
+  --border-subtle: var(--card-border);
+  --border-strong: var(--main-color);
+  
+  --text-primary: var(--heading-color);
+  --text-secondary: var(--subheading-color);
+  --text-muted: var(--muted-color);
+  
+  --accent-blue: var(--main-color);
+  --accent-blue-dark: var(--main-color-dark);
+  --accent-blue-muted: var(--main-color-muted);
+  --accent-blue-glow: var(--main-color-glow);
+  --accent-action: var(--main-color);
+  --accent-action-hover: var(--main-color-hover);
+  --accent-action-muted: var(--main-color-muted);
+
   --accent-emerald: #10b981;
   --accent-amber: #f59e0b;
   --accent-red: #ef4444;
   --accent-critical: #f43f5e;
 
-  /* Backward Compatibility with Electric Blue */
-  --accent-orange: #2f80ed;
-  --accent-orange-hover: #3897f0;
-  --accent-orange-muted: rgba(47, 128, 237, 0.14);
-  --accent-orange-glow: rgba(47, 128, 237, 0.35);
-  --accent-primary: #2f80ed;
-  --accent-primary-hover: #3897f0;
-  --accent-primary-muted: rgba(47, 128, 237, 0.14);
-  --accent-primary-glow: rgba(47, 128, 237, 0.35);
+  --accent-orange: var(--main-color);
+  --accent-orange-hover: var(--main-color-hover);
+  --accent-orange-muted: var(--main-color-muted);
+  --accent-orange-glow: var(--main-color-glow);
+  --accent-primary: var(--main-color);
+  --accent-primary-hover: var(--main-color-hover);
+  --accent-primary-muted: var(--main-color-muted);
+  --accent-primary-glow: var(--main-color-glow);
 
-  /* Screenshot Inspired Palette Tokens (Matte Charcoal & Sunrise Horizon & Electric Sapphire Blue) */
-  --bg-matte: #0a0a0c;
-  --surface-matte: #18191e;
-  --surface-matte-elevated: #1c1d22;
-  --surface-matte-subtle: #141519;
+  --bg-matte: var(--bg-page);
+  --surface-matte: var(--card-bg);
+  --surface-matte-elevated: var(--card-bg-elevated);
+  --surface-matte-subtle: var(--card-bg-subtle);
   --border-matte: #24262e;
-  --border-matte-subtle: rgba(255, 255, 255, 0.06);
+  --border-matte-subtle: var(--card-border-subtle);
 
-  --accent-blue: #2f80ed;
-  --accent-blue-hover: #3897f0;
-  --accent-blue-active: #2563eb;
-  --accent-blue-glow: rgba(47, 128, 237, 0.35);
-
-  --horizon-dark: #36281a;
-  --horizon-mid: #b88647;
-  --horizon-light: #f3c88e;
+  --accent-blue-hover: var(--main-color-hover);
+  --accent-blue-active: var(--main-color-dark);
 
   /* iOS Safe Area Insets */
   --sat: max(env(safe-area-inset-top, 0px), 0px);
   --sab: max(env(safe-area-inset-bottom, 0px), 0px);
   --sal: max(env(safe-area-inset-left, 0px), 0px);
   --sar: max(env(safe-area-inset-right, 0px), 0px);
+
+  /* Gym Design System Aliases */
+  --gym-canvas: var(--bg-page);
+  --gym-card: var(--card-bg);
+  --gym-card-hover: var(--card-bg-hover);
+  --gym-card-subtle: var(--card-bg-subtle);
+  --gym-card-elevated: var(--card-bg-elevated);
+  --gym-border-subtle: var(--card-border);
+  --gym-border-medium: #242834;
+  --gym-border-blue: var(--main-color);
+  --gym-text-primary: var(--heading-color);
+  --gym-text-secondary: var(--subheading-color);
+  --gym-text-muted: var(--muted-color);
+  --gym-blue: var(--main-color);
+  --gym-blue-dark: var(--main-color-dark);
+  --gym-blue-light: var(--main-color-hover);
+  --gym-blue-glow: var(--main-color-glow);
+  --gym-blue-muted: var(--main-color-muted);
+  --gym-surface-base: var(--card-bg-subtle);
+  --gym-surface-card: var(--card-bg);
+  --gym-surface-hover: var(--card-bg-hover);
+  --gym-surface-elevated: var(--card-bg-elevated);
+  --gym-border-base: #242834;
+  --gym-accent-primary: var(--main-color);
+}
+
+@theme {
+  --color-main: var(--main-color);
+  --color-main-hover: var(--main-color-hover);
+  --color-main-dark: var(--main-color-dark);
+  --color-main-muted: var(--main-color-muted);
+  --color-heading: var(--heading-color);
+  --color-subheading: var(--subheading-color);
+  --color-muted-text: var(--muted-color);
+  --color-card-bg: var(--card-bg);
+  --color-card-border: var(--card-border);
 }
 
 /* Header Dynamic Island & Notch Safe Padding */
@@ -75,11 +155,10 @@
   padding-top: max(env(safe-area-inset-top, 0px), 16px);
 }
 
+/* Base Body Styles */
 html, body {
+  color-scheme: dark;
   min-height: 100%;
-}
-
-body {
   background-color: #0a0a0c;
   color: #f5f7fa;
   font-family: var(--font-geist-sans), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
@@ -99,167 +178,559 @@ body {
   background: transparent;
 }
 
-::-webkit-scrollbar-thumb {
-  background: #1e293b;
-  border-radius: 9999px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: #334155;
-}
-
-/* Custom Scrollbar - Sleek Luxury Track & Thumb */
-.custom-scrollbar::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
-}
-.custom-scrollbar::-webkit-scrollbar-track {
-  background: rgba(5, 8, 14, 0.6);
-  border-radius: 9999px;
-}
-.custom-scrollbar::-webkit-scrollbar-thumb {
-  background: #334155;
-  border-radius: 9999px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-}
-.custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: #2f80ed;
-}
-.custom-scrollbar {
-  scrollbar-width: thin;
-  scrollbar-color: #334155 rgba(5, 8, 14, 0.6);
-}
-
-.scrollbar-none {
-  scrollbar-width: none !important;
-  -ms-overflow-style: none !important;
-}
-
-.scrollbar-none::-webkit-scrollbar {
-  display: none !important;
-  width: 0px !important;
-  height: 0px !important;
-}
-
-/* Monospace digits for precision timers & reps */
-.font-numeric {
-  font-family: var(--font-geist-mono), ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-  font-variant-numeric: tabular-nums;
-}
-
-/* Glass panel subtle backdrop */
-.glass-panel {
-  background: rgba(24, 25, 30, 0.85);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid #24262e;
-}
-
-.glass-panel-elevated {
-  background: rgba(28, 29, 34, 0.95);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid #24262e;
-  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.6);
-}
-
-/* Smooth input styling */
-input[type="number"]::-webkit-inner-spin-button,
-input[type="number"]::-webkit-outer-spin-button {
+/* Remove default browser spinner arrows on number inputs globally */
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
   -webkit-appearance: none;
   margin: 0;
 }
+
 input[type="number"] {
   -moz-appearance: textfield;
 }
 
-/* Smooth interactive transitions */
-.interactive-card {
+/* Calendar Date Input Dark Theme & Calendar Picker Styling */
+input[type="date"] {
+  color-scheme: dark;
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: invert(0.8) brightness(1.2);
+  cursor: pointer;
+  opacity: 0.65;
+  transition: opacity 0.15s ease, transform 0.15s ease;
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator:hover {
+  opacity: 1;
+  transform: scale(1.1);
+}
+
+/* =========================================================================
+   1. GYM TYPOGRAPHY HIERARCHY PREFIXES (.gym-heading-*, .gym-subtext)
+   ========================================================================= */
+.gym-heading-page {
+  font-size: var(--heading-page-size);
+  font-weight: 700;
+  color: var(--heading-color);
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+}
+@media (min-width: 640px) {
+  .gym-heading-page {
+    font-size: var(--heading-page-size-sm);
+  }
+}
+
+.gym-heading-section {
+  font-size: var(--heading-section-size);
+  font-weight: 700;
+  color: var(--heading-color);
+  letter-spacing: -0.015em;
+  line-height: 1.25;
+}
+
+.gym-heading-card {
+  font-size: var(--heading-card-size);
+  font-weight: 700;
+  color: var(--heading-color);
+  letter-spacing: -0.01em;
+}
+
+.gym-subtext {
+  font-size: var(--subheading-size);
+  font-weight: 400;
+  color: var(--subheading-color);
+  line-height: 1.35;
+}
+
+.gym-label-mono {
+  font-family: var(--font-geist-mono), ui-monospace, SFMono-Regular, monospace;
+  font-size: var(--label-mono-size);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--muted-color);
+}
+
+.gym-num {
+  font-family: var(--font-geist-mono), ui-monospace, SFMono-Regular, monospace;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--heading-color);
+}
+
+.gym-num-lg {
+  font-family: var(--font-geist-mono), ui-monospace, SFMono-Regular, monospace;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.03em;
+  color: var(--heading-color);
+  line-height: 1;
+}
+
+/* =========================================================================
+   FLUID RESPONSIVE UTILITIES (.fluid-*)
+   ========================================================================= */
+.fluid-page-px {
+  padding-left: var(--fluid-space-page-px);
+  padding-right: var(--fluid-space-page-px);
+}
+
+.fluid-card-p {
+  padding: var(--fluid-space-card-p);
+}
+
+.fluid-gap-controls {
+  gap: var(--fluid-gap-controls);
+}
+
+.fluid-table-row {
+  height: var(--fluid-table-row-h);
+}
+
+.fluid-table-cell {
+  padding-top: var(--fluid-table-cell-py);
+  padding-bottom: var(--fluid-table-cell-py);
+  padding-left: var(--fluid-table-cell-px);
+  padding-right: var(--fluid-table-cell-px);
+}
+
+/* =========================================================================
+   2. GYM UNIFIED NUMERIC DELTA BADGES (.gym-delta-*)
+   Increases, drops, PRs, and targets follow the EXACT same styling.
+   ========================================================================= */
+.gym-delta-pos {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-family: var(--font-geist-mono), ui-monospace, SFMono-Regular, monospace;
+  font-size: var(--delta-badge-size);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  padding: 0.125rem 0.375rem;
+  border-radius: 0.25rem;
+  color: #34d399; /* emerald-400 */
+  background-color: rgba(16, 185, 129, 0.1);
+  border: 1px solid rgba(16, 185, 129, 0.22);
+}
+
+.gym-delta-neg {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-family: var(--font-geist-mono), ui-monospace, SFMono-Regular, monospace;
+  font-size: var(--delta-badge-size);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  padding: 0.125rem 0.375rem;
+  border-radius: 0.25rem;
+  color: #f87171; /* rose-400 */
+  background-color: rgba(244, 63, 94, 0.1);
+  border: 1px solid rgba(244, 63, 94, 0.22);
+}
+
+.gym-delta-neutral {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-family: var(--font-geist-mono), ui-monospace, SFMono-Regular, monospace;
+  font-size: var(--delta-badge-size);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  padding: 0.125rem 0.375rem;
+  border-radius: 0.25rem;
+  color: var(--subheading-color);
+  background-color: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.gym-delta-blue {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-family: var(--font-geist-mono), ui-monospace, SFMono-Regular, monospace;
+  font-size: var(--delta-badge-size);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  padding: 0.125rem 0.375rem;
+  border-radius: 0.25rem;
+  color: var(--main-color);
+  background-color: var(--main-color-muted);
+  border: 1px solid var(--main-color-border);
+}
+
+/* =========================================================================
+   3. GYM BUTTON PREFIXES (.gym-btn-*)
+   ========================================================================= */
+.gym-btn-primary {
+  height: 2rem; /* 32px */
+  padding: 0 0.875rem;
+  border-radius: 0.5rem;
+  font-size: var(--btn-size);
+  font-weight: 700;
+  color: var(--heading-color);
+  background: linear-gradient(135deg, var(--main-color-dark) 0%, var(--main-color) 100%);
+  box-shadow: 0 2px 10px var(--main-color-glow);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.375rem;
+  white-space: nowrap;
+  cursor: pointer;
+  user-select: none;
   transition: all 0.15s cubic-bezier(0.16, 1, 0.3, 1);
 }
-
-.interactive-card:hover {
+.gym-btn-primary:hover {
+  background: linear-gradient(135deg, var(--main-color) 0%, var(--main-color-hover) 100%);
+  box-shadow: 0 4px 16px var(--main-color-glow);
   transform: translateY(-1px);
 }
-
-.interactive-button {
-  transition: all 0.12s cubic-bezier(0.16, 1, 0.3, 1);
+.gym-btn-primary:active {
+  transform: scale(0.98);
+  box-shadow: 0 1px 6px rgba(47, 128, 237, 0.2);
+}
+.gym-btn-primary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
 }
 
-.interactive-button:active {
+.gym-btn-secondary {
+  height: 2rem;
+  padding: 0 0.75rem;
+  border-radius: 0.5rem;
+  font-size: var(--btn-size);
+  font-weight: 600;
+  color: var(--subheading-color);
+  background-color: var(--card-bg);
+  border: 1px solid var(--card-border);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.375rem;
+  white-space: nowrap;
+  cursor: pointer;
+  user-select: none;
+  transition: all 0.15s ease;
+}
+.gym-btn-secondary:hover {
+  background-color: var(--card-bg-hover);
+  color: var(--heading-color);
+  border-color: rgba(255, 255, 255, 0.16);
+  transform: translateY(-0.5px);
+}
+.gym-btn-secondary:active {
+  transform: scale(0.98);
+}
+.gym-btn-secondary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.gym-btn-ghost {
+  height: 2rem;
+  padding: 0 0.625rem;
+  border-radius: 0.5rem;
+  font-size: var(--btn-size);
+  font-weight: 500;
+  color: var(--subheading-color);
+  background-color: transparent;
+  border: 1px solid transparent;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.25rem;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.gym-btn-ghost:hover {
+  background-color: rgba(255, 255, 255, 0.06);
+  color: var(--heading-color);
+}
+.gym-btn-ghost:active {
   transform: scale(0.98);
 }
 
-/* Unified Electric Blue Buttons & Accents */
-.btn-cyan, .btn-orange {
-  background: linear-gradient(135deg, #2563eb 0%, #2f80ed 100%);
-  color: #ffffff;
-  font-weight: 800;
-  letter-spacing: -0.01em;
-  box-shadow: 0 4px 18px -2px rgba(47, 128, 237, 0.4);
-  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+.gym-btn-danger {
+  height: 2rem;
+  padding: 0 0.75rem;
+  border-radius: 0.5rem;
+  font-size: var(--btn-size);
+  font-weight: 600;
+  color: #fca5a5;
+  background-color: rgba(239, 68, 68, 0.12);
+  border: 1px solid rgba(239, 68, 68, 0.24);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.375rem;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.gym-btn-danger:hover {
+  background-color: rgba(239, 68, 68, 0.22);
+  color: var(--heading-color);
+  border-color: rgba(239, 68, 68, 0.35);
+  transform: translateY(-0.5px);
+}
+.gym-btn-danger:active {
+  transform: scale(0.98);
 }
 
-.btn-cyan:hover, .btn-orange:hover {
-  background: linear-gradient(135deg, #2f80ed 0%, #3897f0 100%);
-  box-shadow: 0 6px 26px 0 rgba(47, 128, 237, 0.55);
+/* Button size modifiers */
+.gym-btn-sm {
+  height: 1.625rem !important; /* 26px */
+  padding: 0 0.5rem !important;
+  font-size: var(--btn-sm-size) !important;
+  border-radius: 0.375rem !important;
+}
+.gym-btn-lg {
+  height: 2.375rem !important; /* 38px */
+  padding: 0 1.125rem !important;
+  font-size: var(--btn-lg-size) !important;
+  border-radius: 0.625rem !important;
+}
+
+/* Backward compatibility button aliases */
+.btn-electric-blue, .btn-primary-blue, .btn-blue {
+  background: linear-gradient(135deg, var(--main-color-dark) 0%, var(--main-color) 100%);
+  color: var(--heading-color);
+  font-weight: 700;
+  border-radius: 0.5rem;
+  box-shadow: 0 2px 10px var(--main-color-glow);
+  transition: all 0.15s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.btn-electric-blue:hover, .btn-primary-blue:hover, .btn-blue:hover {
+  background: linear-gradient(135deg, var(--main-color) 0%, var(--main-color-hover) 100%);
+  box-shadow: 0 4px 16px var(--main-color-glow);
   transform: translateY(-1px);
 }
-
-.btn-cyan:active, .btn-orange:active {
+.btn-electric-blue:active, .btn-primary-blue:active, .btn-blue:active {
   transform: scale(0.98);
-  box-shadow: 0 2px 10px rgba(47, 128, 237, 0.25);
 }
 
-.border-cyan-subtle, .border-orange-subtle {
-  border-color: rgba(47, 128, 237, 0.25);
+/* =========================================================================
+   4. GYM CARDS & CONTAINERS (.gym-card*)
+   Strict pro paddings (never p-8 or giant margins).
+   ========================================================================= */
+.gym-card {
+  padding: 0.75rem; /* 12px */
+  border-radius: 0.75rem; /* 12px */
+  background-color: var(--card-bg);
+  border: 1px solid var(--card-border);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+  transition: border-color 0.15s ease, background-color 0.15s ease;
+}
+@media (min-width: 640px) {
+  .gym-card {
+    padding: 0.875rem; /* 14px */
+  }
 }
 
-.bg-cyan-subtle, .bg-orange-subtle {
-  background-color: rgba(47, 128, 237, 0.1);
+.gym-card-interactive {
+  padding: 0.75rem;
+  border-radius: 0.75rem;
+  background-color: var(--card-bg);
+  border: 1px solid var(--card-border);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+  cursor: pointer;
+  transition: all 0.15s cubic-bezier(0.16, 1, 0.3, 1);
 }
-
-.text-cyan-primary, .text-orange-primary {
-  color: #2f80ed;
+@media (min-width: 640px) {
+  .gym-card-interactive {
+    padding: 0.875rem;
+  }
 }
-
-.glow-ambient-cyan, .glow-ambient-orange {
-  background: radial-gradient(circle at 75% 15%, rgba(47, 128, 237, 0.15) 0%, transparent 65%);
-}
-
-@keyframes shimmerTrack {
-  0% { transform: translateX(-100%); }
-  100% { transform: translateX(250%); }
-}
-
-.animate-shimmer-track {
-  animation: shimmerTrack 2.5s infinite linear;
-}
-
-/* Electric Sapphire Blue Pill Button */
-.btn-electric-blue {
-  background: linear-gradient(135deg, #2563eb 0%, #2f80ed 100%);
-  color: #ffffff;
-  font-weight: 800;
-  letter-spacing: -0.01em;
-  box-shadow: 0 4px 18px -2px rgba(47, 128, 237, 0.4);
-  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.btn-electric-blue:hover {
-  background: linear-gradient(135deg, #2f80ed 0%, #3897f0 100%);
-  box-shadow: 0 6px 26px 0 rgba(47, 128, 237, 0.55);
+.gym-card-interactive:hover {
+  background-color: var(--card-bg-hover);
+  border-color: rgba(255, 255, 255, 0.15);
   transform: translateY(-1px);
 }
-
-.btn-electric-blue:active {
-  transform: scale(0.98);
-  box-shadow: 0 2px 10px rgba(47, 128, 237, 0.25);
+.gym-card-interactive:active {
+  transform: scale(0.99);
 }
 
-/* Ambient Sunrise Horizon Arc Container Glow */
-.ambient-sunrise-glow {
-  background: radial-gradient(ellipse 80% 50% at 50% -20%, rgba(184, 134, 71, 0.22) 0%, rgba(54, 40, 26, 0.08) 50%, transparent 80%);
+.gym-card-elevated {
+  padding: 0.875rem;
+  border-radius: 0.75rem;
+  background-color: var(--card-bg-elevated);
+  border: 1px solid var(--card-border-elevated);
+  box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.5);
+}
+
+.gym-card-subtle {
+  padding: 0.625rem;
+  border-radius: 0.5rem;
+  background-color: var(--card-bg-subtle);
+  border: 1px solid var(--card-border-subtle);
+}
+
+/* =========================================================================
+   5. GYM INPUTS & WELLS (.gym-input)
+   ========================================================================= */
+.gym-input {
+  height: 2rem;
+  padding: 0 0.75rem;
+  border-radius: 0.5rem;
+  background-color: var(--input-bg);
+  border: 1px solid var(--input-border);
+  font-size: var(--btn-size);
+  color: var(--heading-color);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+.gym-input::placeholder {
+  color: var(--muted-color);
+}
+.gym-input:focus {
+  outline: none;
+  border-color: var(--input-border-focus);
+  box-shadow: 0 0 0 1px var(--main-color-glow);
+}
+
+/* =========================================================================
+   6. GYM STATUS BADGES (.gym-badge-*)
+   ========================================================================= */
+.gym-badge-blue {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-family: var(--font-geist-mono), ui-monospace, SFMono-Regular, monospace;
+  font-size: var(--label-mono-size);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  padding: 0.125rem 0.4375rem;
+  border-radius: 0.25rem;
+  color: var(--main-color);
+  background-color: var(--main-color-muted);
+  border: 1px solid var(--main-color-border);
+}
+
+.gym-badge-emerald {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-family: var(--font-geist-mono), ui-monospace, SFMono-Regular, monospace;
+  font-size: var(--label-mono-size);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  padding: 0.125rem 0.4375rem;
+  border-radius: 0.25rem;
+  color: #34d399;
+  background-color: rgba(16, 185, 129, 0.1);
+  border: 1px solid rgba(16, 185, 129, 0.22);
+}
+
+.gym-badge-amber {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-family: var(--font-geist-mono), ui-monospace, SFMono-Regular, monospace;
+  font-size: var(--label-mono-size);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  padding: 0.125rem 0.4375rem;
+  border-radius: 0.25rem;
+  color: #fbbf24;
+  background-color: rgba(245, 158, 11, 0.1);
+  border: 1px solid rgba(245, 158, 11, 0.22);
+}
+
+.gym-badge-rose {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-family: var(--font-geist-mono), ui-monospace, SFMono-Regular, monospace;
+  font-size: var(--label-mono-size);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  padding: 0.125rem 0.4375rem;
+  border-radius: 0.25rem;
+  color: #f87171;
+  background-color: rgba(244, 63, 94, 0.1);
+  border: 1px solid rgba(244, 63, 94, 0.22);
+}
+
+.gym-badge-slate {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-family: var(--font-geist-mono), ui-monospace, SFMono-Regular, monospace;
+  font-size: var(--label-mono-size);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  padding: 0.125rem 0.4375rem;
+  border-radius: 0.25rem;
+  color: var(--subheading-color);
+  background-color: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* Minimal sleek scrollbars */
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #1e293b;
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--main-color);
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: rgba(10, 10, 12, 0.5);
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #242834;
+  border-radius: 9999px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: var(--main-color);
+}
+
+.font-numeric {
+  font-family: var(--font-geist-mono), ui-monospace, SFMono-Regular, monospace;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Hide scrollbar across all browsers while retaining scroll functionality */
+.no-scrollbar::-webkit-scrollbar {
+  display: none !important;
+}
+.no-scrollbar {
+  -ms-overflow-style: none !important;
+  scrollbar-width: none !important;
+}
+
+/* Responsive Viewport Display Rules for Mobile Clients List */
+@media (max-width: 374px) {
+  .viewport-mobile-compact { display: block !important; }
+  .viewport-mobile-standard { display: none !important; }
+}
+@media (min-width: 375px) and (max-width: 767px) {
+  .viewport-mobile-compact { display: none !important; }
+  .viewport-mobile-standard { display: block !important; }
+}
+@media (min-width: 768px) {
+  .viewport-mobile-compact { display: none !important; }
+  .viewport-mobile-standard { display: none !important; }
 }
 
 

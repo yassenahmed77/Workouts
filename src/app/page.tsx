@@ -26,6 +26,7 @@ import { WeeklySplitView } from '@/components/trainee/WeeklySplitView';
 import { WorkoutHistoryView } from '@/components/trainee/WorkoutHistoryView';
 import { TraineeProfileView } from '@/components/trainee/TraineeProfileView';
 import { TraineeHabitsView } from '@/components/trainee/TraineeHabitsView';
+import { TraineeDietView } from '@/components/trainee/TraineeDietView';
 import { InstallPwaBanner } from '@/components/pwa/InstallPwaBanner';
 import { CommandPalette } from '@/components/ui';
 import { useAppRouting } from '@/hooks/useAppRouting';
@@ -84,6 +85,34 @@ export default function Home() {
   const [isClientDetailModalOpen, setIsClientDetailModalOpen] = useState(false);
   const [detailUser, setDetailUser] = useState<User | null>(null);
 
+  // Responsive Coach Sidebar State: strictly Closed on <= 1024px, Open on > 1024px
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
+  useEffect(() => {
+    const handleResize = () => {
+      if (typeof window !== 'undefined') {
+        setIsSidebarOpen(window.innerWidth > 1024);
+      }
+    };
+    if (typeof window !== 'undefined') {
+      setIsSidebarOpen(window.innerWidth > 1024);
+    }
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  // Keyboard shortcut Ctrl+B / Cmd+B to toggle sidebar anywhere
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'b') {
+        e.preventDefault();
+        setIsSidebarOpen((prev) => !prev);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
+
   // Register Service Worker for Native Push Notifications & PWA
   useEffect(() => {
     if (typeof window !== 'undefined' && 'serviceWorker' in navigator) {
@@ -97,8 +126,8 @@ export default function Home() {
   // Loading state during initial storage/database hydration
   if (!isLoaded) {
     return (
-      <div className="min-h-screen bg-[#0a0a0c] flex flex-col items-center justify-center text-white">
-        <Loader2 className="w-8 h-8 text-[#2f80ed] animate-spin mb-3" />
+      <div className="min-h-screen bg-[var(--bg-page)] flex flex-col items-center justify-center text-white">
+        <Loader2 className="w-8 h-8 text-[var(--main-color)] animate-spin mb-3" />
         <span className="text-xs font-mono text-zinc-400">Loading Workouts PRO OS...</span>
       </div>
     );
@@ -127,10 +156,10 @@ export default function Home() {
   };
 
   return (
-    <div className={`min-h-screen ${currentUser.role === 'coach' ? 'md:h-screen bg-[#0a0a0c] md:overflow-hidden' : 'bg-[#0a0a0c]'} text-[#f4f4f5] selection:bg-[#2f80ed]/30 selection:text-white`}>
+    <div className={`min-h-screen ${currentUser.role === 'coach' ? 'h-[100dvh] bg-[var(--bg-page)] md:overflow-hidden' : 'bg-[var(--bg-page)]'} text-[#f4f4f5] selection:bg-[var(--main-color)]/30 selection:text-white`}>
       {currentUser.role === 'coach' ? (
         // Coach Experience: Left Vertical Sidebar on Desktop, Mobile Bar on Phones
-        <div className="min-h-screen md:h-full flex flex-col md:flex-row md:overflow-hidden">
+        <div className="h-full flex flex-col md:flex-row md:overflow-hidden relative">
           {/* Mobile Top Navbar (Hidden on Desktop) */}
           <div className="md:hidden flex-shrink-0">
             <Navbar
@@ -140,7 +169,7 @@ export default function Home() {
             />
           </div>
 
-          {/* Desktop Left Sidebar (Sticky/Fixed) */}
+          {/* Desktop & Tablet Coach Sidebar (Collapsible / Slide-over Drawer) */}
           <CoachSidebar
             activeTab={activeTab}
             setActiveTab={handleNavigateTab}
@@ -149,18 +178,20 @@ export default function Home() {
             onSwitchToTrainee={handleSwitchToTrainee}
             onOpenAlerts={() => setIsAlertCenterOpen(true)}
             alertsCount={coachAlerts.length}
+            isOpen={isSidebarOpen}
+            onClose={() => setIsSidebarOpen(false)}
           />
 
           {/* Main Coach Workspace Area - Full Width Fit with Proper Top Breathing Room */}
-          <main className={`flex-1 w-full max-w-none px-3 sm:px-5 lg:px-6 transition-all md:h-full select-none ${
+          <main className={`flex-1 w-full max-w-none fluid-page-px transition-all h-full select-none ${
             selectedClientFor360 
               ? 'pt-4 sm:pt-5 pb-3 overflow-hidden flex flex-col min-h-0' 
               : (activeTab === 'splits-studio' || activeTab === 'diet')
-                ? 'pt-2.5 sm:pt-3 pb-2.5 overflow-y-auto lg:overflow-hidden flex flex-col min-h-0'
+                ? 'pt-2.5 sm:pt-3 pb-20 md:pb-2.5 overflow-y-auto lg:overflow-hidden flex flex-col min-h-0'
                 : activeTab === 'dashboard' 
                   ? 'pt-2 sm:pt-2.5 pb-2 overflow-y-auto custom-scrollbar' 
                   : activeTab === 'clients'
-                    ? 'pt-2.5 sm:pt-3 pb-2 overflow-y-auto custom-scrollbar'
+                    ? 'pt-2 sm:pt-3 pb-2.5 md:pb-2.5 overflow-y-auto md:overflow-hidden flex flex-col min-h-0 h-full custom-scrollbar'
                     : 'pt-4 sm:pt-6 pb-6 overflow-y-auto custom-scrollbar'
           }`}>
             {activeTab === 'dashboard' && (
@@ -178,6 +209,8 @@ export default function Home() {
                 onNavigateToPlans={() => handleNavigateTab('splits-studio')}
                 onOpenAlerts={() => handleNavigateTab('alerts')}
                 alerts={coachAlerts}
+                isSidebarOpen={isSidebarOpen}
+                onToggleSidebar={() => setIsSidebarOpen((prev) => !prev)}
               />
             )}
 
@@ -188,6 +221,8 @@ export default function Home() {
                   const target = users.find((u) => u.id === clientId);
                   if (target) handleSelectClientFor360(target, 'workout');
                 }}
+                isSidebarOpen={isSidebarOpen}
+                onToggleSidebar={() => setIsSidebarOpen((prev) => !prev)}
               />
             )}
 
@@ -196,6 +231,8 @@ export default function Home() {
                 onSelectClientFor360={(u) => handleSelectClientFor360(u, 'overview')}
                 onOpenNewTraineeModal={() => setIsNewTraineeModalOpen(true)}
                 onSwitchToTrainee={handleSwitchToTrainee}
+                isSidebarOpen={isSidebarOpen}
+                onToggleSidebar={() => setIsSidebarOpen((prev) => !prev)}
               />
             )}
 
@@ -217,6 +254,8 @@ export default function Home() {
                   onSelectTraineeDetails={(u, subTab) => handleSelectClientFor360(u, (subTab as ClientDetailSubTab) || 'overview')}
                   onSwitchToTrainee={handleSwitchToTrainee}
                   onNavigateToDiet={() => handleNavigateTab('diet')}
+                  isSidebarOpen={isSidebarOpen}
+                  onToggleSidebar={() => setIsSidebarOpen((prev) => !prev)}
                 />
               )
             )}
@@ -227,10 +266,17 @@ export default function Home() {
                   const target = users.find((u) => u.id === clientId);
                   if (target) handleSelectClientFor360(target, 'nutrition');
                 }}
+                isSidebarOpen={isSidebarOpen}
+                onToggleSidebar={() => setIsSidebarOpen((prev) => !prev)}
               />
             )}
 
-            {activeTab === 'exercises' && <ExerciseLibraryView />}
+            {activeTab === 'exercises' && (
+              <ExerciseLibraryView
+                isSidebarOpen={isSidebarOpen}
+                onToggleSidebar={() => setIsSidebarOpen((prev) => !prev)}
+              />
+            )}
 
             {activeTab === 'alerts' && (
               <CoachAlertsView
@@ -242,6 +288,8 @@ export default function Home() {
                   }
                 }}
                 onOpenAssignModal={(u) => handleOpenPlanBuilder(undefined, u.id)}
+                isSidebarOpen={isSidebarOpen}
+                onToggleSidebar={() => setIsSidebarOpen((prev) => !prev)}
               />
             )}
 
@@ -249,15 +297,22 @@ export default function Home() {
               <CalendarView
                 onSelectClient={(client) => handleSelectClientFor360(client, 'overview')}
                 onOpenNewTraineeModal={() => setIsNewTraineeModalOpen(true)}
+                isSidebarOpen={isSidebarOpen}
+                onToggleSidebar={() => setIsSidebarOpen((prev) => !prev)}
               />
             )}
 
-            {activeTab === 'settings' && <CoachSettingsView />}
+            {activeTab === 'settings' && (
+              <CoachSettingsView
+                isSidebarOpen={isSidebarOpen}
+                onToggleSidebar={() => setIsSidebarOpen((prev) => !prev)}
+              />
+            )}
           </main>
         </div>
       ) : (
         // Athlete Experience (Rawan Ahmed / Trainee Portal)
-        <div className="min-h-screen flex flex-col bg-[#0a0a0c]">
+        <div className="min-h-screen flex flex-col bg-[var(--bg-page)]">
           <Navbar
             activeTab={activeTab}
             setActiveTab={handleNavigateTab}
@@ -270,16 +325,24 @@ export default function Home() {
                 onNavigateToSplit={() => handleNavigateTab('split')}
                 onNavigateToHistory={() => handleNavigateTab('history')}
                 onNavigateToHabits={() => handleNavigateTab('habits')}
+                onNavigateToDiet={() => handleNavigateTab('diet')}
               />
             )}
 
             {activeTab === 'split' && <WeeklySplitView />}
 
+            {activeTab === 'diet' && <TraineeDietView />}
+
             {activeTab === 'habits' && <TraineeHabitsView />}
 
             {activeTab === 'history' && <WorkoutHistoryView />}
 
-            {activeTab === 'profile' && <TraineeProfileView />}
+            {activeTab === 'profile' && (
+              <TraineeProfileView
+                onNavigateToWorkouts={() => handleNavigateTab('split')}
+                onNavigateToDiet={() => handleNavigateTab('diet')}
+              />
+            )}
           </main>
         </div>
       )}

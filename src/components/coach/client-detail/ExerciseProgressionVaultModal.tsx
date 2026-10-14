@@ -78,11 +78,11 @@ export const ExerciseProgressionVaultModal: React.FC<ExerciseProgressionVaultMod
       }}
     >
       <div
-        className="w-full max-w-3xl rounded-xl bg-[#090d14] border border-white/[0.08] shadow-2xl overflow-hidden flex flex-col max-h-[90vh]"
+        className="w-full max-w-3xl rounded-xl bg-[var(--card-bg)] border border-[var(--card-border)] shadow-2xl overflow-hidden flex flex-col max-h-[90vh]"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header (Clean Typography, Calm Monochrome) */}
-        <div className="p-3.5 sm:p-4 border-b border-white/[0.06] flex items-center justify-between gap-3 bg-[#070a10]">
+        <div className="p-3.5 sm:p-4 border-b border-[var(--card-border)] flex items-center justify-between gap-3 bg-[var(--card-subtle-bg)]">
           <div>
             <div className="flex items-center gap-2">
               <span className="text-[10px] font-mono uppercase tracking-wider text-slate-400 font-semibold">
@@ -107,7 +107,7 @@ export const ExerciseProgressionVaultModal: React.FC<ExerciseProgressionVaultMod
         </div>
 
         {/* Exercise Selector Pill Strip */}
-        <div className="px-3 sm:px-4 py-2 border-b border-white/[0.05] bg-[#05080e] overflow-x-auto custom-scrollbar flex items-center gap-1.5 flex-nowrap">
+        <div className="px-3 sm:px-4 py-2 border-b border-[var(--card-border)] bg-[var(--card-subtle-bg)] overflow-x-auto custom-scrollbar flex items-center gap-1.5 flex-nowrap">
           {allSummaries.map((summary) => {
             const isSelected = summary.exerciseName === activeSummary?.exerciseName;
             const hasGains = summary.netWeightGainKg > 0;
@@ -138,7 +138,7 @@ export const ExerciseProgressionVaultModal: React.FC<ExerciseProgressionVaultMod
             <>
               {/* Telemetry Metrics for this Exercise */}
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-                <div className="p-2.5 rounded-lg bg-[#05080e] border border-white/[0.05] text-center">
+                <div className="p-2.5 rounded-lg bg-[var(--card-subtle-bg)] border border-[var(--card-border)] text-center">
                   <span className="text-[10px] sm:text-[11px] font-mono uppercase tracking-wider text-slate-400 block font-semibold">
                     Starting Top Set
                   </span>
@@ -152,7 +152,7 @@ export const ExerciseProgressionVaultModal: React.FC<ExerciseProgressionVaultMod
                   </span>
                 </div>
 
-                <div className="p-2.5 rounded-lg bg-[#05080e] border border-white/[0.05] text-center">
+                <div className="p-2.5 rounded-lg bg-[var(--card-subtle-bg)] border border-[var(--card-border)] text-center">
                   <span className="text-[10px] sm:text-[11px] font-mono uppercase tracking-wider text-slate-400 block font-semibold">
                     Current Top Set
                   </span>
@@ -166,7 +166,7 @@ export const ExerciseProgressionVaultModal: React.FC<ExerciseProgressionVaultMod
                   </span>
                 </div>
 
-                <div className="p-2.5 rounded-lg bg-[#05080e] border border-white/[0.05] text-center">
+                <div className="p-2.5 rounded-lg bg-[var(--card-subtle-bg)] border border-[var(--card-border)] text-center">
                   <span className="text-[10px] sm:text-[11px] font-mono uppercase tracking-wider text-slate-400 block font-semibold">
                     Net Progression
                   </span>
@@ -181,7 +181,7 @@ export const ExerciseProgressionVaultModal: React.FC<ExerciseProgressionVaultMod
                   </span>
                 </div>
 
-                <div className="p-2.5 rounded-lg bg-[#05080e] border border-white/[0.05] text-center">
+                <div className="p-2.5 rounded-lg bg-[var(--card-subtle-bg)] border border-[var(--card-border)] text-center">
                   <span className="text-[10px] sm:text-[11px] font-mono uppercase tracking-wider text-slate-400 block font-semibold">
                     Lift Status
                   </span>
@@ -210,14 +210,14 @@ export const ExerciseProgressionVaultModal: React.FC<ExerciseProgressionVaultMod
                 </div>
 
                 {activeSummary.history.length === 0 ? (
-                  <div className="p-5 text-center rounded-lg bg-[#05080e] border border-white/[0.04] text-slate-400 text-xs font-mono">
+                  <div className="p-5 text-center rounded-lg bg-[var(--card-subtle-bg)] border border-[var(--card-border)] text-slate-400 text-xs font-mono">
                     No active sessions logged for this movement yet.
                   </div>
                 ) : (
-                  <div className="rounded-lg border border-white/[0.06] bg-[#05080e] overflow-hidden">
+                  <div className="rounded-lg border border-[var(--card-border)] bg-[var(--card-subtle-bg)] overflow-hidden">
                     <table className="w-full text-left text-xs">
                       <thead>
-                        <tr className="border-b border-white/[0.06] bg-black/40 text-[10px] sm:text-[11px] font-mono text-slate-300 uppercase tracking-wider font-semibold">
+                        <tr className="border-b border-[var(--card-border)] bg-black/40 text-[10px] sm:text-[11px] font-mono text-slate-300 uppercase tracking-wider font-semibold">
                           <th className="py-2.5 px-3">Date / Day</th>
                           <th className="py-2.5 px-3">Sets &amp; Reps</th>
                           <th className="py-2.5 px-3 text-center">Top Set</th>
@@ -307,13 +307,13 @@ export const ExerciseProgressionVaultModal: React.FC<ExerciseProgressionVaultMod
         </div>
 
         {/* Footer */}
-        <div className="p-3 sm:p-3.5 border-t border-white/[0.06] bg-[#070a10] flex items-center justify-between">
+        <div className="p-3 sm:p-3.5 border-t border-[var(--card-border)] bg-[var(--card-subtle-bg)] flex items-center justify-between">
           <span className="text-[10px] text-slate-400 font-mono">
             Verifiable Progressive Overload Telemetry
           </span>
           <button
             onClick={onClose}
-            className="px-3.5 py-1 rounded-lg bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] text-xs font-medium text-slate-200 hover:text-white transition-colors cursor-pointer"
+            className="gym-btn-ghost text-xs"
           >
             Close
           </button>

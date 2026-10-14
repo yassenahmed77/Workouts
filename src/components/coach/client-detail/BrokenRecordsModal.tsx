@@ -108,22 +108,22 @@ export const BrokenRecordsModal: React.FC<BrokenRecordsModalProps> = ({
       aria-labelledby="broken-records-title"
     >
       <div
-        className="w-full max-w-3xl max-h-[90vh] flex flex-col rounded-2xl bg-[#090d14] border border-white/[0.08] shadow-2xl overflow-hidden cursor-default"
+        className="w-full max-w-3xl max-h-[90dvh] flex flex-col rounded-2xl bg-[var(--card-bg)] border border-[var(--card-border)] shadow-2xl overflow-hidden cursor-default"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Modal Header */}
-        <div className="flex items-center justify-between p-4 sm:p-5 border-b border-white/[0.07] bg-[#090d14] flex-shrink-0">
+        <div className="flex items-center justify-between p-4 sm:p-5 border-b border-[var(--card-border)] bg-[var(--card-bg)] flex-shrink-0">
           <div>
             <div className="flex items-center gap-2">
-              <span className="text-[10px] font-mono uppercase tracking-wider text-slate-400 font-semibold">
+              <span className="gym-label-mono text-slate-400">
                 Milestone Telemetry
               </span>
               <span className="text-slate-600 text-xs">&bull;</span>
-              <span className="text-[10px] font-mono uppercase tracking-wider text-slate-500">
+              <span className="gym-label-mono text-slate-500">
                 {client?.name || 'Athlete'}
               </span>
             </div>
-            <h2 id="broken-records-title" className="text-sm sm:text-base font-bold text-white mt-0.5 tracking-tight">
+            <h2 id="broken-records-title" className="gym-heading-section text-white mt-0.5 tracking-tight">
               Broken Records &amp; Strength Milestones
             </h2>
           </div>
@@ -139,8 +139,8 @@ export const BrokenRecordsModal: React.FC<BrokenRecordsModalProps> = ({
         </div>
 
         {/* Telemetry Highlight Strip */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 p-3 sm:p-4 border-b border-white/[0.06] bg-[#05080e] flex-shrink-0">
-          <div className="p-2.5 rounded-lg bg-[#090d14] border border-white/[0.04]">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 p-3 sm:p-4 border-b border-[var(--card-border)] bg-[var(--bg-main)] flex-shrink-0">
+          <div className="p-2.5 rounded-lg bg-[var(--card-subtle-bg)] border border-[var(--card-border)]">
             <span className="text-[9px] font-mono uppercase tracking-wider text-slate-400 block font-medium">
               Total Milestones
             </span>
@@ -149,7 +149,7 @@ export const BrokenRecordsModal: React.FC<BrokenRecordsModalProps> = ({
             </span>
           </div>
 
-          <div className="p-2.5 rounded-lg bg-[#090d14] border border-white/[0.04]">
+          <div className="p-2.5 rounded-lg bg-[var(--card-subtle-bg)] border border-[var(--card-border)]">
             <span className="text-[9px] font-mono uppercase tracking-wider text-slate-400 block font-medium">
               Weight PRs
             </span>
@@ -158,7 +158,7 @@ export const BrokenRecordsModal: React.FC<BrokenRecordsModalProps> = ({
             </span>
           </div>
 
-          <div className="p-2.5 rounded-lg bg-[#090d14] border border-white/[0.04]">
+          <div className="p-2.5 rounded-lg bg-[var(--card-subtle-bg)] border border-[var(--card-border)]">
             <span className="text-[9px] font-mono uppercase tracking-wider text-slate-400 block font-medium">
               Rep Progressions
             </span>
@@ -167,7 +167,7 @@ export const BrokenRecordsModal: React.FC<BrokenRecordsModalProps> = ({
             </span>
           </div>
 
-          <div className="p-2.5 rounded-lg bg-[#090d14] border border-white/[0.04]">
+          <div className="p-2.5 rounded-lg bg-[var(--card-subtle-bg)] border border-[var(--card-border)]">
             <span className="text-[9px] font-mono uppercase tracking-wider text-slate-400 block font-medium">
               Net Strength Added
             </span>
@@ -194,14 +194,14 @@ export const BrokenRecordsModal: React.FC<BrokenRecordsModalProps> = ({
                   onClick={() => setFilterType(tab.key)}
                   className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all cursor-pointer flex items-center gap-1.5 ${
                     isSelected
-                      ? 'bg-white text-[#080c14] font-semibold shadow-sm'
+                      ? 'bg-white text-black font-semibold shadow-sm'
                       : 'bg-white/[0.03] text-slate-300 hover:text-white hover:bg-white/[0.07] border border-white/[0.06]'
                   }`}
                 >
                   <span>{tab.label}</span>
                   <span
                     className={`px-1.5 py-0.2 rounded-full text-[10px] font-mono ${
-                      isSelected ? 'bg-black/15 text-[#080c14]' : 'bg-white/[0.06] text-slate-400'
+                      isSelected ? 'bg-black/15 text-black' : 'bg-white/[0.06] text-slate-400'
                     }`}
                   >
                     {tab.count}
@@ -219,7 +219,7 @@ export const BrokenRecordsModal: React.FC<BrokenRecordsModalProps> = ({
               placeholder="Filter by exercise name..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-9 pr-3 py-1.5 rounded-lg bg-[#05080e] border border-white/[0.07] text-xs text-white placeholder:text-slate-500 focus:outline-none focus:border-white/20 transition-colors"
+              className="w-full pl-9 pr-3 py-1.5 rounded-lg bg-[var(--card-subtle-bg)] border border-white/[0.07] text-xs text-white placeholder:text-slate-500 focus:outline-none focus:border-white/20 transition-colors"
             />
           </div>
         </div>
@@ -227,7 +227,7 @@ export const BrokenRecordsModal: React.FC<BrokenRecordsModalProps> = ({
         {/* Broken Records List (Custom Scrollable Container) */}
         <div className="flex-1 overflow-y-auto custom-scrollbar p-3 sm:p-4 space-y-2.5 min-h-[260px]">
           {filteredRecords.length === 0 ? (
-            <div className="p-8 text-center rounded-xl bg-[#05080e] border border-white/[0.04] space-y-1.5">
+            <div className="p-8 text-center rounded-xl bg-[var(--card-subtle-bg)] border border-white/[0.04] space-y-1.5">
               <h4 className="text-xs font-semibold text-white">No Broken Records Found</h4>
               <p className="text-[11px] text-slate-400 max-w-sm mx-auto">
                 {searchQuery
@@ -242,7 +242,7 @@ export const BrokenRecordsModal: React.FC<BrokenRecordsModalProps> = ({
               return (
                 <div
                   key={record.id}
-                  className="p-3 rounded-xl bg-[#05080e] border border-white/[0.06] hover:border-white/15 transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-3 group"
+                  className="p-3 rounded-xl bg-[var(--card-subtle-bg)] border border-white/[0.06] hover:border-white/15 transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-3 group"
                 >
                   {/* Left info: Movement & Date */}
                   <div className="space-y-1 min-w-0">

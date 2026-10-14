@@ -5,17 +5,22 @@ import { CoachAlert, AlertPriority } from '@/lib/alertsEngine';
 import { User } from '@/types';
 import { useGym } from '@/context/GymContext';
 import { useToast } from '@/context/ToastContext';
+import { PanelLeft } from 'lucide-react';
 
 interface CoachAlertsViewProps {
   alerts: CoachAlert[];
   onNavigateToClient: (clientId: string, subTab?: 'overview' | 'checkins' | 'workout' | 'nutrition' | 'logs') => void;
   onOpenAssignModal?: (user: User) => void;
+  isSidebarOpen?: boolean;
+  onToggleSidebar?: () => void;
 }
 
 export const CoachAlertsView: React.FC<CoachAlertsViewProps> = ({
   alerts,
   onNavigateToClient,
-  onOpenAssignModal
+  onOpenAssignModal,
+  isSidebarOpen,
+  onToggleSidebar
 }) => {
   const { users } = useGym();
   const { showToast } = useToast();
@@ -95,29 +100,40 @@ export const CoachAlertsView: React.FC<CoachAlertsViewProps> = ({
   return (
     <div className="space-y-2.5 sm:space-y-3.5 w-full max-w-none pb-4 select-none font-sans text-[#f8fafc]">
       {/* 1. Executive Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 pb-1 border-b border-[#141a24]">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 pb-2 border-b border-[var(--card-border)]">
         <div>
           <div className="flex items-center gap-2.5">
-            <h1 className="text-lg sm:text-xl font-bold text-white tracking-tight leading-tight">
+            {onToggleSidebar && (
+              <button
+                type="button"
+                onClick={onToggleSidebar}
+                className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-white/[0.06] border border-white/[0.08] transition-colors flex items-center justify-center cursor-pointer shrink-0 min-[1025px]:hidden"
+                title={isSidebarOpen ? "Collapse sidebar (Ctrl+B)" : "Expand sidebar (Ctrl+B)"}
+                aria-label="Toggle Navigation Sidebar"
+              >
+                <PanelLeft className="w-4 h-4 text-slate-300" />
+              </button>
+            )}
+            <h1 className="gym-heading-page">
               Action Alerts
             </h1>
-            <span className="text-xs font-mono font-medium px-2.5 py-0.5 rounded-full bg-[#111827] text-cyan-400 border border-[#1f293d]">
+            <span className="gym-delta-blue">
               {alerts.length} pending
             </span>
           </div>
-          <p className="text-[11px] text-[#8896aa] mt-0.5">
+          <p className="gym-subtext mt-0.5">
             Automated coaching queue requiring your review or intervention.
           </p>
         </div>
 
-        {/* Search input - clean minimal typography */}
+        {/* Search input */}
         <div className="w-full sm:w-72">
           <input
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search by client or issue..."
-            className="w-full px-3 py-1.5 rounded-xl bg-[#090d14] border border-[#161f2e] text-xs text-white placeholder-[#526075] focus:outline-none focus:border-cyan-500/40 transition-colors"
+            className="w-full px-3 py-1.5 rounded-lg bg-[var(--input-bg)] border border-[var(--input-border)] text-xs text-white placeholder-slate-400 focus:outline-none focus:border-[var(--main-color)] transition-colors"
           />
         </div>
       </div>
@@ -125,55 +141,55 @@ export const CoachAlertsView: React.FC<CoachAlertsViewProps> = ({
       {/* 2. Top Summary KPI Strip */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 sm:gap-2.5">
         {/* Metric 1: Critical Attention */}
-        <div className="p-2.5 sm:p-3 rounded-xl bg-[#080c14] border border-[#141b26] flex flex-col justify-between">
+        <div className="gym-card flex flex-col justify-between">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold text-[#cbd5e1]">Critical Attention</span>
-            <span className="text-[10px] font-mono text-rose-400 font-medium px-2 py-0.5 rounded-full bg-[#201117] border border-rose-500/20">
+            <span className="text-xs font-bold text-[var(--gym-text-secondary)]">Critical Attention</span>
+            <span className="gym-delta-neg">
               Needs action
             </span>
           </div>
           <div className="mt-2 flex items-baseline justify-between">
-            <span className="text-2xl sm:text-3xl font-bold text-white font-numeric tracking-tight block leading-none">
+            <span className="gym-delta-value">
               {criticalCount}
             </span>
-            <span className="text-[11px] text-[#8896aa]">
+            <span className="gym-subtext">
               Unreviewed or late updates
             </span>
           </div>
         </div>
 
         {/* Metric 2: Pending Guidance */}
-        <div className="p-2.5 sm:p-3 rounded-xl bg-[#080c14] border border-[#141b26] flex flex-col justify-between">
+        <div className="gym-card flex flex-col justify-between">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold text-[#cbd5e1]">Pending Guidance</span>
-            <span className="text-[10px] font-mono text-amber-400 font-medium px-2 py-0.5 rounded-full bg-[#1c1710] border border-amber-500/20">
+            <span className="text-xs font-bold text-[var(--gym-text-secondary)]">Pending Guidance</span>
+            <span className="gym-delta-warn">
               Secondary
             </span>
           </div>
           <div className="mt-2 flex items-baseline justify-between">
-            <span className="text-2xl sm:text-3xl font-bold text-white font-numeric tracking-tight block leading-none">
+            <span className="gym-delta-value">
               {warningCount}
             </span>
-            <span className="text-[11px] text-[#8896aa]">
+            <span className="gym-subtext">
               Missing splits & diet gaps
             </span>
           </div>
         </div>
 
         {/* Metric 3: Total Trainees Covered */}
-        <div className="p-2.5 sm:p-3 rounded-xl bg-[#080c14] border border-[#141b26] flex flex-col justify-between">
+        <div className="gym-card flex flex-col justify-between">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold text-[#cbd5e1]">Active Roster</span>
-            <span className="text-[10px] font-mono text-emerald-400 font-medium px-2 py-0.5 rounded-full bg-[#0a1f18] border border-emerald-500/20">
+            <span className="text-xs font-bold text-[var(--gym-text-secondary)]">Active Roster</span>
+            <span className="gym-delta-pos">
               Coverage
             </span>
           </div>
           <div className="mt-2 flex items-baseline justify-between">
-            <div className="text-2xl sm:text-3xl font-bold text-white font-numeric tracking-tight block leading-none">
+            <div className="gym-delta-value flex items-baseline">
               <span>{traineesMap.size}</span>
-              <span className="text-[#64748b] text-sm font-normal ml-1">athletes</span>
+              <span className="text-[var(--gym-text-muted)] text-xs font-normal ml-1">athletes</span>
             </div>
-            <span className="text-[11px] text-[#8896aa]">
+            <span className="gym-subtext">
               {Math.max(0, traineesMap.size - alerts.length)} completely clear
             </span>
           </div>
@@ -192,10 +208,10 @@ export const CoachAlertsView: React.FC<CoachAlertsViewProps> = ({
           <button
             key={f.key}
             onClick={() => setActiveFilter(f.key as any)}
-            className={`px-3 py-1 rounded-lg text-xs font-medium tracking-wide transition-all cursor-pointer whitespace-nowrap ${
+            className={`px-3 py-1 rounded-lg text-xs font-semibold tracking-wide transition-all cursor-pointer whitespace-nowrap ${
               activeFilter === f.key
-                ? 'bg-white text-[#080c14] font-semibold shadow-sm'
-                : 'bg-[#090d14] text-[#8896aa] hover:text-white border border-[#16202e]'
+                ? 'gym-btn-primary shadow-sm'
+                : 'gym-btn-secondary'
             }`}
           >
             <span>{f.label}</span>
@@ -207,9 +223,9 @@ export const CoachAlertsView: React.FC<CoachAlertsViewProps> = ({
       {/* 4. Main Full-Width Alerts List */}
       <div className="space-y-2">
         {filteredAlerts.length === 0 ? (
-          <div className="p-8 sm:p-12 text-center rounded-xl bg-[#080c14] border border-[#141b26] space-y-2">
-            <h3 className="text-sm font-bold text-white">All Clear</h3>
-            <p className="text-xs text-[#8896aa] max-w-sm mx-auto">
+          <div className="gym-card p-8 sm:p-12 text-center space-y-2">
+            <h3 className="gym-heading-card">All Clear</h3>
+            <p className="gym-subtext max-w-sm mx-auto">
               No pending alerts or required actions match this filter. Everything across your roster is running smoothly.
             </p>
           </div>
@@ -221,7 +237,7 @@ export const CoachAlertsView: React.FC<CoachAlertsViewProps> = ({
             return (
               <div
                 key={alert.id}
-                className="p-3 sm:p-3.5 rounded-xl bg-[#080c14] hover:bg-[#0c121c] border border-[#141b26] hover:border-[#1e293b] transition-all flex flex-col md:flex-row md:items-center justify-between gap-3 group"
+                className="gym-card gym-card-interactive flex flex-col md:flex-row md:items-center justify-between gap-3 group"
               >
                 {/* Left Side: Avatar, Name, Title, Reason */}
                 <div className="flex items-start gap-3 min-w-0 flex-1">
@@ -230,7 +246,7 @@ export const CoachAlertsView: React.FC<CoachAlertsViewProps> = ({
                     src={athlete?.avatarUrl || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=300&auto=format&fit=crop&q=80'}
                     alt={alert.clientName}
                     onClick={() => onNavigateToClient(alert.clientId, 'overview')}
-                    className="w-9 h-9 rounded-full object-cover border border-[#1d2a3d] flex-shrink-0 cursor-pointer hover:border-cyan-400 transition-colors"
+                    className="w-9 h-9 rounded-full object-cover border border-[var(--card-border)] flex-shrink-0 cursor-pointer hover:border-[var(--main-color)] transition-colors"
                     title={`Open ${alert.clientName}'s profile`}
                   />
 
@@ -238,35 +254,29 @@ export const CoachAlertsView: React.FC<CoachAlertsViewProps> = ({
                     <div className="flex flex-wrap items-center gap-2">
                       <span
                         onClick={() => onNavigateToClient(alert.clientId, 'overview')}
-                        className="text-xs font-bold text-white hover:text-cyan-400 transition-colors cursor-pointer"
+                        className="text-xs font-bold text-white hover:text-[var(--main-color)] transition-colors cursor-pointer"
                       >
                         {alert.clientName}
                       </span>
 
                       {/* Status Badges */}
-                      <span
-                        className={`text-[9px] font-mono font-bold px-2 py-0.5 rounded-full flex items-center gap-1.5 ${
-                          isCritical
-                            ? 'bg-[#201117] text-rose-300 border border-rose-500/25'
-                            : 'bg-[#1c1710] text-amber-300 border border-amber-500/25'
-                        }`}
-                      >
+                      <span className={isCritical ? 'gym-delta-neg' : 'gym-delta-warn'}>
                         <span className={`w-1.5 h-1.5 rounded-full ${isCritical ? 'bg-rose-400' : 'bg-amber-400'}`} />
                         <span>{isCritical ? 'Critical' : 'Warning'}</span>
                       </span>
 
-                      <span className="text-[10px] font-mono text-[#64748b]">
+                      <span className="gym-label-mono text-[var(--gym-text-muted)]">
                         {alert.timestamp}
                       </span>
                     </div>
 
                     {/* Alert Title */}
-                    <h3 className="text-xs font-bold text-white mt-1 leading-tight">
+                    <h3 className="gym-heading-card mt-1 leading-tight">
                       {alert.title}
                     </h3>
 
                     {/* Alert Reason */}
-                    <p className="text-[11px] text-[#8896aa] mt-0.5 leading-relaxed">
+                    <p className="gym-subtext mt-0.5 leading-relaxed">
                       {alert.reason}
                     </p>
                   </div>
@@ -276,14 +286,14 @@ export const CoachAlertsView: React.FC<CoachAlertsViewProps> = ({
                 <div className="flex items-center gap-2 flex-shrink-0 self-end md:self-center">
                   <button
                     onClick={() => onNavigateToClient(alert.clientId, 'overview')}
-                    className="py-1.5 px-3 rounded-lg bg-[#090d14] hover:bg-[#111722] border border-[#16202e] hover:border-[#1e293b] text-xs font-medium text-[#94a3b8] hover:text-white transition-all cursor-pointer"
+                    className="gym-btn-secondary text-xs"
                   >
                     View Profile
                   </button>
 
                   <button
                     onClick={() => handlePrimaryAction(alert)}
-                    className="py-1.5 px-3.5 rounded-lg bg-white hover:bg-slate-100 text-[#080c14] text-xs font-semibold shadow-sm transition-all cursor-pointer active:scale-95"
+                    className="gym-btn-primary text-xs"
                   >
                     {alert.actionLabel || 'Review Status'}
                   </button>

@@ -67,9 +67,9 @@ export const ClientCheckInsTab: React.FC<ClientCheckInsTabProps> = ({ client }) 
 
   if (checkIns.length === 0) {
     return (
-      <div className="p-8 text-center rounded-xl bg-[#090d14] border border-white/[0.07] space-y-2 select-none">
-        <h3 className="text-sm font-bold text-white">No Check-Ins Submitted Yet</h3>
-        <p className="text-xs text-slate-400 max-w-sm mx-auto">
+      <div className="gym-card text-center p-6 space-y-2 select-none">
+        <h3 className="gym-heading-card">No Check-Ins Submitted Yet</h3>
+        <p className="gym-subtext max-w-sm mx-auto">
           When {client.name} submits weekly check-in forms and progress photos, they will appear chronologically here for your coaching review.
         </p>
       </div>
@@ -80,14 +80,14 @@ export const ClientCheckInsTab: React.FC<ClientCheckInsTabProps> = ({ client }) 
     <div className="flex flex-col h-full space-y-2 select-none">
       
       {/* 1. Header Controls: View Mode & Quick Stats (Compact & Clean) */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 p-2.5 rounded-xl bg-[#090d14] border border-white/[0.07] flex-shrink-0">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 p-2.5 gym-card flex-shrink-0">
         <div>
           <div className="flex items-center gap-2">
-            <span className="text-[10px] font-mono uppercase tracking-wider text-slate-400 font-semibold">
+            <span className="gym-label-mono">
               Weekly Submissions
             </span>
             <span className="text-slate-600 text-xs">&bull;</span>
-            <span className="text-[10px] font-mono text-slate-500">
+            <span className="gym-subtext font-mono">
               {checkIns.length} Check-ins &bull; Latest: {checkIns[0]?.date}
             </span>
           </div>
@@ -98,18 +98,14 @@ export const ClientCheckInsTab: React.FC<ClientCheckInsTabProps> = ({ client }) 
             <button
               type="button"
               onClick={() => setIsPhotoModalOpen(true)}
-              className="px-2.5 py-1 rounded-lg bg-white/[0.04] hover:bg-white/[0.08] active:scale-95 border border-white/[0.08] text-xs font-medium text-slate-200 hover:text-white transition-all cursor-pointer shadow-sm"
+              className="gym-btn-secondary gym-btn-sm"
             >
               Compare Photos
             </button>
             <button
               type="button"
               onClick={() => setIsCompareMode(!isCompareMode)}
-              className={`px-2.5 py-1 rounded-lg text-xs font-medium transition-all cursor-pointer border ${
-                isCompareMode
-                  ? 'bg-white text-black border-white shadow-sm font-semibold'
-                  : 'bg-white/[0.04] hover:bg-white/[0.08] text-slate-300 border-white/[0.08]'
-              }`}
+              className={isCompareMode ? 'gym-btn-primary gym-btn-sm' : 'gym-btn-secondary gym-btn-sm'}
             >
               {isCompareMode ? 'Exit Compare' : 'Side-by-Side'}
             </button>
@@ -119,7 +115,7 @@ export const ClientCheckInsTab: React.FC<ClientCheckInsTabProps> = ({ client }) 
 
       {/* 2. Side-by-Side Comparison Modal / Box */}
       {isCompareMode && compareCheckInA && compareCheckInB && (
-        <div className="p-3 rounded-xl bg-[#090d14] border border-white/[0.07] space-y-2 flex-shrink-0">
+        <div className="gym-card space-y-2 flex-shrink-0">
           <div className="flex items-center justify-between gap-2 pb-2 border-b border-white/[0.05]">
             <span className="text-xs font-semibold text-white">
               Visual Transformation ({selectedAngle.toUpperCase()} View)
@@ -191,7 +187,7 @@ export const ClientCheckInsTab: React.FC<ClientCheckInsTabProps> = ({ client }) 
               className={`py-1 px-2.5 rounded-lg text-xs font-medium whitespace-nowrap transition-all flex items-center gap-1.5 cursor-pointer border ${
                 isSelected
                   ? 'bg-white/[0.1] text-white border-white/20 shadow-sm font-semibold'
-                  : 'bg-[#090d14] text-slate-400 hover:text-white border-white/[0.05]'
+                  : 'bg-[var(--card-subtle-bg)] text-slate-400 hover:text-white border-[var(--card-border)]'
               }`}
             >
               <span>{item.date}</span>
@@ -207,40 +203,40 @@ export const ClientCheckInsTab: React.FC<ClientCheckInsTabProps> = ({ client }) 
       {/* 4. Active Selected Check-in Detail Card (Internal Scroll Container) */}
       {activeCheckIn && (
         <div className="flex-1 min-h-0 overflow-y-auto custom-scrollbar space-y-2 pr-1">
-          <div className="p-3 rounded-xl bg-[#090d14] border border-white/[0.07] space-y-3">
+          <div className="gym-card space-y-3">
             {/* Top Status & Date Header */}
-            <div className="flex items-center justify-between pb-2 border-b border-white/[0.05]">
+            <div className="flex items-center justify-between pb-2 border-b border-white/[0.07]">
               <div>
                 <div className="flex items-center gap-2">
-                  <h4 className="text-xs sm:text-sm font-semibold text-white">
+                  <h4 className="gym-heading-card">
                     Check-In: {activeCheckIn.date}
                   </h4>
                   {activeCheckIn.reviewed ? (
-                    <span className="px-1.5 py-0.2 rounded bg-white/[0.04] border border-white/[0.08] text-slate-300 text-[9px] font-mono">
+                    <span className="gym-delta-neutral">
                       Reviewed
                     </span>
                   ) : (
-                    <span className="px-1.5 py-0.2 rounded bg-white/[0.08] border border-white/20 text-white text-[9px] font-mono font-medium">
+                    <span className="gym-delta-blue">
                       Needs Review
                     </span>
                   )}
                 </div>
-                <span className="text-[11px] text-slate-400 font-numeric">
+                <span className="gym-subtext font-mono mt-0.5 block">
                   Body Weight: <strong className="text-white font-medium">{activeCheckIn.weightKg} kg</strong>
                 </span>
               </div>
 
               {/* Bio Feedback Indicators */}
               <div className="flex items-center gap-1.5 text-xs font-mono">
-                <div className="px-2 py-0.5 rounded bg-[#05080e] border border-white/[0.04] text-center">
+                <div className="gym-card-subtle px-2 py-0.5 text-center">
                   <span className="text-[8px] text-slate-500 uppercase block">Energy</span>
                   <span className="text-white font-medium">{activeCheckIn.energyRating || 4}/5</span>
                 </div>
-                <div className="px-2 py-0.5 rounded bg-[#05080e] border border-white/[0.04] text-center">
+                <div className="gym-card-subtle px-2 py-0.5 text-center">
                   <span className="text-[8px] text-slate-500 uppercase block">Sleep</span>
                   <span className="text-white font-medium">{activeCheckIn.sleepQuality || 4}/5</span>
                 </div>
-                <div className="px-2 py-0.5 rounded bg-[#05080e] border border-white/[0.04] text-center">
+                <div className="gym-card-subtle px-2 py-0.5 text-center">
                   <span className="text-[8px] text-slate-500 uppercase block">Hunger</span>
                   <span className="text-white font-medium">{activeCheckIn.hungerRating || 3}/5</span>
                 </div>
@@ -249,7 +245,7 @@ export const ClientCheckInsTab: React.FC<ClientCheckInsTabProps> = ({ client }) 
 
             {/* Check-in Photos Gallery */}
             <div className="space-y-1">
-              <span className="text-[9px] font-mono uppercase text-slate-500 font-medium block">
+              <span className="gym-label-mono block">
                 Physique Photos ({activeCheckIn.photos.length} angles)
               </span>
 
@@ -265,8 +261,10 @@ export const ClientCheckInsTab: React.FC<ClientCheckInsTabProps> = ({ client }) 
                       alt={`Photo ${photo.angle}`}
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                     />
-                    <div className="absolute top-1 left-1 px-1.5 py-0.5 rounded bg-black/80 text-white font-mono text-[9px] uppercase">
-                      {photo.angle}
+                    <div className="absolute top-1 left-1 px-1.5 py-0.5 rounded bg-black/85 text-white font-mono text-[9px] uppercase flex items-center gap-1 border border-white/10">
+                      <span>{photo.angle}</span>
+                      <span className="text-zinc-400">•</span>
+                      <span className="text-zinc-300 font-bold">{activeCheckIn.date}</span>
                     </div>
                   </div>
                 ))}
@@ -275,20 +273,20 @@ export const ClientCheckInsTab: React.FC<ClientCheckInsTabProps> = ({ client }) 
 
             {/* Circumference Measurements */}
             {activeCheckIn.measurements && (
-              <div className="grid grid-cols-4 gap-1.5 pt-1 border-t border-white/[0.05] text-center font-mono">
-                <div className="p-1 rounded bg-[#05080e] border border-white/[0.04]">
+              <div className="grid grid-cols-4 gap-1.5 pt-1 border-t border-white/[0.07] text-center font-mono">
+                <div className="gym-card-subtle p-1">
                   <span className="text-[8px] text-slate-500 uppercase block">Waist</span>
                   <span className="text-xs font-medium text-white">{activeCheckIn.measurements.waistCm || '—'} cm</span>
                 </div>
-                <div className="p-1 rounded bg-[#05080e] border border-white/[0.04]">
+                <div className="gym-card-subtle p-1">
                   <span className="text-[8px] text-slate-500 uppercase block">Chest</span>
                   <span className="text-xs font-medium text-white">{activeCheckIn.measurements.chestCm || '—'} cm</span>
                 </div>
-                <div className="p-1 rounded bg-[#05080e] border border-white/[0.04]">
+                <div className="gym-card-subtle p-1">
                   <span className="text-[8px] text-slate-500 uppercase block">Arms</span>
                   <span className="text-xs font-medium text-white">{activeCheckIn.measurements.armsCm || '—'} cm</span>
                 </div>
-                <div className="p-1 rounded bg-[#05080e] border border-white/[0.04]">
+                <div className="gym-card-subtle p-1">
                   <span className="text-[8px] text-slate-500 uppercase block">Hips</span>
                   <span className="text-xs font-medium text-white">{activeCheckIn.measurements.hipsCm || '—'} cm</span>
                 </div>
@@ -296,16 +294,16 @@ export const ClientCheckInsTab: React.FC<ClientCheckInsTabProps> = ({ client }) 
             )}
 
             {/* Coach Feedback Note */}
-            <div className="pt-2 border-t border-white/[0.05] space-y-1.5">
+            <div className="pt-2 border-t border-white/[0.07] space-y-1.5">
               <div className="flex items-center justify-between">
-                <span className="text-[10px] font-mono uppercase tracking-wider text-slate-400 font-medium">
+                <span className="gym-label-mono">
                   Coach Feedback & Review
                 </span>
                 <button
                   type="button"
                   onClick={() => handleSaveFeedback(activeCheckIn.id)}
                   disabled={isSavingFeedback}
-                  className="px-2.5 py-0.5 rounded-md bg-white/[0.04] hover:bg-white/[0.08] active:scale-95 border border-white/[0.08] text-[10px] font-medium text-slate-200 hover:text-white cursor-pointer transition-all disabled:opacity-50"
+                  className="gym-btn-primary gym-btn-sm"
                 >
                   {isSavingFeedback ? 'Saving...' : 'Save Feedback'}
                 </button>
@@ -316,7 +314,7 @@ export const ClientCheckInsTab: React.FC<ClientCheckInsTabProps> = ({ client }) 
                 value={feedbackDraft[activeCheckIn.id] ?? activeCheckIn.coachFeedback ?? ''}
                 onChange={(e) => setFeedbackDraft({ ...feedbackDraft, [activeCheckIn.id]: e.target.value })}
                 placeholder="Give constructive feedback on this week's progress..."
-                className="w-full p-1.5 rounded-lg bg-black border border-white/[0.06] text-xs text-white placeholder-slate-500 focus:outline-none focus:border-white/20 transition-colors leading-relaxed font-sans resize-none"
+                className="gym-input w-full h-auto min-h-[60px] p-2 leading-relaxed resize-none font-sans"
               />
             </div>
           </div>

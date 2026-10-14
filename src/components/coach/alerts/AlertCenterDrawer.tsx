@@ -47,28 +47,28 @@ export const AlertCenterDrawer: React.FC<AlertCenterDrawerProps> = ({
       }}
     >
       <div 
-        className="w-full max-w-md bg-[#080c14] border-l border-[#16202e] flex flex-col h-full shadow-2xl animate-in slide-in-from-right duration-300 select-none"
+        className="w-full max-w-md bg-[var(--card-bg)] border-l border-[var(--card-border)] flex flex-col h-full shadow-2xl animate-in slide-in-from-right duration-300 select-none"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Drawer Header */}
-        <div className="px-5 py-3.5 border-b border-[#16202e] flex items-center justify-between gap-3">
+        <div className="px-5 py-3.5 border-b border-[var(--card-border)] flex items-center justify-between gap-3">
           <div>
             <div className="flex items-center gap-2.5">
               <h2 className="text-base font-bold text-white tracking-tight">
                 Alert Center
               </h2>
-              <span className="text-[10px] font-mono font-medium px-2 py-0.5 rounded-full bg-[#111827] text-[#94a3b8] border border-[#1f293d]">
+              <span className="text-[10px] font-mono font-medium px-2 py-0.5 rounded-full bg-[var(--card-subtle-bg)] text-slate-400 border border-[var(--card-border)]">
                 {alerts.length} total
               </span>
             </div>
-            <p className="text-[11px] text-[#64748b] mt-0.5">
+            <p className="text-[11px] text-slate-400 mt-0.5">
               Automated items requiring coach action
             </p>
           </div>
 
           <button
             onClick={onClose}
-            className="p-1.5 rounded-lg bg-[#0f1724] hover:bg-[#16202e] border border-[#1f293d] text-[#94a3b8] hover:text-white transition-colors cursor-pointer"
+            className="p-1.5 rounded-lg bg-[var(--card-subtle-bg)] hover:bg-[var(--card-border)] border border-[var(--card-border)] text-slate-400 hover:text-white transition-colors cursor-pointer"
             title="Close Alert Center"
           >
             <X className="w-4 h-4" />
@@ -76,13 +76,13 @@ export const AlertCenterDrawer: React.FC<AlertCenterDrawerProps> = ({
         </div>
 
         {/* Priority Filter Bar */}
-        <div className="px-5 py-2.5 border-b border-[#16202e] flex items-center gap-1.5 overflow-x-auto custom-scrollbar">
+        <div className="px-5 py-2.5 border-b border-[var(--card-border)] flex items-center gap-1.5 overflow-x-auto custom-scrollbar">
           <button
             onClick={() => setFilter('ALL')}
             className={`px-3 py-1 rounded-lg text-xs font-medium tracking-wide transition-all cursor-pointer ${
               filter === 'ALL'
-                ? 'bg-white text-[#080c14] font-semibold shadow-sm'
-                : 'bg-[#0f1724] text-[#64748b] hover:text-white border border-[#16202e]'
+                ? 'bg-white text-slate-900 font-semibold shadow-sm'
+                : 'bg-[var(--card-subtle-bg)] text-slate-400 hover:text-white border border-[var(--card-border)]'
             }`}
           >
             All ({alerts.length})
@@ -93,7 +93,7 @@ export const AlertCenterDrawer: React.FC<AlertCenterDrawerProps> = ({
             className={`px-2.5 py-1 rounded-lg text-xs font-medium tracking-wide transition-all cursor-pointer flex items-center gap-1.5 ${
               filter === 'CRITICAL'
                 ? 'bg-[#1a131b] text-rose-300 border border-rose-500/40 shadow-sm'
-                : 'bg-[#0f1724] text-[#64748b] hover:text-rose-300 border border-[#16202e]'
+                : 'bg-[var(--card-subtle-bg)] text-slate-400 hover:text-rose-300 border border-[var(--card-border)]'
             }`}
           >
             <span className="w-1.5 h-1.5 rounded-full bg-rose-400" />
@@ -105,7 +105,7 @@ export const AlertCenterDrawer: React.FC<AlertCenterDrawerProps> = ({
             className={`px-2.5 py-1 rounded-lg text-xs font-medium tracking-wide transition-all cursor-pointer flex items-center gap-1.5 ${
               filter === 'WARNING'
                 ? 'bg-[#1c1710] text-amber-300 border border-amber-500/40 shadow-sm'
-                : 'bg-[#0f1724] text-[#64748b] hover:text-amber-300 border border-[#16202e]'
+                : 'bg-[var(--card-subtle-bg)] text-slate-400 hover:text-amber-300 border border-[var(--card-border)]'
             }`}
           >
             <span className="w-1.5 h-1.5 rounded-full bg-amber-400" />
@@ -116,11 +116,11 @@ export const AlertCenterDrawer: React.FC<AlertCenterDrawerProps> = ({
             onClick={() => setFilter('INFO')}
             className={`px-2.5 py-1 rounded-lg text-xs font-medium tracking-wide transition-all cursor-pointer flex items-center gap-1.5 ${
               filter === 'INFO'
-                ? 'bg-[#101924] text-cyan-300 border border-cyan-500/40 shadow-sm'
-                : 'bg-[#0f1724] text-[#64748b] hover:text-cyan-300 border border-[#16202e]'
+                ? 'bg-[var(--main-color)]/10 text-[var(--main-color)] border border-[var(--main-color)]/40 shadow-sm'
+                : 'bg-[var(--card-subtle-bg)] text-slate-400 hover:text-[var(--main-color)] border border-[var(--card-border)]'
             }`}
           >
-            <span className="w-1.5 h-1.5 rounded-full bg-cyan-400" />
+            <span className="w-1.5 h-1.5 rounded-full bg-[var(--main-color)]" />
             <span>Info ({infoCount})</span>
           </button>
         </div>
@@ -135,31 +135,31 @@ export const AlertCenterDrawer: React.FC<AlertCenterDrawerProps> = ({
               return (
                 <div
                   key={alert.id}
-                  className="p-3.5 rounded-xl bg-[#090e17] border border-[#16202e] hover:border-[#223247] transition-all text-left space-y-2.5"
+                  className="p-3.5 rounded-xl bg-[var(--card-subtle-bg)] border border-[var(--card-border)] hover:border-[var(--card-border)] transition-all text-left space-y-2.5"
                 >
                   <div className="flex items-start justify-between gap-3">
                     <div className="flex items-center gap-2.5 min-w-0">
-                      <div className="w-7 h-7 rounded-lg bg-[#111827] border border-[#1f293d] text-zinc-300 font-bold text-xs flex items-center justify-center flex-shrink-0 font-mono">
+                      <div className="w-7 h-7 rounded-lg bg-[var(--card-bg)] border border-[var(--card-border)] text-zinc-300 font-bold text-xs flex items-center justify-center flex-shrink-0 font-mono">
                         {alert.clientAvatar}
                       </div>
                       <div className="min-w-0">
                         <span className="text-xs font-semibold text-white block truncate">
                           {alert.clientName}
                         </span>
-                        <span className="text-[10px] text-[#64748b] font-mono block truncate">
+                        <span className="text-[10px] text-slate-400 font-mono block truncate">
                           {alert.timestamp}
                         </span>
                       </div>
                     </div>
 
-                    <span className="text-[10px] font-mono font-medium px-2 py-0.5 rounded-md bg-[#111827] text-zinc-300 border border-[#1f293d] flex items-center gap-1.5">
+                    <span className="text-[10px] font-mono font-medium px-2 py-0.5 rounded-md bg-[var(--card-bg)] text-slate-300 border border-[var(--card-border)] flex items-center gap-1.5">
                       <span 
                         className={`w-1.5 h-1.5 rounded-full ${
                           isCritical 
                             ? 'bg-rose-400' 
                             : isWarning 
                             ? 'bg-amber-400' 
-                            : 'bg-cyan-400'
+                            : 'bg-[var(--main-color)]'
                         }`} 
                       />
                       <span>{alert.priority}</span>
@@ -170,18 +170,18 @@ export const AlertCenterDrawer: React.FC<AlertCenterDrawerProps> = ({
                     <h4 className="text-xs font-semibold text-white">
                       {alert.title}
                     </h4>
-                    <p className="text-[11px] text-[#94a3b8] mt-1 leading-relaxed">
+                    <p className="text-[11px] text-slate-400 mt-1 leading-relaxed">
                       {alert.reason}
                     </p>
                   </div>
 
-                  <div className="pt-2 border-t border-[#141c28] flex items-center justify-end">
+                  <div className="pt-2 border-t border-[var(--card-border)] flex items-center justify-end">
                     <button
                       onClick={() => {
                         onClose();
                         onNavigateToClient(alert.clientId, alert.targetSubTab);
                       }}
-                      className="py-1.5 px-3 rounded-lg bg-white hover:bg-slate-100 text-[#080c14] text-xs font-semibold cursor-pointer active:scale-95 transition-all shadow-sm"
+                      className="gym-btn-primary text-xs"
                     >
                       {alert.actionLabel}
                     </button>
@@ -190,13 +190,13 @@ export const AlertCenterDrawer: React.FC<AlertCenterDrawerProps> = ({
               );
             })
           ) : (
-            <div className="p-8 text-center rounded-xl bg-[#090e17] border border-[#16202e] space-y-2">
-              <div className="w-8 h-8 rounded-lg bg-[#111827] text-emerald-400 border border-[#1f293d] flex items-center justify-center mx-auto">
+            <div className="p-8 text-center rounded-xl bg-[var(--card-subtle-bg)] border border-[var(--card-border)] space-y-2">
+              <div className="w-8 h-8 rounded-lg bg-[var(--card-bg)] text-emerald-400 border border-[var(--card-border)] flex items-center justify-center mx-auto">
                 <CheckCircle2 className="w-4 h-4" />
               </div>
               <div>
                 <h4 className="text-xs font-semibold text-white">All Clear</h4>
-                <p className="text-[11px] text-[#64748b] mt-0.5 max-w-xs mx-auto">
+                <p className="text-[11px] text-slate-400 mt-0.5 max-w-xs mx-auto">
                   No alerts match your current filter. Your athletes are adhering to their protocols.
                 </p>
               </div>

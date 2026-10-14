@@ -10,7 +10,8 @@ import {
   ChevronLeft,
   ChevronRight,
   Eye,
-  MessageCircle
+  MessageCircle,
+  PanelLeft
 } from 'lucide-react';
 import { SearchInput, SegmentedTabs } from '@/components/ui';
 import { useCompetitors, CompetitorPhaseFilter } from '@/hooks/useCompetitors';
@@ -21,11 +22,15 @@ interface CompetitorsViewProps {
   onSelectClientFor360?: (user: User) => void;
   onOpenNewTraineeModal?: () => void;
   onSwitchToTrainee?: (userId: string) => void;
+  isSidebarOpen?: boolean;
+  onToggleSidebar?: () => void;
 }
 
 export const CompetitorsView: React.FC<CompetitorsViewProps> = ({
   onSelectClientFor360,
-  onSwitchToTrainee
+  onSwitchToTrainee,
+  isSidebarOpen,
+  onToggleSidebar
 }) => {
   const { getUserLogs, getDietPlanForUser, logs } = useGym();
 
@@ -106,7 +111,7 @@ export const CompetitorsView: React.FC<CompetitorsViewProps> = ({
 
   // Status helper - unified calm dark obsidian pill with quiet micro-indicator
   const getCompetitorStatus = (comp: User) => {
-    const basePill = 'bg-[#0b1018] border-[#161f2e] text-[#cbd5e1]';
+    const basePill = 'bg-[var(--card-subtle-bg)] border-[var(--card-border)] text-[#cbd5e1]';
     const profile = comp.competitionProfile;
     const phase = profile?.prepPhase || 'Stage Prep';
     const daysOut = profile?.daysOut ?? 45;
@@ -156,34 +161,44 @@ export const CompetitorsView: React.FC<CompetitorsViewProps> = ({
   };
 
   return (
-    <div className="space-y-2.5 sm:space-y-3.5 w-full max-w-none pb-2 select-none">
+    <div className="space-y-2.5 sm:space-y-3 w-full max-w-none pb-2 select-none">
       {/* 1. Header Section - Clean Monochrome Luxury */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 pb-1 border-b border-white/[0.07]">
         <div>
-          <div className="flex items-center gap-3">
-            <h1 className="text-xl sm:text-2xl font-black text-white tracking-tight">
+          <div className="flex items-center gap-2.5">
+            {onToggleSidebar && (
+              <button
+                type="button"
+                onClick={onToggleSidebar}
+                className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-white/[0.06] border border-white/[0.08] transition-colors flex items-center justify-center cursor-pointer shrink-0 min-[1025px]:hidden"
+                title={isSidebarOpen ? "Collapse sidebar (Ctrl+B)" : "Expand sidebar (Ctrl+B)"}
+                aria-label="Toggle Navigation Sidebar"
+              >
+                <PanelLeft className="w-4 h-4 text-slate-300" />
+              </button>
+            )}
+            <h1 className="gym-heading-page">
               Competitors Directory
             </h1>
-            <span className="text-xs font-mono font-medium px-2.5 py-0.5 rounded-full bg-[#111827] text-[#94a3b8] border border-[#1f293d]">
+            <span className="gym-delta-neutral">
               {competitors.length} athletes
             </span>
           </div>
-          <p className="text-[11px] sm:text-xs text-slate-400 mt-0.5 font-semibold">
+          <p className="gym-subtext mt-0.5">
             Manage stage prep readiness, target weight limits, championship countdowns, and posing audits.
           </p>
         </div>
 
         <button
           onClick={() => setIsAddCompetitorModalOpen(true)}
-          className="py-1.5 px-3.5 rounded-xl bg-white hover:bg-slate-100 text-[#080c14] text-xs font-semibold inline-flex items-center gap-2 cursor-pointer shadow-sm active:scale-95 transition-all self-start sm:self-auto whitespace-nowrap"
+          className="gym-btn-primary gym-btn-sm self-start sm:self-auto"
         >
-          <Plus className="w-3.5 h-3.5 stroke-[2.5]" />
-          <span>Add Competitor</span>
+          + Competitor
         </button>
       </div>
 
       {/* 2. Search, Status Filter & Controls Bar - Minimalist Segmented Aesthetic */}
-      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3 pt-1">
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-2 pt-0.5">
         {/* Left: Search input */}
         <SearchInput
           value={searchQuery}
@@ -214,50 +229,50 @@ export const CompetitorsView: React.FC<CompetitorsViewProps> = ({
         {/* Right: Minimal Dropdowns */}
         <div className="flex items-center gap-2 flex-wrap sm:flex-nowrap">
           {/* Sort Dropdown */}
-          <div className="flex items-center gap-2 bg-[#090e17] border border-[#16202e] rounded-xl px-3 py-1.5 text-xs text-[#64748b]">
-            <span className="text-[11px] text-[#475569] whitespace-nowrap">Sort</span>
+          <div className="flex items-center gap-2 gym-card-subtle px-2.5 py-1 text-xs">
+            <span className="gym-label-mono text-slate-400 whitespace-nowrap">Sort</span>
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value as any)}
-              className="bg-transparent text-[#cbd5e1] font-medium text-xs focus:outline-none cursor-pointer pr-1 whitespace-nowrap"
+              className="bg-transparent text-slate-200 font-medium text-xs focus:outline-none cursor-pointer pr-1 whitespace-nowrap"
             >
-              <option value="days_out" className="bg-[#090e17] text-white">Days Out</option>
-              <option value="weight" className="bg-[#090e17] text-white">Weight</option>
-              <option value="readiness" className="bg-[#090e17] text-white">Readiness</option>
-              <option value="workout" className="bg-[#090e17] text-white">Workout Progress</option>
+              <option value="days_out" className="bg-[var(--card-bg)] text-white">Days Out</option>
+              <option value="weight" className="bg-[var(--card-bg)] text-white">Weight</option>
+              <option value="readiness" className="bg-[var(--card-bg)] text-white">Readiness</option>
+              <option value="workout" className="bg-[var(--card-bg)] text-white">Workout Progress</option>
             </select>
-            <ChevronDown className="w-3.5 h-3.5 text-[#475569] pointer-events-none" />
+            <ChevronDown className="w-3.5 h-3.5 text-slate-400 pointer-events-none" />
           </div>
 
           {/* Filter Shows Dropdown */}
-          <div className="flex items-center gap-2 bg-[#090e17] border border-[#16202e] rounded-xl px-3 py-1.5 text-xs text-[#64748b]">
-            <span className="text-[11px] text-[#475569] whitespace-nowrap">Show</span>
+          <div className="flex items-center gap-2 gym-card-subtle px-2.5 py-1 text-xs">
+            <span className="gym-label-mono text-slate-400 whitespace-nowrap">Show</span>
             <select
               value={showFilter}
               onChange={(e) => {
                 setShowFilter(e.target.value);
                 setCurrentPage(1);
               }}
-              className="bg-transparent text-[#cbd5e1] font-medium text-xs focus:outline-none cursor-pointer pr-1 whitespace-nowrap max-w-[140px] truncate"
+              className="bg-transparent text-slate-200 font-medium text-xs focus:outline-none cursor-pointer pr-1 whitespace-nowrap max-w-[140px] truncate"
             >
-              <option value="all" className="bg-[#090e17] text-white">All Shows</option>
+              <option value="all" className="bg-[var(--card-bg)] text-white">All Shows</option>
               {uniqueShows.map((s) => (
-                <option key={s} value={s} className="bg-[#090e17] text-white">
+                <option key={s} value={s} className="bg-[var(--card-bg)] text-white">
                   {s}
                 </option>
               ))}
             </select>
-            <ChevronDown className="w-3.5 h-3.5 text-[#475569] pointer-events-none" />
+            <ChevronDown className="w-3.5 h-3.5 text-slate-400 pointer-events-none" />
           </div>
         </div>
       </div>
 
       {/* 3. Desktop High-Density Table */}
-      <div className="hidden lg:block rounded-2xl bg-[#080c14] border border-[#141b26] overflow-hidden shadow-xl">
+      <div className="hidden lg:block gym-card p-0 overflow-hidden shadow-xl">
         <div className="overflow-x-auto custom-scrollbar">
           <table className="w-full text-left border-collapse min-w-full">
             <thead>
-              <tr className="border-b border-[#141b26] bg-[#070a10] text-[10px] font-semibold uppercase tracking-wider text-slate-400">
+              <tr className="border-b border-white/[0.07] bg-[var(--card-subtle-bg)] text-[10px] font-mono font-semibold uppercase tracking-wider text-slate-400">
                 <th className="py-2.5 px-3 text-left whitespace-nowrap w-[22%] min-w-[180px]">
                   Athlete
                 </th>
@@ -281,7 +296,7 @@ export const CompetitorsView: React.FC<CompetitorsViewProps> = ({
                 </th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-[#101622] text-xs">
+            <tbody className="divide-y divide-[var(--card-border)] text-xs">
               {paginatedCompetitors.map((comp) => {
                 const profile = comp.competitionProfile;
                 const targetLimit = profile?.targetWeightClassKg || comp.targetWeightKg || comp.weightKg;
@@ -298,7 +313,7 @@ export const CompetitorsView: React.FC<CompetitorsViewProps> = ({
                 return (
                   <tr
                     key={comp.id}
-                    className="hover:bg-[#0b1018] transition-colors group relative"
+                    className="hover:bg-[var(--card-subtle-bg)]/50 transition-colors group relative"
                   >
                     {/* 1. Athlete Column */}
                     <td className="py-2.5 px-3 align-middle text-left">
@@ -324,11 +339,11 @@ export const CompetitorsView: React.FC<CompetitorsViewProps> = ({
                           <div className="flex items-center gap-1.5 flex-nowrap">
                             <h3
                               onClick={() => onSelectClientFor360 ? onSelectClientFor360(comp) : setAuditCompetitor(comp)}
-                              className="text-xs sm:text-[13px] font-semibold text-white group-hover:text-cyan-300 transition-colors cursor-pointer truncate leading-snug"
+                              className="text-xs sm:text-[13px] font-semibold text-white group-hover:text-[var(--main-color)] transition-colors cursor-pointer truncate leading-snug"
                             >
                               {comp.name}
                             </h3>
-                            <span className="text-[9px] font-mono px-1 py-0.2 rounded bg-cyan-950/50 text-cyan-300 border border-cyan-800/40 flex-shrink-0">
+                            <span className="text-[9px] font-mono px-1 py-0.2 rounded bg-[var(--main-color)]/15 text-[var(--main-color)] border border-[var(--main-color)]/30 flex-shrink-0">
                               {profile?.division || 'Classic'}
                             </span>
                           </div>
@@ -341,7 +356,7 @@ export const CompetitorsView: React.FC<CompetitorsViewProps> = ({
                                 <button
                                   type="button"
                                   onClick={() => onSelectClientFor360(comp)}
-                                  className="text-[9.5px] text-[#64748b] hover:text-[#2f80ed] transition-colors cursor-pointer font-medium hover:underline leading-none"
+                                  className="text-[9.5px] text-[#64748b] hover:text-[var(--main-color)] transition-colors cursor-pointer font-medium hover:underline leading-none"
                                 >
                                   Profile 360
                                 </button>
@@ -351,7 +366,7 @@ export const CompetitorsView: React.FC<CompetitorsViewProps> = ({
                             <button
                               type="button"
                               onClick={() => setAuditCompetitor(comp)}
-                              className="text-[9.5px] text-[#64748b] hover:text-[#2f80ed] transition-colors cursor-pointer font-medium hover:underline leading-none"
+                              className="text-[9.5px] text-[#64748b] hover:text-[var(--main-color)] transition-colors cursor-pointer font-medium hover:underline leading-none"
                             >
                               Stage Audit
                             </button>
@@ -359,7 +374,7 @@ export const CompetitorsView: React.FC<CompetitorsViewProps> = ({
                             <button
                               type="button"
                               onClick={() => setAuditCompetitor(comp)}
-                              className="text-[9.5px] text-[#64748b] hover:text-[#2f80ed] transition-colors cursor-pointer font-medium hover:underline leading-none"
+                              className="text-[9.5px] text-[#64748b] hover:text-[var(--main-color)] transition-colors cursor-pointer font-medium hover:underline leading-none"
                             >
                               Posing
                             </button>
@@ -398,7 +413,7 @@ export const CompetitorsView: React.FC<CompetitorsViewProps> = ({
                         </div>
                         <div className="w-20 sm:w-24 h-1.5 rounded-full bg-[#111722] mt-1 overflow-hidden mx-auto">
                           <div
-                            className="h-full bg-cyan-400/70 rounded-full transition-all duration-300"
+                            className="h-full bg-[var(--main-color)] rounded-full transition-all duration-300"
                             style={{ width: `${progressWidth}%` }}
                           />
                         </div>
@@ -422,7 +437,7 @@ export const CompetitorsView: React.FC<CompetitorsViewProps> = ({
                                   workoutProg.workoutPct >= 100
                                     ? 'bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.6)]'
                                     : workoutProg.workoutPct >= 50
-                                    ? 'bg-cyan-400 shadow-[0_0_8px_rgba(6,182,212,0.6)]'
+                                    ? 'bg-[var(--main-color)] shadow-[0_0_8px_rgba(47,128,237,0.6)]'
                                     : 'bg-amber-400 shadow-[0_0_8px_rgba(251,191,36,0.6)]'
                                 }`}
                                 style={{ width: `${workoutProg.workoutPct}%` }}
@@ -452,7 +467,7 @@ export const CompetitorsView: React.FC<CompetitorsViewProps> = ({
                             <button
                               type="button"
                               onClick={() => onSelectClientFor360 && onSelectClientFor360(comp)}
-                              className="text-[10.5px] font-mono font-medium text-white hover:text-cyan-300 whitespace-nowrap inline-flex items-center justify-center cursor-pointer py-0.5 px-2 rounded-lg bg-[#0d131e] hover:bg-[#141c2a] border border-[#1a2333] hover:border-cyan-500/40 transition-colors"
+                              className="text-[10.5px] font-mono font-medium text-white hover:text-[var(--main-color)] whitespace-nowrap inline-flex items-center justify-center cursor-pointer py-0.5 px-2 rounded-lg bg-[#0d131e] hover:bg-[#141c2a] border border-[#1a2333] hover:border-[var(--main-color)]/40 transition-colors"
                               title={`View Diet: ${assignedDiet.title}`}
                             >
                               <span>{assignedDiet.targetCalories ? `${assignedDiet.targetCalories.toLocaleString()} kcal/d` : 'View Diet'}</span>
@@ -479,7 +494,7 @@ export const CompetitorsView: React.FC<CompetitorsViewProps> = ({
                         onClick={() => setAuditCompetitor(comp)}
                         className="flex flex-col items-center justify-center cursor-pointer group/championship"
                       >
-                        <p className="text-[11.5px] font-medium text-white group-hover/championship:text-cyan-300 transition-colors whitespace-nowrap truncate max-w-[140px]">
+                        <p className="text-[11.5px] font-medium text-white group-hover/championship:text-[var(--main-color)] transition-colors whitespace-nowrap truncate max-w-[140px]">
                           {profile?.targetShow || 'Championship Prep'}
                         </p>
                         <div className="flex items-center justify-center gap-1 mt-0.5">
@@ -488,7 +503,7 @@ export const CompetitorsView: React.FC<CompetitorsViewProps> = ({
                               posingApproved ? 'bg-emerald-400' : 'bg-amber-400'
                             }`}
                           />
-                          <span className="text-[9.5px] text-[#94a3b8] font-mono whitespace-nowrap">
+                          <span className="text-[9.5px] text-slate-400 font-mono whitespace-nowrap">
                             {readinessScore}% Ready &bull; {posingApproved ? 'Posing OK' : 'Audit Posing'}
                           </span>
                         </div>
@@ -505,16 +520,16 @@ export const CompetitorsView: React.FC<CompetitorsViewProps> = ({
                             const cleanPhone = (comp.phone || '+201012345678').replace(/[^0-9]/g, '');
                             window.open(`https://wa.me/${cleanPhone}`, '_blank', 'noopener,noreferrer');
                           }}
-                          className="p-1.5 rounded-lg bg-[#0a1812] hover:bg-[#10241b] border border-[#1b3d2c] hover:border-[#2b5941] text-[#34d399] transition-colors cursor-pointer flex items-center justify-center flex-shrink-0"
+                          className="p-1.5 rounded-lg bg-emerald-950/40 hover:bg-emerald-900/40 border border-emerald-800/40 text-emerald-400 transition-colors cursor-pointer flex items-center justify-center flex-shrink-0"
                           title={`Open WhatsApp (${comp.phone || '+20 101 234 5678'})`}
                         >
-                          <MessageCircle className="w-3.5 h-3.5 text-[#34d399]" />
+                          <MessageCircle className="w-3.5 h-3.5 text-emerald-400" />
                         </button>
 
                         <button
                           type="button"
                           onClick={() => setAuditCompetitor(comp)}
-                          className="py-1 px-2.5 rounded-lg bg-[#0d131e] hover:bg-[#141c2a] border border-[#1a2333] hover:border-[#2a384e] text-[11px] font-medium text-[#cbd5e1] hover:text-white transition-all cursor-pointer inline-flex items-center active:scale-95 shadow-sm whitespace-nowrap flex-nowrap flex-shrink-0"
+                          className="py-1 px-2.5 rounded-lg bg-[var(--card-subtle-bg)] hover:bg-[var(--card-border)] border border-[var(--card-border)] text-[11px] font-medium text-slate-300 hover:text-white transition-all cursor-pointer inline-flex items-center active:scale-95 shadow-sm whitespace-nowrap flex-nowrap flex-shrink-0"
                           title="Open Stage Audit &amp; Private Notes"
                         >
                           <span className="whitespace-nowrap">Stage Audit</span>
@@ -533,18 +548,18 @@ export const CompetitorsView: React.FC<CompetitorsViewProps> = ({
                                 const spaceBelow = window.innerHeight - rect.bottom;
                                 const openUpwards = spaceBelow < 250;
                                 setMenuCoords({
-                                  top: openUpwards ? undefined : rect.bottom + 6,
-                                  bottom: openUpwards ? window.innerHeight - rect.top + 6 : undefined,
-                                  right: window.innerWidth - rect.right,
-                                  openUpwards,
+                                   top: openUpwards ? undefined : rect.bottom + 6,
+                                   bottom: openUpwards ? window.innerHeight - rect.top + 6 : undefined,
+                                   right: window.innerWidth - rect.right,
+                                   openUpwards,
                                 });
                                 setActiveActionMenuId(comp.id);
                               }
                             }}
                             className={`p-1.5 rounded-lg border transition-all cursor-pointer flex items-center justify-center flex-shrink-0 ${
                               isMenuOpen
-                                ? 'bg-[#141c2a] border-[#2a384e] text-white'
-                                : 'bg-[#0d131e] border-[#1a2333] text-[#64748b] hover:text-white hover:border-[#233146]'
+                                ? 'bg-[var(--card-subtle-bg)] border-[var(--main-color)] text-white'
+                                : 'bg-[var(--card-subtle-bg)] border-[var(--card-border)] text-slate-400 hover:text-white hover:border-[var(--main-color)]'
                             }`}
                           >
                             <span className="text-xs">&bull;&bull;&bull;</span>
@@ -567,7 +582,7 @@ export const CompetitorsView: React.FC<CompetitorsViewProps> = ({
                                   bottom: menuCoords.bottom !== undefined ? `${menuCoords.bottom}px` : 'auto',
                                   right: `${menuCoords.right}px`,
                                 }}
-                                className="z-50 w-44 rounded-xl bg-[#090e17] border border-[#16202e] shadow-2xl py-1 text-left select-none animate-in fade-in zoom-in-95 duration-100"
+                                className="z-50 w-44 rounded-xl bg-[var(--card-bg)] border border-[var(--card-border)] shadow-2xl py-1 text-left select-none animate-in fade-in zoom-in-95 duration-100"
                               >
                                 <button
                                   type="button"
@@ -576,7 +591,7 @@ export const CompetitorsView: React.FC<CompetitorsViewProps> = ({
                                     setMenuCoords(null);
                                     setAuditCompetitor(comp);
                                   }}
-                                  className="w-full px-4 py-2 text-xs font-medium text-slate-300 hover:bg-[#141c2a] hover:text-white transition-colors cursor-pointer text-left block"
+                                  className="w-full px-4 py-2 text-xs font-medium text-slate-300 hover:bg-[var(--card-subtle-bg)] hover:text-white transition-colors cursor-pointer text-left block"
                                 >
                                   Open Stage Audit
                                 </button>
@@ -589,7 +604,7 @@ export const CompetitorsView: React.FC<CompetitorsViewProps> = ({
                                       setMenuCoords(null);
                                       onSelectClientFor360(comp);
                                     }}
-                                    className="w-full px-4 py-2 text-xs font-medium text-slate-300 hover:bg-[#141c2a] hover:text-white transition-colors cursor-pointer text-left block"
+                                    className="w-full px-4 py-2 text-xs font-medium text-slate-300 hover:bg-[var(--card-subtle-bg)] hover:text-white transition-colors cursor-pointer text-left block"
                                   >
                                     Open Client 360
                                   </button>
@@ -603,13 +618,13 @@ export const CompetitorsView: React.FC<CompetitorsViewProps> = ({
                                       setMenuCoords(null);
                                       onSwitchToTrainee(comp.id);
                                     }}
-                                    className="w-full px-4 py-2 text-xs font-medium text-slate-300 hover:bg-[#141c2a] hover:text-white transition-colors cursor-pointer text-left block"
+                                    className="w-full px-4 py-2 text-xs font-medium text-slate-300 hover:bg-[var(--card-subtle-bg)] hover:text-white transition-colors cursor-pointer text-left block"
                                   >
                                     Switch to Athlete View
                                   </button>
                                 )}
 
-                                <div className="my-1 border-t border-[#141d2a]" />
+                                <div className="my-1 border-t border-[var(--card-border)]" />
 
                                 <button
                                   type="button"
@@ -618,7 +633,7 @@ export const CompetitorsView: React.FC<CompetitorsViewProps> = ({
                                     setMenuCoords(null);
                                     handleCopyAthleteLink(comp.id, comp.name);
                                   }}
-                                  className="w-full px-4 py-2 text-xs font-medium text-slate-400 hover:bg-[#141c2a] hover:text-white transition-colors cursor-pointer text-left block"
+                                  className="w-full px-4 py-2 text-xs font-medium text-slate-400 hover:bg-[var(--card-subtle-bg)] hover:text-white transition-colors cursor-pointer text-left block"
                                 >
                                   Copy Portal Link
                                 </button>
@@ -637,7 +652,7 @@ export const CompetitorsView: React.FC<CompetitorsViewProps> = ({
       </div>
 
       {/* 4. Mobile & Tablet Card Layout (< 1024px) */}
-      <div className="lg:hidden space-y-3">
+      <div className="lg:hidden space-y-2.5">
         {paginatedCompetitors.map((comp) => {
           const profile = comp.competitionProfile;
           const targetLimit = profile?.targetWeightClassKg || comp.targetWeightKg || comp.weightKg;
@@ -653,43 +668,43 @@ export const CompetitorsView: React.FC<CompetitorsViewProps> = ({
           return (
             <div
               key={comp.id}
-              className="p-4 rounded-2xl bg-[#080c14] border border-[#141b26] space-y-3 shadow-md"
+              className="gym-card space-y-2.5"
             >
               {/* Top Row: Circular Avatar, Name, Division badge & Status Badge */}
               <div className="flex items-center justify-between gap-3">
                 <div
                   onClick={() => onSelectClientFor360 ? onSelectClientFor360(comp) : setAuditCompetitor(comp)}
-                  className="flex items-center gap-3 min-w-0 cursor-pointer"
+                  className="flex items-center gap-2.5 min-w-0 cursor-pointer"
                 >
                   {comp.avatarUrl ? (
                     <img
                       src={comp.avatarUrl}
                       alt={comp.name}
-                      className="w-10 h-10 rounded-full object-cover border border-[#1b2535] flex-shrink-0"
+                      className="w-9 h-9 rounded-full object-cover border border-white/10 flex-shrink-0"
                     />
                   ) : (
-                    <div className="w-10 h-10 rounded-full bg-[#0d131e] text-[#94a3b8] border border-[#1b2535] font-mono text-xs font-semibold flex items-center justify-center flex-shrink-0">
+                    <div className="w-9 h-9 rounded-full bg-[var(--card-subtle-bg)] text-slate-400 border border-[var(--card-border)] font-mono text-xs font-semibold flex items-center justify-center flex-shrink-0">
                       {comp.avatarText || comp.name.slice(0, 2).toUpperCase()}
                     </div>
                   )}
 
                   <div className="min-w-0">
                     <div className="flex items-center gap-1.5 flex-wrap">
-                      <h3 className="text-sm font-semibold text-white truncate">
+                      <h3 className="gym-heading-card truncate">
                         {comp.name}
                       </h3>
-                      <span className="text-[9px] font-mono px-1.5 py-0.2 rounded bg-cyan-950/50 text-cyan-300 border border-cyan-800/40">
+                      <span className="gym-badge-blue text-[9px]">
                         {profile?.division || 'Classic Physique'}
                       </span>
                     </div>
-                    <p className="text-[11px] text-[#64748b] truncate mt-0.5">
+                    <p className="gym-subtext truncate mt-0.5">
                       {profile?.targetShow || 'Championship Prep'} &bull; {profile?.daysOut !== undefined ? `${profile.daysOut}d out` : 'Prep'} &bull; {comp.email}
                     </p>
                   </div>
                 </div>
 
                 <div className="flex items-center gap-1.5 flex-shrink-0">
-                  <span className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-medium border ${statusBadge.pillClass}`}>
+                  <span className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10.5px] font-medium border ${statusBadge.pillClass}`}>
                     <span className={`w-1.5 h-1.5 rounded-full ${statusBadge.dot}`} />
                     {statusBadge.label}
                   </span>
@@ -697,54 +712,54 @@ export const CompetitorsView: React.FC<CompetitorsViewProps> = ({
               </div>
 
               {/* Data Row 1: Current vs Target Limit + Readiness */}
-              <div className="grid grid-cols-2 gap-2 p-2.5 rounded-xl bg-[#090d14] border border-[#141b26]">
+              <div className="grid grid-cols-2 gap-2 p-2.5 rounded-xl bg-[var(--card-subtle-bg)] border border-[var(--card-border)]">
                 <div>
-                  <span className="text-[9px] font-mono uppercase text-[#64748b] block">Current / Stage Limit</span>
+                  <span className="gym-label-mono block">Current / Stage Limit</span>
                   <div className="text-xs font-medium text-white font-numeric mt-0.5 flex items-center gap-1">
-                    <span>{comp.weightKg} kg</span>
-                    <span className="text-[#475569]">/</span>
-                    <span className="text-[#94a3b8]">{targetLimit} kg</span>
-                    <span className="text-[9px] font-mono text-[#f59e0b] ml-1">
+                    <span className="gym-num text-white">{comp.weightKg} kg</span>
+                    <span className="text-slate-500">/</span>
+                    <span className="text-slate-400 font-mono">{targetLimit} kg</span>
+                    <span className="gym-delta-neutral text-[9px] ml-1">
                       {Number(weightDiff) <= 0 ? 'Met' : `+${weightDiff}k`}
                     </span>
                   </div>
-                  <div className="w-full h-1 rounded-full bg-[#111722] mt-1 overflow-hidden">
-                    <div className="h-full bg-cyan-400 rounded-full" style={{ width: `${progressWidth}%` }} />
+                  <div className="w-full h-1 rounded-full bg-white/[0.08] mt-1 overflow-hidden">
+                    <div className="h-full bg-[var(--main-color)] rounded-full" style={{ width: `${progressWidth}%` }} />
                   </div>
                 </div>
 
                 <div>
-                  <span className="text-[9px] font-mono uppercase text-[#64748b] block">Readiness &amp; Posing</span>
+                  <span className="text-[9px] font-mono uppercase text-slate-400 block">Readiness &amp; Posing</span>
                   <div className="flex items-center gap-1.5 mt-0.5">
                     <span className={`w-1.5 h-1.5 rounded-full ${posingApproved ? 'bg-emerald-400' : 'bg-amber-400'}`} />
                     <span className="text-xs font-medium text-white">
                       {readinessScore}% &bull; {posingApproved ? 'Approved' : 'Needs Review'}
                     </span>
                   </div>
-                  <span className="text-[10px] text-[#64748b] font-mono block mt-0.5 truncate">
+                  <span className="text-[10px] text-slate-400 font-mono block mt-0.5 truncate">
                     {profile?.targetShow || 'Championship'}
                   </span>
                 </div>
               </div>
 
               {/* Data Row 2: Workout Attendance + Diet Calories */}
-              <div className="grid grid-cols-2 gap-2 p-2.5 rounded-xl bg-[#090d14] border border-[#141b26]">
+              <div className="grid grid-cols-2 gap-2 p-2.5 rounded-xl bg-[var(--card-subtle-bg)] border border-[var(--card-border)]">
                 <div>
-                  <span className="text-[9px] font-mono uppercase text-[#64748b] block">Workout Split</span>
+                  <span className="text-[9px] font-mono uppercase text-slate-400 block">Workout Split</span>
                   <p className="text-xs font-medium text-white truncate mt-0.5">
                     {assignedPlan?.title || 'No Split'}
                   </p>
-                  <p className="text-[10px] text-[#64748b] font-mono mt-0.5">
+                  <p className="text-[10px] text-slate-400 font-mono mt-0.5">
                     {workoutProg.completedDays}/{workoutProg.targetDays} Days &bull; {workoutProg.workoutPct}%
                   </p>
                 </div>
 
                 <div>
-                  <span className="text-[9px] font-mono uppercase text-[#64748b] block">Diet Plan</span>
+                  <span className="text-[9px] font-mono uppercase text-slate-400 block">Diet Plan</span>
                   <p className="text-xs font-mono font-medium text-white mt-0.5">
                     {assignedDiet ? `${assignedDiet.targetCalories.toLocaleString()} kcal` : 'No Diet'}
                   </p>
-                  <p className="text-[10px] text-[#64748b] font-mono mt-0.5">
+                  <p className="text-[10px] text-slate-400 font-mono mt-0.5">
                     {assignedDiet ? `${assignedDiet.targetProteinG}P • ${assignedDiet.targetCarbsG}C • ${assignedDiet.targetFatsG}F` : 'Not assigned'}
                   </p>
                 </div>
@@ -758,7 +773,7 @@ export const CompetitorsView: React.FC<CompetitorsViewProps> = ({
                     const cleanPhone = (comp.phone || '+201012345678').replace(/[^0-9]/g, '');
                     window.open(`https://wa.me/${cleanPhone}`, '_blank', 'noopener,noreferrer');
                   }}
-                  className="col-span-2 py-2 rounded-xl bg-[#0a1812] border border-[#1b3d2c] text-[#34d399] flex items-center justify-center cursor-pointer"
+                  className="col-span-2 py-2 rounded-xl bg-emerald-950/40 border border-emerald-800/40 text-emerald-400 flex items-center justify-center cursor-pointer"
                   title="WhatsApp"
                 >
                   <MessageCircle className="w-4 h-4" />
@@ -767,9 +782,9 @@ export const CompetitorsView: React.FC<CompetitorsViewProps> = ({
                 <button
                   type="button"
                   onClick={() => setAuditCompetitor(comp)}
-                  className="col-span-6 py-2 px-3 rounded-xl bg-[#0d131e] hover:bg-[#141c2a] border border-[#1a2333] text-xs font-medium text-[#cbd5e1] hover:text-white flex items-center justify-center gap-1.5 cursor-pointer shadow-sm active:scale-95 transition-all"
+                  className="col-span-6 py-2 px-3 rounded-xl bg-[var(--card-subtle-bg)] hover:bg-[var(--card-border)] border border-[var(--card-border)] text-xs font-medium text-slate-300 hover:text-white flex items-center justify-center gap-1.5 cursor-pointer shadow-sm active:scale-95 transition-all"
                 >
-                  <Eye className="w-3.5 h-3.5 text-[#64748b]" />
+                  <Eye className="w-3.5 h-3.5 text-slate-400" />
                   <span>Stage Audit</span>
                 </button>
 
@@ -777,7 +792,7 @@ export const CompetitorsView: React.FC<CompetitorsViewProps> = ({
                   <button
                     type="button"
                     onClick={() => onSelectClientFor360(comp)}
-                    className="col-span-4 py-2 px-3 rounded-xl bg-white hover:bg-slate-100 text-[#080c14] text-xs font-semibold flex items-center justify-center cursor-pointer shadow-sm active:scale-95 transition-all"
+                    className="col-span-4 gym-btn-primary text-xs flex items-center justify-center"
                   >
                     <span>Profile 360</span>
                   </button>
@@ -790,7 +805,7 @@ export const CompetitorsView: React.FC<CompetitorsViewProps> = ({
 
       {/* 5. Pagination & Client Count Footer */}
       <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-2">
-        <p className="text-xs text-[#64748b] font-normal whitespace-nowrap">
+        <p className="text-xs text-slate-400 font-normal whitespace-nowrap">
           Showing {paginatedCompetitors.length} of {filteredCompetitors.length} competitors
         </p>
 
@@ -798,7 +813,7 @@ export const CompetitorsView: React.FC<CompetitorsViewProps> = ({
           <button
             onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
             disabled={currentPage === 1}
-            className="w-8 h-8 rounded-xl bg-[#090e17] border border-[#16202e] text-[#64748b] hover:text-white disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center transition-colors cursor-pointer"
+            className="w-8 h-8 rounded-xl bg-[var(--card-subtle-bg)] border border-[var(--card-border)] text-slate-400 hover:text-white disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center transition-colors cursor-pointer"
           >
             <ChevronLeft className="w-4 h-4" />
           </button>
@@ -809,8 +824,8 @@ export const CompetitorsView: React.FC<CompetitorsViewProps> = ({
               onClick={() => setCurrentPage(pageNum)}
               className={`w-8 h-8 rounded-xl text-xs font-medium transition-all cursor-pointer ${
                 currentPage === pageNum
-                  ? 'bg-[#151f2e] text-white border border-[#233146] shadow-sm'
-                  : 'bg-[#090e17] border border-[#16202e] text-[#64748b] hover:text-white'
+                  ? 'bg-[var(--main-color)] text-white shadow-sm font-semibold'
+                  : 'bg-[var(--card-subtle-bg)] border border-[var(--card-border)] text-slate-400 hover:text-white'
               }`}
             >
               {pageNum}
@@ -820,7 +835,7 @@ export const CompetitorsView: React.FC<CompetitorsViewProps> = ({
           <button
             onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
             disabled={currentPage === totalPages}
-            className="w-8 h-8 rounded-xl bg-[#090e17] border border-[#16202e] text-[#64748b] hover:text-white disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center transition-colors cursor-pointer"
+            className="w-8 h-8 rounded-xl bg-[var(--card-subtle-bg)] border border-[var(--card-border)] text-slate-400 hover:text-white disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center transition-colors cursor-pointer"
           >
             <ChevronRight className="w-4 h-4" />
           </button>
@@ -829,17 +844,17 @@ export const CompetitorsView: React.FC<CompetitorsViewProps> = ({
 
       {/* Empty State */}
       {filteredCompetitors.length === 0 && (
-        <div className="p-12 text-center rounded-2xl bg-[#080c14] border border-[#141b26] space-y-3">
-          <div className="w-12 h-12 rounded-2xl bg-[#090e17] text-[#64748b] border border-[#16202e] flex items-center justify-center mx-auto">
+        <div className="p-12 text-center rounded-2xl bg-[var(--card-bg)] border border-[var(--card-border)] space-y-3">
+          <div className="w-12 h-12 rounded-2xl bg-[var(--card-subtle-bg)] text-slate-400 border border-[var(--card-border)] flex items-center justify-center mx-auto">
             <Trophy className="w-6 h-6" />
           </div>
           <h3 className="text-base font-semibold text-white">No Competitors Found</h3>
-          <p className="text-xs text-[#64748b] max-w-sm mx-auto">
+          <p className="text-xs text-slate-400 max-w-sm mx-auto">
             No athletes match your filter criteria. Reset your filters or add a new stage competitor.
           </p>
           <button
             onClick={() => setIsAddCompetitorModalOpen(true)}
-            className="px-4 py-2 rounded-xl bg-white hover:bg-slate-100 text-[#080c14] text-xs font-semibold inline-flex items-center gap-2 cursor-pointer shadow-sm active:scale-95 mt-2 whitespace-nowrap"
+            className="gym-btn-primary text-xs inline-flex items-center gap-2 mt-2 whitespace-nowrap"
           >
             <Plus className="w-3.5 h-3.5 stroke-[2.5]" />
             <span>Add Competitor</span>

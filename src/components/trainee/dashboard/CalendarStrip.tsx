@@ -31,7 +31,7 @@ export const CalendarStrip: React.FC<CalendarStripProps> = React.memo(({
   onSelectDate
 }) => {
   return (
-    <div className="p-2.5 sm:p-3 rounded-2xl bg-[#18191e] border border-[#24262e] shadow-sm space-y-2">
+    <div className="gym-card-elevated space-y-2 border-[var(--gym-border-base)]">
       {/* Week Header & Navigation */}
       <div className="flex items-center justify-between px-1">
         <div className="flex items-center gap-2 min-w-0">
@@ -44,7 +44,7 @@ export const CalendarStrip: React.FC<CalendarStripProps> = React.memo(({
           <button
             type="button"
             onClick={onPrevWeek}
-            className="w-6 h-6 rounded-lg bg-[#15161a] hover:bg-[#1c1d22] border border-[#24262e] text-zinc-400 hover:text-white flex items-center justify-center transition-colors cursor-pointer active:scale-95"
+            className="w-6 h-6 rounded-lg bg-[var(--card-subtle-bg)] hover:bg-white/[0.04] border border-[var(--card-border)] text-zinc-400 hover:text-white flex items-center justify-center transition-colors cursor-pointer active:scale-95"
             title="Previous week"
             aria-label="Previous week"
           >
@@ -53,7 +53,7 @@ export const CalendarStrip: React.FC<CalendarStripProps> = React.memo(({
           <button
             type="button"
             onClick={onNextWeek}
-            className="w-6 h-6 rounded-lg bg-[#15161a] hover:bg-[#1c1d22] border border-[#24262e] text-zinc-400 hover:text-white flex items-center justify-center transition-colors cursor-pointer active:scale-95"
+            className="w-6 h-6 rounded-lg bg-[var(--card-subtle-bg)] hover:bg-white/[0.04] border border-[var(--card-border)] text-zinc-400 hover:text-white flex items-center justify-center transition-colors cursor-pointer active:scale-95"
             title="Next week"
             aria-label="Next week"
           >
@@ -75,14 +75,14 @@ export const CalendarStrip: React.FC<CalendarStripProps> = React.memo(({
               onClick={() => onSelectDate(item.dateStr)}
               className={`flex flex-col items-center justify-center py-2 px-1 rounded-xl transition-all cursor-pointer active:scale-95 ${
                 isSelected
-                  ? 'bg-[#1c1d22] border-2 border-[#2f80ed] text-white shadow-[0_0_12px_rgba(47,128,237,0.3)]'
+                  ? 'bg-[var(--card-subtle-bg)] border-2 border-[var(--main-color)] text-white shadow-[0_0_12px_rgba(47,128,237,0.3)]'
                   : isToday
-                    ? 'bg-[#18191e] border border-[#2f80ed]/40 text-white'
-                    : 'bg-[#15161a] border border-[#24262e]/70 text-[#94a3b8] hover:border-zinc-700'
+                    ? 'bg-[var(--card-bg)] border border-[var(--main-color)]/40 text-white'
+                    : 'bg-[var(--card-subtle-bg)] border border-[var(--card-border)]/70 text-slate-400 hover:border-zinc-700'
               }`}
             >
               <span className={`text-[9px] font-mono font-bold uppercase tracking-wider ${
-                isSelected ? 'text-[#2f80ed] font-extrabold' : isToday ? 'text-[#2f80ed]' : 'text-[#8e8e93]'
+                isSelected ? 'text-[var(--main-color)] font-extrabold' : isToday ? 'text-[var(--main-color)]' : 'text-zinc-500'
               }`}>
                 {item.day}
               </span>
@@ -105,7 +105,7 @@ export const CalendarStrip: React.FC<CalendarStripProps> = React.memo(({
                         cy="6"
                         r="4.6"
                         fill="none"
-                        stroke="#272930"
+                        stroke="var(--card-border)"
                         strokeWidth="1.2"
                       />
                       {/* Progress ring filled by item.score % */}
@@ -137,7 +137,8 @@ export const CalendarStrip: React.FC<CalendarStripProps> = React.memo(({
                         <path
                           d="M4.2 4.2 L7.8 7.8 M7.8 4.2 L4.2 7.8"
                           fill="none"
-                          stroke="#71717a"
+                          stroke="currentColor"
+                          className="text-zinc-500"
                           strokeWidth="1.1"
                           strokeLinecap="round"
                         />
@@ -146,7 +147,7 @@ export const CalendarStrip: React.FC<CalendarStripProps> = React.memo(({
                   </div>
                 ) : item.isToday ? (
                   <span 
-                    className="w-1.5 h-1.5 rounded-full bg-[#2f80ed]" 
+                    className="w-1.5 h-1.5 rounded-full bg-[var(--main-color)]" 
                     title="Today" 
                   />
                 ) : (

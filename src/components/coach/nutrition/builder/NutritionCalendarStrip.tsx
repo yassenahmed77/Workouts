@@ -27,7 +27,7 @@ export const NutritionCalendarStrip: React.FC<NutritionCalendarStripProps> = ({
 }) => {
   return (
     <div className="flex-1 min-w-0 flex items-center justify-center px-1 sm:px-2 overflow-x-auto no-scrollbar">
-      <div className="flex items-center gap-0.5 sm:gap-1 p-0.5 rounded-xl bg-[#05080e] border border-white/[0.06] flex-shrink-0">
+      <div className="flex items-center gap-0.5 sm:gap-1 p-0.5 rounded-xl bg-[var(--card-subtle-bg)] border border-[var(--card-border)] flex-shrink-0">
         {/* Previous Day Arrow */}
         <button
           type="button"
@@ -52,12 +52,12 @@ export const NutritionCalendarStrip: React.FC<NutritionCalendarStripProps> = ({
               onClick={() => onSelectDate(dateKey)}
               className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold whitespace-nowrap transition-all cursor-pointer ${
                 isSelected
-                  ? 'bg-white/[0.1] border border-white/20 text-white font-bold shadow-xs'
+                  ? 'bg-[var(--main-color)]/15 border border-[var(--main-color)]/35 text-white font-bold shadow-xs'
                   : 'text-slate-400 hover:text-white hover:bg-white/[0.04]'
               }`}
             >
               {isToday && (
-                <span className={`w-1.5 h-1.5 rounded-full ${isSelected ? 'bg-white' : 'bg-slate-500'}`} />
+                <span className={`w-1.5 h-1.5 rounded-full ${isSelected ? 'bg-[var(--main-color)]' : 'bg-slate-500'}`} />
               )}
               <span>{main}</span>
               <span className={`text-[10px] font-mono ${isSelected ? 'text-slate-300 font-normal' : 'text-slate-500'}`}>

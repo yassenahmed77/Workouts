@@ -70,25 +70,25 @@ export const AssignDietModal: React.FC<AssignDietModalProps> = ({
       }}
     >
       <div 
-        className="w-full max-w-2xl bg-[#18191e] border border-[#24262e] rounded-3xl p-5 sm:p-6 shadow-2xl relative max-h-[90vh] flex flex-col animate-in zoom-in-95 duration-150"
+        className="gym-card w-full max-w-2xl p-4 sm:p-5 shadow-2xl relative max-h-[90vh] flex flex-col animate-in zoom-in-95 duration-150"
         onClick={(e) => e.stopPropagation()}
       >
         <button
           onClick={onClose}
-          className="absolute top-5 right-5 text-zinc-400 hover:text-white p-2 rounded-xl hover:bg-[#141519] transition-colors cursor-pointer"
+          className="absolute top-4 right-4 text-slate-400 hover:text-white p-1.5 rounded-lg hover:bg-white/[0.05] transition-colors cursor-pointer"
         >
-          <X className="w-5 h-5" />
+          <X className="w-4 h-4" />
         </button>
 
-        <div className="flex items-center gap-3 mb-5 pb-4 border-b border-[#24262e]">
-          <div className="w-10 h-10 rounded-2xl bg-[#141519] text-[#2f80ed] border border-[#24262e] flex items-center justify-center flex-shrink-0">
-            <Utensils className="w-5 h-5 text-[#2f80ed]" />
+        <div className="flex items-center gap-3 mb-4 pb-3 border-b border-white/[0.08]">
+          <div className="w-9 h-9 rounded-xl bg-[var(--card-subtle-bg)] text-[var(--main-color)] border border-[var(--card-border)] flex items-center justify-center flex-shrink-0">
+            <Utensils className="w-4 h-4 text-[var(--main-color)]" />
           </div>
           <div>
-            <h3 className="text-base font-extrabold text-white tracking-tight">
+            <h3 className="gym-heading-section">
               Assign Diet Plan
             </h3>
-            <p className="text-xs text-zinc-400">
+            <p className="gym-subtext mt-0.5">
               Deploy structured macronutrient and caloric targets to athlete profile.
             </p>
           </div>
@@ -116,8 +116,8 @@ export const AssignDietModal: React.FC<AssignDietModalProps> = ({
                     }}
                     className={`flex items-center justify-between p-3 rounded-2xl border text-left transition-all cursor-pointer ${
                       isSelected
-                        ? 'bg-[#141519] border-[#2f80ed]/50 shadow-md shadow-[#2f80ed]/15'
-                        : 'bg-[#141519] border-[#24262e] hover:border-zinc-700'
+                        ? 'bg-[var(--card-subtle-bg)] border-[var(--main-color)] shadow-md shadow-[var(--main-color)]/15'
+                        : 'bg-[var(--card-subtle-bg)] border-[var(--card-border)] hover:border-zinc-700'
                     }`}
                   >
                     <div className="flex items-center gap-2.5 min-w-0">
@@ -125,10 +125,10 @@ export const AssignDietModal: React.FC<AssignDietModalProps> = ({
                         <img 
                           src={trainee.avatarUrl} 
                           alt={trainee.name} 
-                          className="w-8 h-8 rounded-full object-cover border border-[#2f80ed]/40 flex-shrink-0" 
+                          className="w-8 h-8 rounded-full object-cover border border-[var(--main-color)]/40 flex-shrink-0" 
                         />
                       ) : (
-                        <div className="w-8 h-8 rounded-full bg-[#18191e] text-[#2f80ed] border border-[#24262e] text-[11px] font-mono font-bold flex items-center justify-center flex-shrink-0">
+                        <div className="w-8 h-8 rounded-full bg-[var(--card-bg)] text-[var(--main-color)] border border-[var(--card-border)] text-[11px] font-mono font-bold flex items-center justify-center flex-shrink-0">
                           {trainee.avatarText}
                         </div>
                       )}
@@ -140,7 +140,7 @@ export const AssignDietModal: React.FC<AssignDietModalProps> = ({
                       </div>
                     </div>
                     {isSelected && (
-                      <div className="w-5 h-5 rounded-full bg-[#2f80ed] text-white flex items-center justify-center flex-shrink-0 ml-2">
+                      <div className="w-5 h-5 rounded-full bg-[var(--main-color)] text-white flex items-center justify-center flex-shrink-0 ml-2">
                         <Check className="w-3 h-3 stroke-[3]" />
                       </div>
                     )}
@@ -164,8 +164,8 @@ export const AssignDietModal: React.FC<AssignDietModalProps> = ({
                     onClick={() => setSelectedDietPlanId(plan.id)}
                     className={`p-4 rounded-2xl border transition-all cursor-pointer ${
                       isSelected
-                        ? 'bg-[#141519] border-[#2f80ed]/50 shadow-lg shadow-[#2f80ed]/15'
-                        : 'bg-[#141519] border-[#24262e] hover:border-zinc-700'
+                        ? 'bg-[var(--card-subtle-bg)] border-[var(--main-color)] shadow-lg shadow-[var(--main-color)]/15'
+                        : 'bg-[var(--card-subtle-bg)] border-[var(--card-border)] hover:border-zinc-700'
                     }`}
                   >
                     <div className="flex items-start justify-between gap-3">
@@ -173,7 +173,7 @@ export const AssignDietModal: React.FC<AssignDietModalProps> = ({
                         <div className="flex items-center gap-2">
                           <h4 className="text-sm font-bold text-white">{plan.title}</h4>
                           {isSelected && (
-                            <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-[#2f80ed]/15 text-[#2f80ed] border border-[#2f80ed]/30">
+                            <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-[var(--main-color)]/15 text-[var(--main-color)] border border-[var(--main-color)]/30">
                               Selected
                             </span>
                           )}
@@ -181,28 +181,28 @@ export const AssignDietModal: React.FC<AssignDietModalProps> = ({
                         <p className="text-xs text-zinc-400 mt-0.5 line-clamp-2">{plan.description}</p>
                       </div>
 
-                      <div className="flex items-center gap-1.5 px-3 py-1 rounded-xl bg-[#18191e] border border-[#24262e] text-xs font-mono font-bold text-[#2f80ed] flex-shrink-0">
-                        <Flame className="w-3.5 h-3.5 text-[#2f80ed]" />
+                      <div className="flex items-center gap-1.5 px-3 py-1 rounded-xl bg-[var(--card-bg)] border border-[var(--card-border)] text-xs font-mono font-bold text-[var(--main-color)] flex-shrink-0">
+                        <Flame className="w-3.5 h-3.5 text-[var(--main-color)]" />
                         <span>{plan.targetCalories} kcal</span>
                       </div>
                     </div>
 
-                    <div className="grid grid-cols-4 gap-2 mt-3 pt-3 border-t border-[#24262e] text-center font-mono">
-                      <div className="py-1 px-2 rounded-lg bg-[#18191e]">
+                    <div className="grid grid-cols-4 gap-2 mt-3 pt-3 border-t border-[var(--card-border)] text-center font-mono">
+                      <div className="py-1 px-2 rounded-lg bg-[var(--card-bg)]">
                         <span className="text-[9px] text-zinc-500 block font-bold">Protein</span>
                         <span className="text-xs text-white font-bold">{plan.targetProteinG}g</span>
                       </div>
-                      <div className="py-1 px-2 rounded-lg bg-[#18191e]">
+                      <div className="py-1 px-2 rounded-lg bg-[var(--card-bg)]">
                         <span className="text-[9px] text-zinc-500 block font-bold">Carbs</span>
                         <span className="text-xs text-white font-bold">{plan.targetCarbsG}g</span>
                       </div>
-                      <div className="py-1 px-2 rounded-lg bg-[#18191e]">
+                      <div className="py-1 px-2 rounded-lg bg-[var(--card-bg)]">
                         <span className="text-[9px] text-zinc-500 block font-bold">Fats</span>
                         <span className="text-xs text-white font-bold">{plan.targetFatsG}g</span>
                       </div>
-                      <div className="py-1 px-2 rounded-lg bg-[#18191e] flex items-center justify-center gap-1">
-                        <Droplets className="w-3 h-3 text-[#2f80ed]" />
-                        <span className="text-xs text-[#2f80ed] font-bold">{plan.waterTargetLiters}L</span>
+                      <div className="py-1 px-2 rounded-lg bg-[var(--card-bg)] flex items-center justify-center gap-1">
+                        <Droplets className="w-3 h-3 text-[var(--main-color)]" />
+                        <span className="text-xs text-[var(--main-color)] font-bold">{plan.waterTargetLiters}L</span>
                       </div>
                     </div>
                   </div>
@@ -213,11 +213,11 @@ export const AssignDietModal: React.FC<AssignDietModalProps> = ({
         </div>
 
         {/* Footer actions */}
-        <div className="flex items-center justify-between gap-3 pt-4 mt-4 border-t border-[#24262e] flex-shrink-0">
+        <div className="flex items-center justify-between gap-3 pt-4 mt-4 border-t border-[var(--card-border)] flex-shrink-0">
           <button
             type="button"
             onClick={onClose}
-            className="px-4 py-2.5 rounded-xl border border-[#24262e] text-xs font-bold text-zinc-400 hover:text-white hover:bg-[#141519] transition-all cursor-pointer"
+            className="gym-btn-ghost text-xs"
           >
             Cancel
           </button>
@@ -226,7 +226,7 @@ export const AssignDietModal: React.FC<AssignDietModalProps> = ({
             type="button"
             onClick={handleAssign}
             disabled={!selectedUserId || !selectedDietPlanId}
-            className="px-6 py-2.5 rounded-xl btn-cyan disabled:opacity-50 disabled:cursor-not-allowed text-white text-xs font-black inline-flex items-center gap-2 cursor-pointer shadow-md shadow-[#2f80ed]/30 active:scale-95 transition-all"
+            className="gym-btn-primary text-xs inline-flex items-center gap-2"
           >
             <span>Deploy Diet Plan</span>
             <ArrowRight className="w-4 h-4 stroke-[2.5]" />

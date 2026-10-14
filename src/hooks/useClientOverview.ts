@@ -413,7 +413,7 @@ export function useClientOverview(
     const daysLeft = Math.max(0, Math.ceil((end.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)));
     const remainingPct = Math.min(100, Math.max(0, Math.round((daysLeft / totalDays) * 100)));
 
-    let barColor = 'bg-cyan-500/80';
+    let barColor = 'bg-[var(--main-color)]';
     let statusText = `${daysLeft}d left`;
 
     if (daysLeft === 0 || sub.status === 'expired') {

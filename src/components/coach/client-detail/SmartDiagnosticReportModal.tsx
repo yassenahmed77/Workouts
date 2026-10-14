@@ -52,18 +52,18 @@ export const SmartDiagnosticReportModal: React.FC<SmartDiagnosticReportModalProp
       }}
     >
       <div
-        className="w-full max-w-2xl rounded-2xl bg-[#090d14] border border-white/[0.1] shadow-2xl overflow-hidden flex flex-col max-h-[90vh] relative animate-in zoom-in-95 duration-150"
+        className="w-full max-w-2xl rounded-2xl bg-[var(--card-bg)] border border-[var(--card-border)] shadow-2xl overflow-hidden flex flex-col max-h-[90vh] relative animate-in zoom-in-95 duration-150"
         onClick={(e) => e.stopPropagation()}
       >
         {/* 1. Header */}
-        <div className="p-3.5 sm:p-4 bg-gradient-to-r from-[#0d1420] via-[#090d14] to-[#0d1420] border-b border-white/[0.08] flex items-center justify-between gap-3">
+        <div className="p-3.5 sm:p-4 bg-[var(--card-subtle-bg)] border-b border-[var(--card-border)] flex items-center justify-between gap-3">
           <div className="min-w-0">
             <div className="flex items-center gap-2">
               <span className="text-[9.5px] font-mono uppercase tracking-wider text-slate-400 font-semibold">
                 Movement Telemetry Report
               </span>
               <span className="text-slate-600 text-xs">&bull;</span>
-              <span className="text-[10px] font-mono text-cyan-400 font-bold">
+              <span className="text-[10px] font-mono text-[var(--main-color)] font-bold">
                 {report.traineeName}
               </span>
             </div>
@@ -93,7 +93,7 @@ export const SmartDiagnosticReportModal: React.FC<SmartDiagnosticReportModalProp
         </div>
 
         {/* 2. Scrollable Report Body */}
-        <div className="p-3.5 sm:p-4 space-y-3 overflow-y-auto custom-scrollbar flex-1 bg-[#06090e]">
+        <div className="p-3.5 sm:p-4 space-y-3 overflow-y-auto custom-scrollbar flex-1 bg-[var(--card-bg)]">
           
           {/* Status Alert Banner (Clean text layout, NO decorative icons) */}
           <div className={`p-2.5 rounded-xl border flex items-center justify-between gap-2 ${
@@ -127,7 +127,7 @@ export const SmartDiagnosticReportModal: React.FC<SmartDiagnosticReportModalProp
           {/* 3 Head-to-Head Telemetry Cards */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
             {/* Box 1: Prior Top Set */}
-            <div className="p-2 rounded-xl bg-[#090d14] border border-white/[0.06] text-center">
+            <div className="p-2 rounded-xl bg-[var(--card-subtle-bg)] border border-[var(--card-border)] text-center">
               <span className="text-[9px] font-mono uppercase tracking-wider text-slate-400 font-semibold block">
                 Prior Top Set
               </span>
@@ -140,7 +140,7 @@ export const SmartDiagnosticReportModal: React.FC<SmartDiagnosticReportModalProp
             </div>
 
             {/* Box 2: Latest Top Set */}
-            <div className="p-2 rounded-xl bg-[#090d14] border border-white/[0.06] text-center">
+            <div className="p-2 rounded-xl bg-[var(--card-subtle-bg)] border border-[var(--card-border)] text-center">
               <span className="text-[9px] font-mono uppercase tracking-wider text-slate-400 font-semibold block">
                 Latest Top Set
               </span>
@@ -153,7 +153,7 @@ export const SmartDiagnosticReportModal: React.FC<SmartDiagnosticReportModalProp
             </div>
 
             {/* Box 3: Working Set Delta */}
-            <div className="p-2 rounded-xl bg-[#090d14] border border-white/[0.06] text-center">
+            <div className="p-2 rounded-xl bg-[var(--card-subtle-bg)] border border-[var(--card-border)] text-center">
               <span className="text-[9px] font-mono uppercase tracking-wider text-slate-400 font-semibold block">
                 Load / Rep Delta
               </span>
@@ -177,7 +177,7 @@ export const SmartDiagnosticReportModal: React.FC<SmartDiagnosticReportModalProp
           </div>
 
           {/* Simple Factual Coach Summary (NO ICONS, EASY LANGUAGE) */}
-          <div className="p-3 rounded-xl bg-[#090d14] border border-white/[0.07] space-y-1.5">
+          <div className="p-3 rounded-xl bg-[var(--card-subtle-bg)] border border-[var(--card-border)] space-y-1.5">
             <div className="flex items-center justify-between pb-1 border-b border-white/[0.05]">
               <span className="text-[9.5px] font-mono uppercase tracking-wider text-slate-300 font-bold">
                 COACH PERFORMANCE SUMMARY
@@ -192,7 +192,7 @@ export const SmartDiagnosticReportModal: React.FC<SmartDiagnosticReportModalProp
           </div>
 
           {/* Set-by-Set Matchup Table */}
-          <div className="p-3 rounded-xl bg-[#090d14] border border-white/[0.07] space-y-2">
+          <div className="p-3 rounded-xl bg-[var(--card-subtle-bg)] border border-[var(--card-border)] space-y-2">
             <div className="flex items-center justify-between pb-1 border-b border-white/[0.05]">
               <span className="text-[9.5px] font-mono uppercase tracking-wider text-slate-300 font-bold">
                 HEAD-TO-HEAD SET BREAKDOWN
@@ -242,7 +242,7 @@ export const SmartDiagnosticReportModal: React.FC<SmartDiagnosticReportModalProp
                     className={`grid grid-cols-12 items-center px-2 py-1.5 rounded-lg border text-xs font-mono transition-colors ${
                       isTopSetRow
                         ? 'bg-white/[0.04] border-white/15'
-                        : 'bg-[#05080e] border-white/[0.03]'
+                        : 'bg-[var(--card-bg)] border-[var(--card-border)]'
                     }`}
                   >
                     <div className="col-span-2 flex items-center gap-1.5">
@@ -272,7 +272,7 @@ export const SmartDiagnosticReportModal: React.FC<SmartDiagnosticReportModalProp
           </div>
 
           {/* Lifetime Context Bar */}
-          <div className="p-2.5 rounded-xl bg-[#05080e] border border-white/[0.05] grid grid-cols-3 gap-2 text-center">
+          <div className="p-2.5 rounded-xl bg-[var(--card-subtle-bg)] border border-[var(--card-border)] grid grid-cols-3 gap-2 text-center">
             <div>
               <span className="text-[8.5px] font-mono text-slate-400 uppercase tracking-wider block">
                 Baseline Day 1
@@ -312,7 +312,7 @@ export const SmartDiagnosticReportModal: React.FC<SmartDiagnosticReportModalProp
         </div>
 
         {/* 3. Footer Action Bar */}
-        <div className="p-3 bg-[#090d14] border-t border-white/[0.08] flex items-center justify-between gap-2 flex-shrink-0">
+        <div className="p-3 bg-[var(--card-subtle-bg)] border-t border-[var(--card-border)] flex items-center justify-between gap-2 flex-shrink-0">
           <span className="text-[10px] font-mono text-slate-400 hidden sm:inline">
             Total Sessions: <strong className="text-slate-200">{report.totalSessionsCount} Recorded</strong>
           </span>
@@ -321,7 +321,7 @@ export const SmartDiagnosticReportModal: React.FC<SmartDiagnosticReportModalProp
             <button
               type="button"
               onClick={onClose}
-              className="px-3 py-1.5 rounded-lg bg-white/[0.04] hover:bg-white/[0.08] active:scale-95 border border-white/[0.08] text-xs font-semibold text-slate-300 hover:text-white transition-all cursor-pointer"
+              className="gym-btn-ghost text-xs"
             >
               Close
             </button>
@@ -333,7 +333,7 @@ export const SmartDiagnosticReportModal: React.FC<SmartDiagnosticReportModalProp
                   onClose();
                   onOpenHistory(report.exerciseName);
                 }}
-                className="px-3 py-1.5 rounded-lg bg-white hover:bg-slate-100 active:scale-95 text-[#080c14] text-xs font-bold transition-all shadow-sm cursor-pointer"
+                className="gym-btn-primary text-xs"
               >
                 View Full Movement History
               </button>

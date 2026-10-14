@@ -94,7 +94,7 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, onOpenN
     <>
       {/* 1. Top Header App Bar (Dynamic Island & Notch Safe) */}
       <header 
-        className={`sticky top-0 z-40 border-b ${isCoach ? 'border-[#24262e] bg-[#0a0a0c]/95' : 'border-[#24262e] bg-[#121316]/95'} backdrop-blur-md safe-header-top`}
+        className="sticky top-0 z-40 border-b border-[var(--card-border)] bg-[var(--bg-main)]/95 backdrop-blur-md safe-header-top"
         style={{
           paddingTop: 'max(env(safe-area-inset-top, 0px), 14px)'
         }}
@@ -118,7 +118,7 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, onOpenN
                 className="hidden md:flex items-center gap-2.5 group cursor-pointer" 
                 onClick={() => setActiveTab(isCoach ? 'dashboard' : 'today')}
               >
-                <div className="w-9 h-9 rounded-xl bg-[#18191e] border border-[#24262e] flex items-center justify-center text-[#2f80ed] transition-all duration-200 group-hover:border-[#2f80ed]/60 shadow-[0_0_12px_rgba(47,128,237,0.15)] flex-shrink-0">
+                <div className="w-9 h-9 rounded-xl bg-[var(--card-bg)] border border-[var(--card-border)] flex items-center justify-center text-[var(--main-color)] transition-all duration-200 group-hover:border-[var(--main-color)]/60 shadow-[0_0_12px_rgba(47,128,237,0.15)] flex-shrink-0">
                   <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24">
                     <path d="M12 3L2 21h20L12 3zm0 4.5l6.5 11.5H5.5L12 7.5z" />
                   </svg>
@@ -126,9 +126,9 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, onOpenN
                 <div className="flex flex-col min-w-0">
                   <div className="flex items-center gap-1.5">
                     <span className="text-base font-black tracking-wider text-white">
-                      {isCoach ? 'TitanFit' : 'ATHLETE'}
+                      {isCoach ? 'Workouts' : 'ATHLETE'}
                     </span>
-                    <span className="text-[9px] font-mono font-bold px-1.5 py-0.5 rounded-full bg-[#2f80ed]/10 text-[#2f80ed] border border-[#2f80ed]/20 tracking-wider">
+                    <span className="text-[9px] font-mono font-bold px-1.5 py-0.5 rounded-full bg-[var(--main-color)]/10 text-[var(--main-color)] border border-[var(--main-color)]/20 tracking-wider">
                       {isCoach ? 'OS' : 'PRO'}
                     </span>
                   </div>
@@ -136,14 +136,14 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, onOpenN
               </div>
 
               {/* Desktop Navigation Tabs (Hidden on mobile where bottom dock takes over) */}
-              <nav className="hidden md:flex items-center gap-1 ml-4 p-1 rounded-2xl bg-[#141519] border border-[#24262e]">
+              <nav className="hidden md:flex items-center gap-1 ml-4 p-1 rounded-2xl bg-[var(--card-subtle-bg)] border border-[var(--card-border)]">
                 {isCoach ? (
                   <>
                     <button
                       onClick={() => setActiveTab('dashboard')}
                       className={`flex items-center gap-2 px-3.5 py-1.5 rounded-xl text-xs font-semibold tracking-wide transition-all ${
                         activeTab === 'dashboard'
-                          ? 'bg-[#18191e] text-[#2f80ed] shadow-sm border border-[#2f80ed]/30 font-bold'
+                          ? 'bg-[var(--card-bg)] text-[var(--main-color)] shadow-sm border border-[var(--main-color)]/30 font-bold'
                           : 'text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/40'
                       }`}
                     >
@@ -154,7 +154,7 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, onOpenN
                       onClick={() => setActiveTab('splits-studio')}
                       className={`flex items-center gap-2 px-3.5 py-1.5 rounded-xl text-xs font-semibold tracking-wide transition-all ${
                         activeTab === 'splits-studio'
-                          ? 'bg-[#18191e] text-[#2f80ed] shadow-sm border border-[#2f80ed]/30 font-bold'
+                          ? 'bg-[var(--card-bg)] text-[var(--main-color)] shadow-sm border border-[var(--main-color)]/30 font-bold'
                           : 'text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/40'
                       }`}
                     >
@@ -165,7 +165,7 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, onOpenN
                       onClick={() => setActiveTab('diet')}
                       className={`flex items-center gap-2 px-3.5 py-1.5 rounded-xl text-xs font-semibold tracking-wide transition-all ${
                         activeTab === 'diet'
-                          ? 'bg-[#18191e] text-[#2f80ed] shadow-sm border border-[#2f80ed]/30 font-bold'
+                          ? 'bg-[var(--card-bg)] text-[var(--main-color)] shadow-sm border border-[var(--main-color)]/30 font-bold'
                           : 'text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/40'
                       }`}
                     >
@@ -176,7 +176,7 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, onOpenN
                       onClick={() => setActiveTab('clients')}
                       className={`flex items-center gap-2 px-3.5 py-1.5 rounded-xl text-xs font-semibold tracking-wide transition-all ${
                         activeTab === 'clients'
-                          ? 'bg-[#18191e] text-[#2f80ed] shadow-sm border border-[#2f80ed]/30 font-bold'
+                          ? 'bg-[var(--card-bg)] text-[var(--main-color)] shadow-sm border border-[var(--main-color)]/30 font-bold'
                           : 'text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/40'
                       }`}
                     >
@@ -187,7 +187,7 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, onOpenN
                       onClick={() => setActiveTab('exercises')}
                       className={`flex items-center gap-2 px-3.5 py-1.5 rounded-xl text-xs font-semibold tracking-wide transition-all ${
                         activeTab === 'exercises'
-                          ? 'bg-[#18191e] text-[#2f80ed] shadow-sm border border-[#2f80ed]/30 font-bold'
+                          ? 'bg-[var(--card-bg)] text-[var(--main-color)] shadow-sm border border-[var(--main-color)]/30 font-bold'
                           : 'text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/40'
                       }`}
                     >
@@ -201,7 +201,7 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, onOpenN
                       onClick={() => setActiveTab('today')}
                       className={`flex items-center gap-2 px-3.5 py-1.5 rounded-xl text-xs font-semibold tracking-wide transition-all ${
                         activeTab === 'today'
-                          ? 'bg-[#18191e] text-[#2f80ed] shadow-sm border border-[#2f80ed]/30 font-bold'
+                          ? 'bg-[var(--card-bg)] text-[var(--main-color)] shadow-sm border border-[var(--main-color)]/30 font-bold'
                           : 'text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/40'
                       }`}
                     >
@@ -212,7 +212,7 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, onOpenN
                       onClick={() => setActiveTab('split')}
                       className={`flex items-center gap-2 px-3.5 py-1.5 rounded-xl text-xs font-semibold tracking-wide transition-all ${
                         activeTab === 'split'
-                          ? 'bg-[#18191e] text-[#2f80ed] shadow-sm border border-[#2f80ed]/30 font-bold'
+                          ? 'bg-[var(--card-bg)] text-[var(--main-color)] shadow-sm border border-[var(--main-color)]/30 font-bold'
                           : 'text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/40'
                       }`}
                     >
@@ -220,10 +220,21 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, onOpenN
                       Workouts
                     </button>
                     <button
+                      onClick={() => setActiveTab('diet')}
+                      className={`flex items-center gap-2 px-3.5 py-1.5 rounded-xl text-xs font-semibold tracking-wide transition-all ${
+                        activeTab === 'diet'
+                          ? 'bg-[var(--card-bg)] text-[var(--main-color)] shadow-sm border border-[var(--main-color)]/30 font-bold'
+                          : 'text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/40'
+                      }`}
+                    >
+                      <Utensils className="w-3.5 h-3.5" />
+                      Diet
+                    </button>
+                    <button
                       onClick={() => setActiveTab('habits')}
                       className={`flex items-center gap-2 px-3.5 py-1.5 rounded-xl text-xs font-semibold tracking-wide transition-all ${
                         activeTab === 'habits'
-                          ? 'bg-[#18191e] text-[#2f80ed] shadow-sm border border-[#2f80ed]/30 font-bold'
+                          ? 'bg-[var(--card-bg)] text-[var(--main-color)] shadow-sm border border-[var(--main-color)]/30 font-bold'
                           : 'text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/40'
                       }`}
                     >
@@ -234,7 +245,7 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, onOpenN
                       onClick={() => setActiveTab('history')}
                       className={`flex items-center gap-2 px-3.5 py-1.5 rounded-xl text-xs font-semibold tracking-wide transition-all ${
                         activeTab === 'history'
-                          ? 'bg-[#18191e] text-[#2f80ed] shadow-sm border border-[#2f80ed]/30 font-bold'
+                          ? 'bg-[var(--card-bg)] text-[var(--main-color)] shadow-sm border border-[var(--main-color)]/30 font-bold'
                           : 'text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/40'
                       }`}
                     >
@@ -245,7 +256,7 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, onOpenN
                       onClick={() => setActiveTab('profile')}
                       className={`flex items-center gap-2 px-3.5 py-1.5 rounded-xl text-xs font-semibold tracking-wide transition-all ${
                         activeTab === 'profile'
-                          ? 'bg-[#18191e] text-[#2f80ed] shadow-sm border border-[#2f80ed]/30 font-bold'
+                          ? 'bg-[var(--card-bg)] text-[var(--main-color)] shadow-sm border border-[var(--main-color)]/30 font-bold'
                           : 'text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/40'
                       }`}
                     >
@@ -267,7 +278,7 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, onOpenN
               >
                 <Bell className="w-5 h-5" />
                 {unreadCount > 0 && (
-                  <span className="absolute top-0.5 right-0.5 w-3.5 h-3.5 rounded-full bg-[#2f80ed] text-white text-[8px] font-mono font-black flex items-center justify-center animate-pulse shadow-[0_0_8px_#2f80ed]">
+                  <span className="absolute top-0.5 right-0.5 w-3.5 h-3.5 rounded-full bg-[var(--main-color)] text-white text-[8px] font-mono font-black flex items-center justify-center animate-pulse shadow-[0_0_8px_var(--main-color)]">
                     {unreadCount}
                   </span>
                 )}
@@ -279,11 +290,11 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, onOpenN
                 className="relative flex items-center cursor-pointer active:scale-95 group flex-shrink-0"
                 title="Open Account Menu"
               >
-                <div className="w-8 h-8 rounded-full bg-[#18191e] border border-[#24262e] text-[#2f80ed] flex items-center justify-center font-bold text-xs shadow-sm ring-1 ring-[#2f80ed]/30">
+                <div className="w-8 h-8 rounded-full bg-[var(--card-bg)] border border-[var(--card-border)] text-[var(--main-color)] flex items-center justify-center font-bold text-xs shadow-sm ring-1 ring-[var(--main-color)]/30">
                   {currentUser.avatarText}
                 </div>
                 {/* Active circle indicator */}
-                <span className="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-emerald-500 ring-2 ring-[#121316]" />
+                <span className="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-emerald-500 ring-2 ring-[var(--bg-main)]" />
               </button>
             </div>
 
@@ -298,30 +309,30 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, onOpenN
           onClick={() => setIsSwitcherOpen(false)}
         >
           <div 
-            className="w-full max-w-md bg-[#18191e] border-t sm:border border-[#24262e] rounded-t-3xl sm:rounded-3xl p-5 sm:p-6 shadow-2xl space-y-4 animate-in slide-in-from-bottom duration-250 max-h-[85vh] flex flex-col"
+            className="w-full max-w-md gym-card-elevated rounded-t-3xl sm:rounded-2xl p-4 sm:p-5 shadow-2xl space-y-3.5 animate-in slide-in-from-bottom duration-250 max-h-[85vh] flex flex-col font-sans"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Mobile Drag Indicator Bar */}
-            <div className="w-12 h-1.5 rounded-full bg-zinc-700 mx-auto sm:hidden -mt-1 mb-1" />
+            <div className="w-12 h-1 rounded-full bg-slate-700 mx-auto sm:hidden -mt-1 mb-1" />
 
             {/* Drawer Header */}
-            <div className="flex items-center justify-between pb-3 border-b border-[#24262e]">
+            <div className="flex items-center justify-between pb-2.5 border-b border-white/[0.08]">
               <div>
-                <span className="text-[10px] font-mono uppercase tracking-wider text-zinc-500 font-bold block">
+                <span className="gym-label-mono block">
                   CURRENT ACCOUNT
                 </span>
-                <h3 className="text-base font-extrabold text-white truncate max-w-[200px]">
+                <h3 className="gym-heading-section truncate max-w-[200px]">
                   {currentUser.name}
                 </h3>
               </div>
               
               <div className="flex items-center gap-2">
-                <span className="text-[9px] font-mono uppercase px-2.5 py-1 rounded-full bg-[#2f80ed]/10 text-[#2f80ed] border border-[#2f80ed]/20 font-bold">
+                <span className="gym-badge-blue text-[9px]">
                   {isCoach ? 'COACH' : 'ATHLETE'}
                 </span>
                 <button
                   onClick={() => setIsSwitcherOpen(false)}
-                  className="w-8 h-8 rounded-xl bg-[#141519] border border-[#24262e] text-zinc-400 hover:text-white flex items-center justify-center transition-colors"
+                  className="gym-btn-ghost gym-btn-sm"
                 >
                   <X className="w-4 h-4" />
                 </button>
@@ -346,23 +357,23 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, onOpenN
                       switchUser(u.id);
                       setIsSwitcherOpen(false);
                     }}
-                    className={`w-full flex items-center justify-between p-3 rounded-2xl text-left transition-all cursor-pointer ${
+                    className={`w-full flex items-center justify-between p-2.5 rounded-xl text-left transition-all cursor-pointer ${
                       isCurrent 
-                        ? 'bg-[#141519] border border-[#2f80ed]/40 text-white shadow-sm' 
-                        : 'bg-[#0a0a0c] border border-[#24262e] hover:bg-[#141519] text-zinc-300'
+                        ? 'bg-[var(--main-color)]/15 border border-[var(--main-color)]/40 text-white shadow-xs' 
+                        : 'bg-[var(--card-subtle-bg)] border border-white/[0.06] hover:bg-[var(--card-bg)] text-slate-300'
                     }`}
                   >
-                    <div className="flex items-center gap-3 min-w-0">
-                      <div className="w-9 h-9 rounded-xl bg-[#18191e] border border-[#24262e] flex items-center justify-center font-black text-xs text-[#2f80ed] flex-shrink-0">
-                        {u.avatarText}
+                    <div className="flex items-center gap-2.5 min-w-0">
+                      <div className="w-8 h-8 rounded-lg bg-[var(--bg-main)] border border-white/[0.08] flex items-center justify-center font-bold text-xs text-[var(--main-color)] flex-shrink-0 font-mono">
+                        {u.avatarText || u.name.substring(0, 2).toUpperCase()}
                       </div>
                       <div className="min-w-0">
                         <p className="text-xs font-bold truncate leading-tight">{u.name}</p>
-                        <p className="text-[10px] text-zinc-400 font-mono mt-0.5 truncate">{u.role === 'coach' ? 'Head Coach' : 'Athlete'}</p>
+                        <p className="gym-subtext mt-0.5 truncate">{u.role === 'coach' ? 'Head Coach' : 'Athlete'}</p>
                       </div>
                     </div>
                     {isCurrent && (
-                      <span className="w-2.5 h-2.5 rounded-full bg-[#2f80ed] shadow-[0_0_8px_#2f80ed] flex-shrink-0 mr-1" />
+                      <span className="w-2 h-2 rounded-full bg-[var(--main-color)] shadow-[0_0_8px_var(--main-color)] flex-shrink-0 mr-1" />
                     )}
                   </button>
                 );
@@ -370,16 +381,16 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, onOpenN
             </div>
 
             {/* Action Buttons */}
-            <div className="pt-3 border-t border-[#24262e] space-y-2">
+            <div className="pt-2.5 border-t border-white/[0.08] space-y-2">
               {isCoach && (
                 <button
                   onClick={() => {
                     setIsSwitcherOpen(false);
                     onOpenNewTraineeModal();
                   }}
-                  className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-2xl text-xs font-bold text-zinc-100 bg-[#141519] hover:bg-[#1c1d22] border border-[#24262e] transition-all cursor-pointer"
+                  className="w-full gym-btn-secondary h-9 justify-center"
                 >
-                  <Plus className="w-4 h-4 text-[#2f80ed]" />
+                  <Plus className="w-4 h-4 text-[var(--main-color)]" />
                   <span>Register New Athlete</span>
                 </button>
               )}
@@ -389,7 +400,7 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, onOpenN
                   setIsSwitcherOpen(false);
                   logout();
                 }}
-                className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-2xl text-xs font-bold text-rose-400 hover:text-rose-300 bg-rose-950/20 hover:bg-rose-950/40 border border-rose-900/30 transition-all cursor-pointer"
+                className="w-full gym-btn-danger h-9 justify-center"
               >
                 <LogOut className="w-4 h-4" />
                 <span>Sign Out</span>
@@ -399,120 +410,58 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, onOpenN
         </div>
       )}
 
-      {/* 3. Facebook-Style Smart Auto-Hide Bottom Fixed Navigation Bar (Mobile only, hidden on desktop) */}
-      <div 
-        className={`fixed bottom-0 left-0 right-0 z-40 ${isCoach ? 'bg-[#0a0a0c]/95 border-[#24262e]' : 'bg-[#121316]/95 border-[#24262e]'} backdrop-blur-xl border-t px-3 pt-2 pb-[max(12px,env(safe-area-inset-bottom))] flex items-center justify-around shadow-2xl transition-transform duration-300 ease-in-out md:hidden ${
-          isNavVisible ? 'translate-y-0' : 'translate-y-28 pointer-events-none'
-        }`}
-      >
-        {isCoach ? (
-          <>
-            <button
-              onClick={() => setActiveTab('dashboard')}
-              className={`flex flex-col items-center justify-center py-1 px-2.5 rounded-xl transition-all relative ${
-                activeTab === 'dashboard'
-                  ? 'text-[#2f80ed] font-bold'
-                  : 'text-[#8e8e93] hover:text-white'
-              }`}
-            >
-              <LayoutDashboard className="w-5 h-5 mb-0.5" />
-              <span className="text-[10px] tracking-tight">Dashboard</span>
-              {activeTab === 'dashboard' && (
-                <span className="absolute bottom-0 w-4 h-0.5 rounded-full bg-[#2f80ed] shadow-[0_0_10px_#2f80ed]" />
-              )}
-            </button>
-
-            <button
-              onClick={() => setActiveTab('splits-studio')}
-              className={`flex flex-col items-center justify-center py-1 px-2 rounded-xl transition-all relative ${
-                activeTab === 'splits-studio'
-                  ? 'text-[#2f80ed] font-bold'
-                  : 'text-[#8e8e93] hover:text-white'
-              }`}
-            >
-              <Layers className="w-5 h-5 mb-0.5" />
-              <span className="text-[10px] tracking-tight">Splits</span>
-              {activeTab === 'splits-studio' && (
-                <span className="absolute bottom-0 w-4 h-0.5 rounded-full bg-[#2f80ed] shadow-[0_0_10px_#2f80ed]" />
-              )}
-            </button>
-
-            <button
-              onClick={() => setActiveTab('diet')}
-              className={`flex flex-col items-center justify-center py-1 px-2.5 rounded-xl transition-all relative ${
-                activeTab === 'diet'
-                  ? 'text-[#2f80ed] font-bold'
-                  : 'text-[#8e8e93] hover:text-white'
-              }`}
-            >
-              <Utensils className="w-5 h-5 mb-0.5" />
-              <span className="text-[10px] tracking-tight">Nutrition</span>
-              {activeTab === 'diet' && (
-                <span className="absolute bottom-0 w-4 h-0.5 rounded-full bg-[#2f80ed] shadow-[0_0_10px_#2f80ed]" />
-              )}
-            </button>
-
-            <button
-              onClick={() => setActiveTab('clients')}
-              className={`flex flex-col items-center justify-center py-1 px-2.5 rounded-xl transition-all relative ${
-                activeTab === 'clients'
-                  ? 'text-[#2f80ed] font-bold'
-                  : 'text-[#8e8e93] hover:text-white'
-              }`}
-            >
-              <Users className="w-5 h-5 mb-0.5" />
-              <span className="text-[10px] tracking-tight">Clients</span>
-              {activeTab === 'clients' && (
-                <span className="absolute bottom-0 w-4 h-0.5 rounded-full bg-[#2f80ed] shadow-[0_0_10px_#2f80ed]" />
-              )}
-            </button>
-
-            <button
-              onClick={() => setActiveTab('exercises')}
-              className={`flex flex-col items-center justify-center py-1 px-3 rounded-xl transition-all relative ${
-                activeTab === 'exercises'
-                  ? 'text-[#2f80ed] font-bold'
-                  : 'text-[#8e8e93] hover:text-white'
-              }`}
-            >
-              <BookOpen className="w-5 h-5 mb-0.5" />
-              <span className="text-[10px] tracking-tight">Library</span>
-              {activeTab === 'exercises' && (
-                <span className="absolute bottom-0 w-4 h-0.5 rounded-full bg-[#2f80ed] shadow-[0_0_10px_#2f80ed]" />
-              )}
-            </button>
-          </>
-        ) : (
-          <>
+      {/* 3. Mobile Bottom Fixed Navigation Bar (Trainee only, completely removed for Coach view) */}
+      {!isCoach && (
+        <div 
+          className={`fixed bottom-0 left-0 right-0 z-40 bg-[var(--bg-main)]/95 border-[var(--card-border)] backdrop-blur-xl border-t px-3 pt-2 pb-[max(12px,env(safe-area-inset-bottom))] flex items-center justify-around shadow-2xl transition-transform duration-300 ease-in-out md:hidden ${
+            isNavVisible ? 'translate-y-0' : 'translate-y-28 pointer-events-none'
+          }`}
+        >
             {/* 1. Home Tab */}
             <button
               onClick={() => setActiveTab('today')}
               className={`flex flex-col items-center justify-center py-1 px-2.5 rounded-xl transition-all relative group cursor-pointer active:scale-95 ${
                 activeTab === 'today'
-                  ? 'text-[#2f80ed] font-bold'
-                  : 'text-[#8e8e93] hover:text-zinc-200'
+                  ? 'text-[var(--main-color)] font-bold'
+                  : 'text-zinc-400 hover:text-zinc-200'
               }`}
             >
               <Home className={`w-5 h-5 mb-0.5 ${activeTab === 'today' ? 'fill-current' : ''}`} />
               <span className="text-[10px] tracking-tight font-medium">Home</span>
               {activeTab === 'today' && (
-                <span className="absolute bottom-0 w-5 h-0.5 rounded-full bg-[#2f80ed] shadow-[0_0_10px_#2f80ed]" />
+                <span className="absolute bottom-0 w-5 h-0.5 rounded-full bg-[var(--main-color)] shadow-[0_0_10px_var(--main-color)]" />
               )}
             </button>
 
             {/* 2. Workouts Tab */}
             <button
               onClick={() => setActiveTab('split')}
-              className={`flex flex-col items-center justify-center py-1 px-2.5 rounded-xl transition-all relative group cursor-pointer active:scale-95 ${
+              className={`flex flex-col items-center justify-center py-1 px-2 rounded-xl transition-all relative group cursor-pointer active:scale-95 ${
                 activeTab === 'split'
-                  ? 'text-[#2f80ed] font-bold'
-                  : 'text-[#8e8e93] hover:text-zinc-200'
+                  ? 'text-[var(--main-color)] font-bold'
+                  : 'text-zinc-400 hover:text-zinc-200'
               }`}
             >
               <Dumbbell className="w-5 h-5 mb-0.5" />
               <span className="text-[10px] tracking-tight font-medium">Workouts</span>
               {activeTab === 'split' && (
-                <span className="absolute bottom-0 w-5 h-0.5 rounded-full bg-[#2f80ed] shadow-[0_0_10px_#2f80ed]" />
+                <span className="absolute bottom-0 w-5 h-0.5 rounded-full bg-[var(--main-color)] shadow-[0_0_10px_var(--main-color)]" />
+              )}
+            </button>
+
+            {/* 3. Diet Tab */}
+            <button
+              onClick={() => setActiveTab('diet')}
+              className={`flex flex-col items-center justify-center py-1 px-2 rounded-xl transition-all relative group cursor-pointer active:scale-95 ${
+                activeTab === 'diet'
+                  ? 'text-[var(--main-color)] font-bold'
+                  : 'text-zinc-400 hover:text-zinc-200'
+              }`}
+            >
+              <Utensils className="w-5 h-5 mb-0.5" />
+              <span className="text-[10px] tracking-tight font-medium">Diet</span>
+              {activeTab === 'diet' && (
+                <span className="absolute bottom-0 w-5 h-0.5 rounded-full bg-[var(--main-color)] shadow-[0_0_10px_var(--main-color)]" />
               )}
             </button>
 
@@ -521,14 +470,14 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, onOpenN
               onClick={() => setActiveTab('habits')}
               className={`flex flex-col items-center justify-center py-1 px-2.5 rounded-xl transition-all relative group cursor-pointer active:scale-95 ${
                 activeTab === 'habits'
-                  ? 'text-[#2f80ed] font-bold'
-                  : 'text-[#8e8e93] hover:text-zinc-200'
+                  ? 'text-[var(--main-color)] font-bold'
+                  : 'text-zinc-400 hover:text-zinc-200'
               }`}
             >
               <CheckCircle2 className="w-5 h-5 mb-0.5" />
               <span className="text-[10px] tracking-tight font-medium">Habits</span>
               {activeTab === 'habits' && (
-                <span className="absolute bottom-0 w-5 h-0.5 rounded-full bg-[#2f80ed] shadow-[0_0_10px_#2f80ed]" />
+                <span className="absolute bottom-0 w-5 h-0.5 rounded-full bg-[var(--main-color)] shadow-[0_0_10px_var(--main-color)]" />
               )}
             </button>
 
@@ -537,14 +486,14 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, onOpenN
               onClick={() => setActiveTab('history')}
               className={`flex flex-col items-center justify-center py-1 px-2.5 rounded-xl transition-all relative group cursor-pointer active:scale-95 ${
                 activeTab === 'history'
-                  ? 'text-[#2f80ed] font-bold'
-                  : 'text-[#8e8e93] hover:text-zinc-200'
+                  ? 'text-[var(--main-color)] font-bold'
+                  : 'text-zinc-400 hover:text-zinc-200'
               }`}
             >
               <Activity className="w-5 h-5 mb-0.5" />
               <span className="text-[10px] tracking-tight font-medium">Progress</span>
               {activeTab === 'history' && (
-                <span className="absolute bottom-0 w-5 h-0.5 rounded-full bg-[#2f80ed] shadow-[0_0_10px_#2f80ed]" />
+                <span className="absolute bottom-0 w-5 h-0.5 rounded-full bg-[var(--main-color)] shadow-[0_0_10px_var(--main-color)]" />
               )}
             </button>
 
@@ -553,19 +502,18 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, onOpenN
               onClick={() => setActiveTab('profile')}
               className={`flex flex-col items-center justify-center py-1 px-2.5 rounded-xl transition-all relative group cursor-pointer active:scale-95 ${
                 activeTab === 'profile'
-                  ? 'text-[#2f80ed] font-bold'
-                  : 'text-[#8e8e93] hover:text-zinc-200'
+                  ? 'text-[var(--main-color)] font-bold'
+                  : 'text-zinc-400 hover:text-zinc-200'
               }`}
             >
               <UserIcon className="w-5 h-5 mb-0.5" />
               <span className="text-[10px] tracking-tight font-medium">Profile</span>
               {activeTab === 'profile' && (
-                <span className="absolute bottom-0 w-5 h-0.5 rounded-full bg-[#2f80ed] shadow-[0_0_10px_#2f80ed]" />
+                <span className="absolute bottom-0 w-5 h-0.5 rounded-full bg-[var(--main-color)] shadow-[0_0_10px_var(--main-color)]" />
               )}
             </button>
-          </>
-        )}
-      </div>
+        </div>
+      )}
 
       {/* 3. Smart Notifications & Contextual Alerts Drawer */}
       <NotificationDrawer

@@ -31,10 +31,10 @@ export const ProtocolReadinessCard: React.FC<ProtocolReadinessCardProps> = React
   habitsTotalCount
 }) => {
   return (
-    <div className="relative p-4 sm:p-5 rounded-3xl bg-[#18191e] border border-[#24262e] overflow-hidden shadow-lg">
+    <div className="relative gym-card-elevated p-3.5 sm:p-4 rounded-2xl border-[var(--gym-border-base)] overflow-hidden">
       {/* Soft Warm Sunrise Glow in Top Arc Area */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-72 h-36 pointer-events-none opacity-40">
-        <div className="w-full h-full rounded-b-full bg-gradient-to-b from-[#b88647]/30 via-[#36281a]/15 to-transparent blur-2xl" />
+        <div className="w-full h-full rounded-b-full bg-gradient-to-b from-amber-600/30 via-amber-950/15 to-transparent blur-2xl" />
       </div>
 
       {/* Top Control Bar: Progress Title & Rest Day Light Switch */}
@@ -50,7 +50,7 @@ export const ProtocolReadinessCard: React.FC<ProtocolReadinessCardProps> = React
           aria-checked={isEffectiveRestDay}
           aria-label="Toggle Rest Day"
           onClick={onToggleRestDay}
-          className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-[#121317] border border-[#24262e] hover:border-zinc-700 transition-all cursor-pointer group active:scale-95 flex-shrink-0"
+          className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-[var(--card-subtle-bg)] border border-[var(--card-border)] hover:border-zinc-700 transition-all cursor-pointer group active:scale-95 flex-shrink-0"
         >
           <span
             className={`text-[11px] font-mono font-semibold transition-colors ${
@@ -65,7 +65,7 @@ export const ProtocolReadinessCard: React.FC<ProtocolReadinessCardProps> = React
             className={`relative inline-flex h-5 w-9 shrink-0 items-center rounded-full p-0.5 transition-colors duration-200 ease-in-out ${
               isEffectiveRestDay
                 ? 'bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.45)] border border-emerald-400/40'
-                : 'bg-[#2a2d36] border border-zinc-700/60'
+                : 'bg-white/[0.08] border border-[var(--card-border)]'
             }`}
           >
             {/* Sliding Knob Circle */}
@@ -84,9 +84,9 @@ export const ProtocolReadinessCard: React.FC<ProtocolReadinessCardProps> = React
           <svg className="w-48 h-48 absolute top-0" viewBox="0 0 100 100">
             <defs>
               <linearGradient id="sunriseHorizonGrad" x1="0%" y1="100%" x2="100%" y2="100%">
-                <stop offset="0%" stopColor="#36281a" />
-                <stop offset="50%" stopColor="#b88647" />
-                <stop offset="100%" stopColor="#f3c88e" />
+                <stop offset="0%" stopColor="rgb(120, 53, 15)" />
+                <stop offset="50%" stopColor="rgb(217, 119, 6)" />
+                <stop offset="100%" stopColor="rgb(251, 191, 36)" />
               </linearGradient>
             </defs>
 
@@ -94,7 +94,7 @@ export const ProtocolReadinessCard: React.FC<ProtocolReadinessCardProps> = React
             <path
               d="M 12 50 A 38 38 0 0 1 88 50"
               fill="none"
-              stroke="#24262e"
+              stroke="var(--card-border)"
               strokeWidth="7"
               strokeLinecap="round"
             />
@@ -114,64 +114,64 @@ export const ProtocolReadinessCard: React.FC<ProtocolReadinessCardProps> = React
 
           {/* Score in Arc Center */}
           <div className="flex flex-col items-center mb-1">
-            <span className="text-2xl font-black font-mono tabular-nums text-white tracking-tight leading-none">
+            <span className="gym-num-lg text-2xl text-white leading-none">
               {adherenceScore}%
             </span>
-            <span className="text-[10px] font-mono uppercase tracking-wider text-[#f3c88e] font-semibold mt-1">
+            <span className="gym-label-mono text-amber-300 mt-1">
               Daily Progress
             </span>
           </div>
         </div>
 
-        <p className="text-[10px] sm:text-[11px] text-zinc-400 font-medium mt-0.5 text-center leading-snug max-w-[280px]">
+        <p className="gym-subtext mt-0.5 text-center leading-snug max-w-[280px]">
           {motivationalQuote}
         </p>
 
         {/* 3-Pill Daily Statistics Row (Sessions, Exercises, Habits) */}
-        <div className="grid grid-cols-3 gap-2 w-full mt-4 pt-3 border-t border-[#24262e]/80">
+        <div className="grid grid-cols-3 gap-2 w-full mt-3 pt-2.5 border-t border-white/[0.06]">
           {/* Pill 1: Sessions */}
-          <div className="p-2 rounded-xl bg-[#15161a] border border-[#24262e] text-center">
-            <span className="text-[9px] font-mono uppercase tracking-wider text-[#8e8e93] block font-semibold">
+          <div className="gym-card-subtle text-center py-1.5">
+            <span className="gym-label-mono block text-slate-400">
               Sessions
             </span>
-            <span className="text-xs font-mono font-bold text-white tabular-nums mt-0.5 block">
+            <span className="gym-num text-xs text-white mt-0.5 block">
               {isEffectiveRestDay ? (
                 <span className="text-amber-400">0 / 0</span>
               ) : (
                 <>
-                  <span className="text-[#2f80ed]">{isSelectedDateWorkoutCompleted ? 1 : 0}</span> / 1
+                  <span className="text-[var(--main-color)]">{isSelectedDateWorkoutCompleted ? 1 : 0}</span> / 1
                 </>
               )}
             </span>
           </div>
 
           {/* Pill 2: Exercises */}
-          <div className="p-2 rounded-xl bg-[#15161a] border border-[#24262e] text-center">
-            <span className="text-[9px] font-mono uppercase tracking-wider text-[#8e8e93] block font-semibold">
+          <div className="gym-card-subtle text-center py-1.5">
+            <span className="gym-label-mono block text-slate-400">
               Exercises
             </span>
-            <span className="text-xs font-mono font-bold text-white tabular-nums mt-0.5 block">
+            <span className="gym-num text-xs text-white mt-0.5 block">
               {isEffectiveRestDay ? (
-                <span className="text-[#8e8e93]">0 / 0</span>
+                <span className="text-slate-500">0 / 0</span>
               ) : isSelectedDateWorkoutCompleted && selectedDateWorkoutLog ? (
-                <span className="text-[#2f80ed]">
+                <span className="text-[var(--main-color)]">
                   {selectedDateWorkoutLog.completedExercises.length} / {targetExercisesCount || selectedDateWorkoutLog.completedExercises.length}
                 </span>
               ) : (
                 <>
-                  <span className="text-[#2f80ed]">0</span> / {targetExercisesCount}
+                  <span className="text-[var(--main-color)]">0</span> / {targetExercisesCount}
                 </>
               )}
             </span>
           </div>
 
           {/* Pill 3: Habits */}
-          <div className="p-2 rounded-xl bg-[#15161a] border border-[#24262e] text-center">
-            <span className="text-[9px] font-mono uppercase tracking-wider text-[#8e8e93] block font-semibold">
+          <div className="gym-card-subtle text-center py-1.5">
+            <span className="gym-label-mono block text-slate-400">
               Habits
             </span>
-            <span className="text-xs font-mono font-bold text-white tabular-nums mt-0.5 block">
-              <span className="text-[#2f80ed]">{habitsCompletedCount}</span> / {habitsTotalCount}
+            <span className="gym-num text-xs text-white mt-0.5 block">
+              <span className="text-[var(--main-color)]">{habitsCompletedCount}</span> / {habitsTotalCount}
             </span>
           </div>
         </div>

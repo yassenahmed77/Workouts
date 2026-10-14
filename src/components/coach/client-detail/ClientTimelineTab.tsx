@@ -91,12 +91,12 @@ export const ClientTimelineTab: React.FC<ClientTimelineTabProps> = ({ client }) 
     <div className="flex flex-col h-full space-y-2 select-none">
       
       {/* Header telemetry (Compact) */}
-      <div className="p-2.5 rounded-xl bg-[#090d14] border border-white/[0.07] flex items-center justify-between flex-shrink-0">
+      <div className="gym-card flex items-center justify-between flex-shrink-0">
         <div>
-          <span className="text-[10px] font-mono uppercase tracking-wider text-slate-400 font-semibold">
+          <span className="gym-label-mono">
             Activity Timeline
           </span>
-          <h3 className="text-xs sm:text-sm font-semibold text-white mt-0.5">
+          <h3 className="gym-heading-card mt-0.5">
             Client Coaching History &bull; {timelineEvents.length} Events
           </h3>
         </div>
@@ -110,7 +110,7 @@ export const ClientTimelineTab: React.FC<ClientTimelineTabProps> = ({ client }) 
         {timelineEvents.map((evt) => (
           <div
             key={evt.id}
-            className="p-3 rounded-xl bg-[#090d14] border border-white/[0.07] space-y-1 hover:border-white/10 transition-colors"
+            className="gym-card space-y-1 hover:border-white/20 transition-colors"
           >
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">

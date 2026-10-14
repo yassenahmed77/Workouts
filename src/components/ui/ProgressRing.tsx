@@ -16,7 +16,7 @@ export interface ProgressRingProps {
 export function ProgressRing({
   title,
   pct,
-  color = '#00c5ff',
+  color = 'var(--main-color)',
   subtext,
   size = 'md',
   onClick,
@@ -26,9 +26,9 @@ export function ProgressRing({
   const isInteractive = Boolean(onClick);
 
   const ringDimensions = {
-    sm: 'w-9 h-9 sm:w-10 sm:h-10',
-    md: 'w-11 h-11 sm:w-12 sm:h-12',
-    lg: 'w-14 h-14 sm:w-16 sm:h-16'
+    sm: 'w-8 h-8 sm:w-9 sm:h-9',
+    md: 'w-10 h-10 sm:w-11 sm:h-11',
+    lg: 'w-12 h-12 sm:w-14 sm:h-14'
   }[size];
 
   return (
@@ -42,7 +42,7 @@ export function ProgressRing({
       } ${className}`}
     >
       <span
-        className={`text-xs font-bold text-slate-300 transition-colors truncate max-w-full ${
+        className={`text-[11px] font-semibold text-slate-300 transition-colors truncate max-w-full ${
           isInteractive ? 'group-hover:text-white' : ''
         }`}
       >
@@ -54,7 +54,7 @@ export function ProgressRing({
           <path
             d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
             fill="none"
-            stroke="#131923"
+            stroke="var(--card-border)"
             strokeWidth="3.4"
           />
           <path
@@ -68,8 +68,8 @@ export function ProgressRing({
         </svg>
         <div className="absolute inset-0 flex items-center justify-center">
           <span
-            className={`text-xs font-bold font-numeric text-white transition-colors ${
-              isInteractive ? 'group-hover:text-[#00c5ff]' : ''
+            className={`gym-num text-[11px] font-bold text-white transition-colors ${
+              isInteractive ? 'group-hover:text-[var(--main-color)]' : ''
             }`}
           >
             {pct}%
@@ -78,7 +78,7 @@ export function ProgressRing({
       </div>
 
       {subtext && (
-        <span className="text-[10px] text-slate-300 font-mono font-bold tracking-tight truncate max-w-full">
+        <span className="gym-label-mono text-slate-400 block truncate max-w-full">
           {subtext}
         </span>
       )}

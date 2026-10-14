@@ -626,10 +626,10 @@ export const LiveWorkoutSession: React.FC<LiveWorkoutSessionProps> = ({
   const getExerciseIcon = (name: string) => {
     const n = name.toLowerCase();
     if (n.includes('lat') || n.includes('row') || n.includes('pull')) {
-      return <Layers className="w-5 h-5 text-[#2f80ed]" />;
+      return <Layers className="w-5 h-5 text-[var(--main-color)]" />;
     }
     if (n.includes('bench') || n.includes('press') || n.includes('chest')) {
-      return <Dumbbell className="w-5 h-5 text-[#2f80ed]" />;
+      return <Dumbbell className="w-5 h-5 text-[var(--main-color)]" />;
     }
     return <Activity className="w-5 h-5 text-amber-400" />;
   };
@@ -640,7 +640,7 @@ export const LiveWorkoutSession: React.FC<LiveWorkoutSessionProps> = ({
     <div className="max-w-md mx-auto space-y-4 pb-36 px-2 sm:px-0">
       
       {/* 1. Top HUD Control Bar (Dynamic Island & Notch Safe) */}
-      <div className="sticky top-0 z-30 pt-[max(6px,env(safe-area-inset-top))] pb-2 bg-[#0a0a0c]/95 backdrop-blur-md w-full">
+      <div className="sticky top-0 z-30 pt-[max(6px,env(safe-area-inset-top))] pb-2 bg-[var(--bg-page)]/95 backdrop-blur-md w-full">
         <div className="flex items-center justify-between gap-2 w-full">
           
           {/* Left Controls: Exit, Sound, Plate Calc */}
@@ -648,7 +648,7 @@ export const LiveWorkoutSession: React.FC<LiveWorkoutSessionProps> = ({
             {/* Close/Exit Button */}
             <button
               onClick={onExit}
-              className="w-9 h-9 rounded-2xl bg-[#18191e] border border-[#24262e] text-zinc-300 hover:text-white flex items-center justify-center transition-colors flex-shrink-0 active:scale-95 cursor-pointer"
+              className="w-9 h-9 rounded-2xl bg-[var(--card-bg)] border border-[var(--card-border)] text-zinc-300 hover:text-white flex items-center justify-center transition-colors flex-shrink-0 active:scale-95 cursor-pointer"
               title="Exit Workout"
             >
               <X className="w-4 h-4 stroke-[2.5]" />
@@ -660,8 +660,8 @@ export const LiveWorkoutSession: React.FC<LiveWorkoutSessionProps> = ({
               onClick={() => setSoundEnabled(!soundEnabled)}
               className={`w-9 h-9 rounded-2xl border flex items-center justify-center transition-colors flex-shrink-0 active:scale-95 cursor-pointer ${
                 soundEnabled 
-                  ? 'bg-[#2f80ed]/15 text-[#2f80ed] border-[#2f80ed]/40' 
-                  : 'bg-[#18191e] text-zinc-500 border-[#24262e]'
+                  ? 'bg-[var(--main-color)]/15 text-[var(--main-color)] border-[var(--main-color)]/40' 
+                  : 'bg-[var(--card-bg)] text-zinc-500 border-[var(--card-border)]'
               }`}
               title={soundEnabled ? 'Timer Sound On' : 'Timer Sound Muted'}
             >
@@ -672,7 +672,7 @@ export const LiveWorkoutSession: React.FC<LiveWorkoutSessionProps> = ({
             <button
               type="button"
               onClick={() => setIsResetConfirmOpen(true)}
-              className="w-9 h-9 rounded-2xl bg-[#18191e] border border-[#24262e] text-zinc-400 hover:text-amber-400 hover:border-amber-400/30 flex items-center justify-center transition-colors flex-shrink-0 active:scale-95 cursor-pointer"
+              className="w-9 h-9 rounded-2xl bg-[var(--card-bg)] border border-[var(--card-border)] text-zinc-400 hover:text-amber-400 hover:border-amber-400/30 flex items-center justify-center transition-colors flex-shrink-0 active:scale-95 cursor-pointer"
               title="Reset Workout Session"
             >
               <RotateCcw className="w-4 h-4 stroke-[2.2]" />
@@ -680,11 +680,11 @@ export const LiveWorkoutSession: React.FC<LiveWorkoutSessionProps> = ({
           </div>
 
           {/* Right: Stopwatch Pill */}
-          <div className="flex items-center gap-2 px-3.5 py-1.5 rounded-2xl bg-[#18191e] border border-[#24262e] flex-shrink-0">
+          <div className="flex items-center gap-2 px-3.5 py-1.5 rounded-2xl bg-[var(--card-bg)] border border-[var(--card-border)] flex-shrink-0">
             <button
               type="button"
               onClick={() => setIsTimerRunning(!isTimerRunning)}
-              className="text-zinc-400 hover:text-[#2f80ed] transition-colors active:scale-95 cursor-pointer"
+              className="text-zinc-400 hover:text-[var(--main-color)] transition-colors active:scale-95 cursor-pointer"
             >
               {isTimerRunning ? <Pause className="w-3.5 h-3.5 fill-current" /> : <Play className="w-3.5 h-3.5 fill-current" />}
             </button>
@@ -703,7 +703,7 @@ export const LiveWorkoutSession: React.FC<LiveWorkoutSessionProps> = ({
             <span className="text-[9px] font-mono uppercase tracking-wider text-zinc-500 font-bold block">
               CURRENT WORKOUT
             </span>
-            <span className="text-sm font-extrabold text-[#2f80ed] tracking-tight">
+            <span className="text-sm font-extrabold text-[var(--main-color)] tracking-tight">
               {day.dayName}
             </span>
           </div>
@@ -714,15 +714,15 @@ export const LiveWorkoutSession: React.FC<LiveWorkoutSessionProps> = ({
               EXERCISES
             </span>
             <span className="font-mono text-xs font-extrabold text-white">
-              <span className="text-[#2f80ed]">{completedExercisesCount}</span> / {sessionExercises.length}
+              <span className="text-[var(--main-color)]">{completedExercisesCount}</span> / {sessionExercises.length}
             </span>
           </div>
         </div>
 
         {/* Dynamic Progress Bar */}
-        <div className="w-full h-1.5 bg-[#141519] rounded-full overflow-hidden">
+        <div className="w-full h-1.5 bg-[var(--card-subtle-bg)] rounded-full overflow-hidden">
           <div 
-            className="h-full bg-[#2f80ed] rounded-full transition-all duration-300 shadow-[0_0_8px_#2f80ed]"
+            className="h-full bg-[var(--main-color)] rounded-full transition-all duration-300 shadow-[0_0_8px_var(--main-color)]"
             style={{ width: `${progressPercent}%` }}
           />
         </div>
@@ -745,15 +745,15 @@ export const LiveWorkoutSession: React.FC<LiveWorkoutSessionProps> = ({
           return (
             <div
               key={routineEx.id || `routine-${exIdx}`}
-              className="relative p-4 sm:p-5 rounded-3xl bg-[#18191e] border border-[#24262e] shadow-xl space-y-3 overflow-hidden"
+              className="relative p-4 sm:p-5 rounded-3xl bg-[var(--card-bg)] border border-[var(--card-border)] shadow-xl space-y-3 overflow-hidden"
             >
               {/* Subtle Left Accent Glow Line */}
-              <div className="absolute top-0 left-0 bottom-0 w-1 bg-[#2f80ed] rounded-l-3xl shadow-[0_0_12px_#2f80ed]" />
+              <div className="absolute top-0 left-0 bottom-0 w-1 bg-[var(--main-color)] rounded-l-3xl shadow-[0_0_12px_var(--main-color)]" />
 
               {/* Exercise Header: Number Badge on far left, Trash on far right, 2 text lines centered */}
               <div className="relative flex items-center justify-center min-h-[42px] px-10">
                 {/* Number Badge alone on far left, vertically centered between the two lines */}
-                <div className="absolute left-0 top-1/2 -translate-y-1/2 w-8 h-8 rounded-xl bg-[#141519] border border-[#24262e] text-[#2f80ed] font-mono text-xs font-black flex items-center justify-center flex-shrink-0 shadow-inner">
+                <div className="absolute left-0 top-1/2 -translate-y-1/2 w-8 h-8 rounded-xl bg-[var(--card-subtle-bg)] border border-[var(--card-border)] text-[var(--main-color)] font-mono text-xs font-black flex items-center justify-center flex-shrink-0 shadow-inner">
                   {exIdx + 1}
                 </div>
 
@@ -763,7 +763,7 @@ export const LiveWorkoutSession: React.FC<LiveWorkoutSessionProps> = ({
                     {routineEx.exerciseName}
                   </h3>
                   <div className="flex items-center justify-center gap-1.5 mt-0.5 text-[11px] font-mono text-zinc-400">
-                    <span className="text-[#2f80ed] font-semibold">
+                    <span className="text-[var(--main-color)] font-semibold">
                       {routineEx.sets} Sets × {routineEx.targetReps} Reps
                     </span>
                     {routineEx.targetRpe && (() => {
@@ -785,7 +785,7 @@ export const LiveWorkoutSession: React.FC<LiveWorkoutSessionProps> = ({
                 <button
                   type="button"
                   onClick={() => handleRemoveExerciseFromSession(exIdx)}
-                  className="absolute right-0 top-1/2 -translate-y-1/2 p-2 rounded-xl text-zinc-500 hover:text-rose-400 hover:bg-[#141519] transition-colors cursor-pointer flex-shrink-0"
+                  className="absolute right-0 top-1/2 -translate-y-1/2 p-2 rounded-xl text-zinc-500 hover:text-rose-400 hover:bg-[var(--card-subtle-bg)] transition-colors cursor-pointer flex-shrink-0"
                   title="Remove exercise from workout"
                 >
                   <Trash2 className="w-3.5 h-3.5" />
@@ -800,10 +800,10 @@ export const LiveWorkoutSession: React.FC<LiveWorkoutSessionProps> = ({
                     <button
                       type="button"
                       onClick={() => handleSwapBadeel(exIdx)}
-                      className="flex-1 h-8 px-3 rounded-xl bg-[#141519] hover:bg-[#1c1d22] hover:border-[#2f80ed]/40 text-zinc-200 hover:text-white border border-[#24262e] text-[11px] font-bold flex items-center justify-center gap-1.5 transition-colors cursor-pointer text-center whitespace-nowrap min-w-0 active:scale-[0.99]"
+                      className="flex-1 h-8 px-3 rounded-xl bg-[var(--card-subtle-bg)] hover:bg-[var(--card-bg-hover)] hover:border-[var(--main-color)]/40 text-zinc-200 hover:text-white border border-[var(--card-border)] text-[11px] font-bold flex items-center justify-center gap-1.5 transition-colors cursor-pointer text-center whitespace-nowrap min-w-0 active:scale-[0.99]"
                       title={`Swap to ${altName}`}
                     >
-                      <Repeat className="w-3.5 h-3.5 text-[#2f80ed] flex-shrink-0" />
+                      <Repeat className="w-3.5 h-3.5 text-[var(--main-color)] flex-shrink-0" />
                       <span className="truncate">{altName}</span>
                     </button>
                   )}
@@ -814,7 +814,7 @@ export const LiveWorkoutSession: React.FC<LiveWorkoutSessionProps> = ({
                       href={safeVideoUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className={`h-8 px-2.5 rounded-xl bg-[#141519] hover:bg-[#1c1d22] text-[#2f80ed] border border-[#24262e] text-[10px] font-bold flex items-center justify-center gap-1.5 transition-colors cursor-pointer whitespace-nowrap active:scale-[0.99] ${
+                      className={`h-8 px-2.5 rounded-xl bg-[var(--card-subtle-bg)] hover:bg-[var(--card-bg-hover)] text-[var(--main-color)] border border-[var(--card-border)] text-[10px] font-bold flex items-center justify-center gap-1.5 transition-colors cursor-pointer whitespace-nowrap active:scale-[0.99] ${
                         hasAlt ? 'flex-shrink-0' : 'flex-1'
                       }`}
                       title="Watch Exercise Video Guide"
@@ -828,8 +828,8 @@ export const LiveWorkoutSession: React.FC<LiveWorkoutSessionProps> = ({
 
               {/* Technique Cue Callout if present */}
               {routineEx.notes && (
-                <div className="px-3 py-2 rounded-2xl bg-[#141519] border border-[#24262e] text-xs text-zinc-300 flex items-start gap-2">
-                  <Info className="w-3.5 h-3.5 text-[#2f80ed] flex-shrink-0 mt-0.5" />
+                <div className="px-3 py-2 rounded-2xl bg-[var(--card-subtle-bg)] border border-[var(--card-border)] text-xs text-zinc-300 flex items-start gap-2">
+                  <Info className="w-3.5 h-3.5 text-[var(--main-color)] flex-shrink-0 mt-0.5" />
                   <p className="leading-snug text-zinc-300">{routineEx.notes}</p>
                 </div>
               )}
@@ -859,9 +859,9 @@ export const LiveWorkoutSession: React.FC<LiveWorkoutSessionProps> = ({
                       </span>
 
                       {/* KG Input Pill with Auto-Clear Zero and Live PR Flame Indicator */}
-                      <div className="relative rounded-xl bg-[#141519] border border-[#24262e] focus-within:border-[#2f80ed] focus-within:ring-1 focus-within:ring-[#2f80ed]/30 py-1.5 px-2 flex flex-col items-center justify-center transition-all shadow-xs">
+                      <div className="relative rounded-xl bg-[var(--card-subtle-bg)] border border-[var(--card-border)] focus-within:border-[var(--main-color)] focus-within:ring-1 focus-within:ring-[var(--main-color)]/30 py-1.5 px-2 flex flex-col items-center justify-center transition-all shadow-xs">
                         {prCheck.isNewPR && (
-                          <span className="absolute -top-2 left-1/2 -translate-x-1/2 z-10 px-1.5 py-0.2 rounded-full bg-[#2f80ed] text-white font-mono text-[8px] font-black tracking-tighter whitespace-nowrap shadow-sm shadow-[#2f80ed]/40 flex items-center gap-0.5 animate-bounce">
+                          <span className="absolute -top-2 left-1/2 -translate-x-1/2 z-10 px-1.5 py-0.2 rounded-full bg-[var(--main-color)] text-white font-mono text-[8px] font-black tracking-tighter whitespace-nowrap shadow-sm shadow-[var(--main-color)]/40 flex items-center gap-0.5 animate-bounce">
                             <Flame className="w-2 h-2 fill-current" />
                             <span>PR</span>
                           </span>
@@ -886,7 +886,7 @@ export const LiveWorkoutSession: React.FC<LiveWorkoutSessionProps> = ({
                       </div>
 
                       {/* REPS Input Pill with Auto-Clear Zero on Typing */}
-                      <div className="relative rounded-xl bg-[#141519] border border-[#24262e] focus-within:border-[#2f80ed] focus-within:ring-1 focus-within:ring-[#2f80ed]/30 py-1.5 px-2 flex flex-col items-center justify-center transition-all shadow-xs">
+                      <div className="relative rounded-xl bg-[var(--card-subtle-bg)] border border-[var(--card-border)] focus-within:border-[var(--main-color)] focus-within:ring-1 focus-within:ring-[var(--main-color)]/30 py-1.5 px-2 flex flex-col items-center justify-center transition-all shadow-xs">
                         <input
                           id={`set-reps-${exIdx}-${sIdx}`}
                           type="number"
@@ -911,8 +911,8 @@ export const LiveWorkoutSession: React.FC<LiveWorkoutSessionProps> = ({
                         onClick={() => handleToggleSetComplete(exIdx, sIdx)}
                         className={`w-9 h-9 rounded-xl flex items-center justify-center transition-all duration-150 cursor-pointer ${
                           set.completed
-                            ? 'bg-[#2f80ed] text-white shadow-md shadow-[#2f80ed]/30 scale-102'
-                            : 'bg-[#141519] text-zinc-600 border border-[#24262e] hover:text-zinc-300'
+                            ? 'bg-[var(--main-color)] text-white shadow-md shadow-[var(--main-color)]/30 scale-102'
+                            : 'bg-[var(--card-subtle-bg)] text-zinc-600 border border-[var(--card-border)] hover:text-zinc-300'
                         }`}
                       >
                         <Check className="w-4 h-4 stroke-[2.5]" />
@@ -923,11 +923,11 @@ export const LiveWorkoutSession: React.FC<LiveWorkoutSessionProps> = ({
               </div>
 
               {/* Set Action Controls (+ Add Set / - Remove Set) */}
-              <div className="flex items-center justify-between border-t border-[#24262e] pt-2.5 px-1">
+              <div className="flex items-center justify-between border-t border-[var(--card-border)] pt-2.5 px-1">
                 <button
                   type="button"
                   onClick={() => handleAddSet(exIdx)}
-                  className="flex items-center gap-1.5 text-xs font-bold text-[#2f80ed] hover:underline cursor-pointer"
+                  className="flex items-center gap-1.5 text-xs font-bold text-[var(--main-color)] hover:underline cursor-pointer"
                 >
                   <Plus className="w-4 h-4 stroke-[2.5]" />
                   <span>Add Set</span>
@@ -956,16 +956,16 @@ export const LiveWorkoutSession: React.FC<LiveWorkoutSessionProps> = ({
         <button
           type="button"
           onClick={() => setIsAddMovementModalOpen(true)}
-          className="w-full py-2 px-3.5 rounded-xl bg-[#141519] border border-dashed border-[#24262e] hover:border-[#2f80ed]/50 hover:bg-[#18191e] text-[11px] font-bold text-zinc-400 hover:text-zinc-200 flex items-center justify-center gap-1.5 transition-all cursor-pointer active:scale-[0.99]"
+          className="w-full py-2 px-3.5 rounded-xl bg-[var(--card-subtle-bg)] border border-dashed border-[var(--card-border)] hover:border-[var(--main-color)]/50 hover:bg-[var(--card-bg)] text-[11px] font-bold text-zinc-400 hover:text-zinc-200 flex items-center justify-center gap-1.5 transition-all cursor-pointer active:scale-[0.99]"
         >
-          <Plus className="w-3.5 h-3.5 text-[#2f80ed] stroke-[2.5]" />
+          <Plus className="w-3.5 h-3.5 text-[var(--main-color)] stroke-[2.5]" />
           <span>Add Extra Movement To Session</span>
         </button>
 
         {/* Big, prominent, heroic primary CTA */}
         <button
           onClick={handleFinishWorkout}
-          className="w-full py-3.5 sm:py-4 px-6 rounded-2xl btn-cyan text-sm sm:text-base font-black tracking-wider flex items-center justify-center gap-2.5 shadow-xl shadow-[#2f80ed]/25 cursor-pointer active:scale-[0.99] transition-transform"
+          className="gym-btn-primary w-full py-3.5 sm:py-4 px-6 text-sm sm:text-base font-bold tracking-wider flex items-center justify-center gap-2.5"
         >
           <CheckCircle2 className="w-5 h-5 stroke-[2.5]" />
           <span>FINISH WORKOUT</span>
@@ -976,12 +976,12 @@ export const LiveWorkoutSession: React.FC<LiveWorkoutSessionProps> = ({
       {isAddMovementModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/85 backdrop-blur-sm animate-in fade-in duration-150">
           <div 
-            className="w-full max-w-lg bg-[#18191e] border border-[#24262e] rounded-3xl p-5 sm:p-6 shadow-2xl relative max-h-[85vh] flex flex-col animate-in zoom-in-95 duration-150"
+            className="w-full max-w-lg bg-[var(--card-bg)] border border-[var(--card-border)] rounded-3xl p-5 sm:p-6 shadow-2xl relative max-h-[85vh] flex flex-col animate-in zoom-in-95 duration-150"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="flex items-center justify-between pb-3 border-b border-[#24262e]">
+            <div className="flex items-center justify-between pb-3 border-b border-[var(--card-border)]">
               <div className="flex items-center gap-2.5">
-                <div className="w-9 h-9 rounded-xl bg-[#141519] border border-[#24262e] text-[#2f80ed] flex items-center justify-center">
+                <div className="w-9 h-9 rounded-xl bg-[var(--card-subtle-bg)] border border-[var(--card-border)] text-[var(--main-color)] flex items-center justify-center">
                   <Dumbbell className="w-5 h-5" />
                 </div>
                 <div>
@@ -996,7 +996,7 @@ export const LiveWorkoutSession: React.FC<LiveWorkoutSessionProps> = ({
               <button
                 type="button"
                 onClick={() => setIsAddMovementModalOpen(false)}
-                className="p-1.5 rounded-xl text-zinc-400 hover:text-white hover:bg-[#141519]"
+                className="p-1.5 rounded-xl text-zinc-400 hover:text-white hover:bg-[var(--card-subtle-bg)]"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -1011,7 +1011,7 @@ export const LiveWorkoutSession: React.FC<LiveWorkoutSessionProps> = ({
                   value={addMovementSearch}
                   onChange={(e) => setAddMovementSearch(e.target.value)}
                   placeholder="Search exercise name or muscle..."
-                  className="w-full pl-10 pr-3.5 py-2 rounded-xl bg-[#141519] border border-[#24262e] text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-[#2f80ed]/60 font-semibold"
+                  className="w-full pl-10 pr-3.5 py-2 rounded-xl bg-[var(--card-subtle-bg)] border border-[var(--card-border)] text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-[var(--main-color)]/60 font-semibold"
                 />
               </div>
 
@@ -1021,8 +1021,8 @@ export const LiveWorkoutSession: React.FC<LiveWorkoutSessionProps> = ({
                   onClick={() => setAddMovementMuscleFilter('All')}
                   className={`px-2.5 py-1 rounded-lg text-[11px] font-bold whitespace-nowrap transition-colors ${
                     addMovementMuscleFilter === 'All'
-                      ? 'bg-[#141519] text-[#2f80ed] border border-[#2f80ed]/40'
-                      : 'bg-[#141519] text-zinc-400 hover:text-white border border-[#24262e]'
+                      ? 'bg-[var(--card-subtle-bg)] text-[var(--main-color)] border border-[var(--main-color)]/40'
+                      : 'bg-[var(--card-subtle-bg)] text-zinc-400 hover:text-white border border-[var(--card-border)]'
                   }`}
                 >
                   All ({exercises.length})
@@ -1037,8 +1037,8 @@ export const LiveWorkoutSession: React.FC<LiveWorkoutSessionProps> = ({
                       onClick={() => setAddMovementMuscleFilter(m)}
                       className={`px-2.5 py-1 rounded-lg text-[11px] font-bold whitespace-nowrap transition-colors ${
                         addMovementMuscleFilter === m
-                          ? 'bg-[#141519] text-[#2f80ed] border border-[#2f80ed]/40'
-                          : 'bg-[#141519] text-zinc-400 hover:text-white border border-[#24262e]'
+                          ? 'bg-[var(--card-subtle-bg)] text-[var(--main-color)] border border-[var(--main-color)]/40'
+                          : 'bg-[var(--card-subtle-bg)] text-zinc-400 hover:text-white border border-[var(--card-border)]'
                       }`}
                     >
                       {m} ({count})
@@ -1061,17 +1061,17 @@ export const LiveWorkoutSession: React.FC<LiveWorkoutSessionProps> = ({
                   <div
                     key={ex.id}
                     onClick={() => handleAddExerciseToSession(ex)}
-                    className="p-3 rounded-2xl bg-[#141519] border border-[#24262e] hover:border-[#2f80ed]/40 hover:bg-[#1c1d22] cursor-pointer transition-all flex items-center justify-between group"
+                    className="p-3 rounded-2xl bg-[var(--card-subtle-bg)] border border-[var(--card-border)] hover:border-[var(--main-color)]/40 hover:bg-[var(--card-bg-hover)] cursor-pointer transition-all flex items-center justify-between group"
                   >
                     <div>
                       <div className="flex items-center gap-2">
-                        <h4 className="text-xs font-bold text-white group-hover:text-[#2f80ed] transition-colors">
+                        <h4 className="text-xs font-bold text-white group-hover:text-[var(--main-color)] transition-colors">
                           {ex.name}
                         </h4>
-                        <span className="text-[9px] font-mono px-1.5 py-0.5 rounded bg-[#18191e] text-zinc-300">
+                        <span className="text-[9px] font-mono px-1.5 py-0.5 rounded bg-[var(--card-bg)] text-zinc-300">
                           {ex.targetMuscle}
                         </span>
-                        <span className="text-[9px] font-mono px-1.5 py-0.5 rounded bg-[#18191e] text-zinc-400">
+                        <span className="text-[9px] font-mono px-1.5 py-0.5 rounded bg-[var(--card-bg)] text-zinc-400">
                           {ex.equipment}
                         </span>
                       </div>
@@ -1081,7 +1081,7 @@ export const LiveWorkoutSession: React.FC<LiveWorkoutSessionProps> = ({
                         </p>
                       )}
                     </div>
-                    <div className="w-7 h-7 rounded-xl bg-[#18191e] border border-[#24262e] group-hover:bg-[#2f80ed] group-hover:text-white flex items-center justify-center text-zinc-400 transition-colors flex-shrink-0">
+                    <div className="w-7 h-7 rounded-xl bg-[var(--card-bg)] border border-[var(--card-border)] group-hover:bg-[var(--main-color)] group-hover:text-white flex items-center justify-center text-zinc-400 transition-colors flex-shrink-0">
                       <Plus className="w-4 h-4 stroke-[2.5]" />
                     </div>
                   </div>
@@ -1093,14 +1093,14 @@ export const LiveWorkoutSession: React.FC<LiveWorkoutSessionProps> = ({
 
       {/* Floating Active Rest Timer HUD (Docked above bottom nav) */}
       {restSecondsLeft !== null && (
-        <div className="fixed bottom-20 left-1/2 -translate-x-1/2 z-50 w-11/12 max-w-sm p-3.5 rounded-3xl bg-[#18191e]/95 border border-[#2f80ed]/40 shadow-2xl backdrop-blur-md animate-in slide-in-from-bottom duration-200">
+        <div className="fixed bottom-20 left-1/2 -translate-x-1/2 z-50 w-11/12 max-w-sm p-3.5 rounded-3xl bg-[var(--card-bg)]/95 border border-[var(--main-color)]/40 shadow-2xl backdrop-blur-md animate-in slide-in-from-bottom duration-200">
           <div className="flex items-center justify-between gap-3">
             <div className="flex items-center gap-2.5 min-w-0">
-              <div className="w-10 h-10 rounded-2xl bg-[#2f80ed] text-white flex items-center justify-center font-numeric font-black text-sm shadow-md shadow-[#2f80ed]/25 flex-shrink-0">
+              <div className="w-10 h-10 rounded-2xl bg-[var(--main-color)] text-white flex items-center justify-center font-numeric font-black text-sm shadow-md shadow-[var(--main-color)]/25 flex-shrink-0">
                 {restSecondsLeft}s
               </div>
               <div className="min-w-0">
-                <span className="text-[9px] font-mono uppercase tracking-wider text-[#2f80ed] font-bold block">
+                <span className="text-[9px] font-mono uppercase tracking-wider text-[var(--main-color)] font-bold block">
                   Rest Interval
                 </span>
                 <p className="text-xs font-bold text-white truncate">
@@ -1113,21 +1113,21 @@ export const LiveWorkoutSession: React.FC<LiveWorkoutSessionProps> = ({
               <button
                 type="button"
                 onClick={() => setRestSecondsLeft((prev) => (prev ? prev + 15 : 15))}
-                className="px-2 py-1 rounded-lg bg-[#141519] hover:bg-[#1c1d22] text-zinc-200 text-xs font-mono font-bold transition-colors border border-[#24262e]"
+                className="px-2 py-1 rounded-lg bg-[var(--card-subtle-bg)] hover:bg-[var(--card-bg-hover)] text-zinc-200 text-xs font-mono font-bold transition-colors border border-[var(--card-border)]"
               >
                 +15s
               </button>
               <button
                 type="button"
                 onClick={() => setRestSecondsLeft((prev) => (prev && prev > 15 ? prev - 15 : 0))}
-                className="px-2 py-1 rounded-lg bg-[#141519] hover:bg-[#1c1d22] text-zinc-200 text-xs font-mono font-bold transition-colors border border-[#24262e]"
+                className="px-2 py-1 rounded-lg bg-[var(--card-subtle-bg)] hover:bg-[var(--card-bg-hover)] text-zinc-200 text-xs font-mono font-bold transition-colors border border-[var(--card-border)]"
               >
                 -15s
               </button>
               <button
                 type="button"
                 onClick={() => setRestSecondsLeft(null)}
-                className="px-2.5 py-1 rounded-lg bg-[#141519] hover:bg-[#1c1d22] text-white text-xs font-bold transition-colors border border-[#24262e]"
+                className="px-2.5 py-1 rounded-lg bg-[var(--card-subtle-bg)] hover:bg-[var(--card-bg-hover)] text-white text-xs font-bold transition-colors border border-[var(--card-border)]"
               >
                 Skip
               </button>
@@ -1139,12 +1139,12 @@ export const LiveWorkoutSession: React.FC<LiveWorkoutSessionProps> = ({
       {/* Completion Celebration Modal */}
       {isCompletedModalOpen && completedSummary && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-150">
-          <div className="w-full max-w-sm bg-[#18191e] border border-[#24262e] rounded-3xl p-6 shadow-2xl text-center relative animate-in zoom-in-95 duration-150">
-            <div className="w-14 h-14 rounded-2xl bg-[#2f80ed] text-white flex items-center justify-center mx-auto mb-3 shadow-lg shadow-[#2f80ed]/30">
+          <div className="w-full max-w-sm bg-[var(--card-bg)] border border-[var(--card-border)] rounded-3xl p-6 shadow-2xl text-center relative animate-in zoom-in-95 duration-150">
+            <div className="w-14 h-14 rounded-2xl bg-[var(--main-color)] text-white flex items-center justify-center mx-auto mb-3 shadow-lg shadow-[var(--main-color)]/30">
               <Award className="w-7 h-7 stroke-[2.5]" />
             </div>
 
-            <span className="text-[10px] font-mono uppercase tracking-wider text-[#2f80ed] font-bold px-2.5 py-0.5 rounded-full bg-[#2f80ed]/10 border border-[#2f80ed]/20">
+            <span className="text-[10px] font-mono uppercase tracking-wider text-[var(--main-color)] font-bold px-2.5 py-0.5 rounded-full bg-[var(--main-color)]/10 border border-[var(--main-color)]/20">
               Session Completed
             </span>
             <h2 className="text-xl font-extrabold text-white tracking-tight mt-2">
@@ -1156,15 +1156,15 @@ export const LiveWorkoutSession: React.FC<LiveWorkoutSessionProps> = ({
 
             {/* PRs Achieved in this session callout */}
             {completedSummary.prsAchieved && completedSummary.prsAchieved.length > 0 && (
-              <div className="mt-3 text-left p-3 rounded-2xl bg-[#141519] border border-[#2f80ed]/30 shadow-md">
-                <div className="flex items-center gap-1.5 text-xs font-bold text-[#2f80ed] mb-1.5">
+              <div className="mt-3 text-left p-3 rounded-2xl bg-[var(--card-subtle-bg)] border border-[var(--main-color)]/30 shadow-md">
+                <div className="flex items-center gap-1.5 text-xs font-bold text-[var(--main-color)] mb-1.5">
                   <Flame className="w-3.5 h-3.5 fill-current" />
                   <span>Progressive Overload Achieved!</span>
                 </div>
                 <div className="space-y-1">
                   {completedSummary.prsAchieved.map((pr, idx) => (
                     <p key={idx} className="text-[11px] font-mono font-bold text-zinc-200 flex items-center gap-1.5">
-                      <span className="w-1.5 h-1.5 rounded-full bg-[#2f80ed]" />
+                      <span className="w-1.5 h-1.5 rounded-full bg-[var(--main-color)]" />
                       <span>{pr}</span>
                     </p>
                   ))}
@@ -1172,14 +1172,14 @@ export const LiveWorkoutSession: React.FC<LiveWorkoutSessionProps> = ({
               </div>
             )}
 
-            <div className="grid grid-cols-3 gap-2 my-4 p-3.5 rounded-2xl bg-[#141519] border border-[#24262e]">
+            <div className="grid grid-cols-3 gap-2 my-4 p-3.5 rounded-2xl bg-[var(--card-subtle-bg)] border border-[var(--card-border)]">
               <div>
                 <span className="block text-[8px] font-mono uppercase text-zinc-500 font-bold">Duration</span>
                 <span className="text-sm font-extrabold font-numeric text-white">{completedSummary.duration}</span>
               </div>
-              <div className="border-x border-[#24262e]">
+              <div className="border-x border-[var(--card-border)]">
                 <span className="block text-[8px] font-mono uppercase text-zinc-500 font-bold">Volume</span>
-                <span className="text-sm font-extrabold font-numeric text-[#2f80ed]">{completedSummary.totalVolume.toLocaleString()} kg</span>
+                <span className="text-sm font-extrabold font-numeric text-[var(--main-color)]">{completedSummary.totalVolume.toLocaleString()} kg</span>
               </div>
               <div>
                 <span className="block text-[8px] font-mono uppercase text-zinc-500 font-bold">Sets Done</span>
@@ -1190,7 +1190,7 @@ export const LiveWorkoutSession: React.FC<LiveWorkoutSessionProps> = ({
             <div className="space-y-2 mt-4">
               <button
                 onClick={onSessionCompleted}
-                className="w-full py-3.5 rounded-2xl btn-cyan text-xs font-black tracking-wide flex items-center justify-center gap-2 cursor-pointer shadow-lg shadow-[#2f80ed]/25"
+                className="gym-btn-primary w-full py-3 text-xs font-bold tracking-wide flex items-center justify-center gap-2"
               >
                 <span>Back to Home</span>
                 <ArrowRight className="w-4 h-4" />
@@ -1199,9 +1199,9 @@ export const LiveWorkoutSession: React.FC<LiveWorkoutSessionProps> = ({
               <button
                 type="button"
                 onClick={handleRestartWorkout}
-                className="w-full py-3 rounded-2xl bg-[#141519] hover:bg-[#1c1d22] border border-[#24262e] text-zinc-300 hover:text-white text-xs font-bold flex items-center justify-center gap-2 cursor-pointer transition-all active:scale-98"
+                className="w-full py-3 rounded-2xl bg-[var(--card-subtle-bg)] hover:bg-[var(--card-bg-hover)] border border-[var(--card-border)] text-zinc-300 hover:text-white text-xs font-bold flex items-center justify-center gap-2 cursor-pointer transition-all active:scale-98"
               >
-                <RotateCcw className="w-3.5 h-3.5 text-[#2f80ed]" />
+                <RotateCcw className="w-3.5 h-3.5 text-[var(--main-color)]" />
                 <span>Restart Workout & Clear History</span>
               </button>
             </div>
@@ -1212,7 +1212,7 @@ export const LiveWorkoutSession: React.FC<LiveWorkoutSessionProps> = ({
       {/* In-Session Reset Confirmation Modal */}
       {isResetConfirmOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-150">
-          <div className="w-full max-w-xs bg-[#18191e] border border-[#24262e] rounded-3xl p-5 shadow-2xl text-center relative animate-in zoom-in-95 duration-150 space-y-3">
+          <div className="w-full max-w-xs bg-[var(--card-bg)] border border-[var(--card-border)] rounded-3xl p-5 shadow-2xl text-center relative animate-in zoom-in-95 duration-150 space-y-3">
             <div className="w-12 h-12 rounded-2xl bg-amber-500/10 border border-amber-500/30 text-amber-400 flex items-center justify-center mx-auto shadow-inner">
               <RotateCcw className="w-6 h-6 stroke-[2.5]" />
             </div>
@@ -1228,7 +1228,7 @@ export const LiveWorkoutSession: React.FC<LiveWorkoutSessionProps> = ({
               <button
                 type="button"
                 onClick={() => setIsResetConfirmOpen(false)}
-                className="py-2.5 px-3 rounded-xl bg-[#141519] border border-[#24262e] text-xs font-bold text-zinc-300 hover:text-white cursor-pointer"
+                className="py-2.5 px-3 rounded-xl bg-[var(--card-subtle-bg)] border border-[var(--card-border)] text-xs font-bold text-zinc-300 hover:text-white cursor-pointer"
               >
                 Cancel
               </button>

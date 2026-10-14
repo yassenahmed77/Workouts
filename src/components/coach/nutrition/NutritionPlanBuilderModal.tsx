@@ -99,10 +99,10 @@ export const NutritionPlanBuilderModal: React.FC<NutritionPlanBuilderModalProps>
 
   return (
     <>
-      <div className="fixed inset-0 z-50 bg-[#070a0f] flex flex-col w-screen h-screen overflow-hidden animate-in fade-in duration-150 select-none text-slate-100 font-sans">
+      <div className="fixed inset-0 z-50 bg-[var(--card-bg)] flex flex-col w-screen h-screen overflow-hidden animate-in fade-in duration-150 select-none text-slate-100 font-sans">
         
         {/* 1. Studio Edge-to-Edge Top Navigation Bar */}
-        <header className="flex-shrink-0 border-b border-white/[0.08] bg-[#090d14] px-3 sm:px-5 py-2 z-30 flex items-center justify-between gap-3">
+        <header className="flex-shrink-0 border-b border-white/[0.08] bg-[var(--card-bg)] px-3 sm:px-5 py-2 z-30 flex items-center justify-between gap-3">
           {/* Left: Back Arrow, Title, Athlete Badge */}
           <div className="flex items-center gap-2 sm:gap-2.5 min-w-0 flex-shrink-0">
             <button
@@ -159,7 +159,7 @@ export const NutritionPlanBuilderModal: React.FC<NutritionPlanBuilderModalProps>
             <button
               type="button"
               onClick={handleSave}
-              className="px-3.5 sm:px-4 py-1.5 rounded-lg bg-white hover:bg-slate-100 active:scale-95 text-[#080c14] text-xs font-bold transition-all shadow-xs cursor-pointer"
+              className="gym-btn-primary text-xs"
             >
               {initialPlan ? 'Save Diet Plan' : 'Publish Diet Plan'}
             </button>
@@ -167,13 +167,13 @@ export const NutritionPlanBuilderModal: React.FC<NutritionPlanBuilderModalProps>
         </header>
 
         {/* Mobile Tab Switcher */}
-        <div className="flex md:hidden items-center justify-center p-1 rounded-lg bg-[#05080e] border border-[#16202e] text-xs font-semibold m-2 flex-shrink-0">
+        <div className="flex md:hidden items-center justify-center p-1 rounded-lg bg-[var(--card-subtle-bg)] border border-[var(--card-border)] text-xs font-semibold m-2 flex-shrink-0">
           <button
             type="button"
             onClick={() => setMobileView('meals')}
             className={`flex-1 py-1 rounded text-center transition-all ${
               mobileView === 'meals'
-                ? 'bg-cyan-500/15 border border-cyan-500/35 text-cyan-300 font-bold shadow-sm'
+                ? 'bg-[var(--main-color)]/15 border border-[var(--main-color)]/35 text-[var(--main-color)] font-bold shadow-sm'
                 : 'text-slate-400 hover:text-white'
             }`}
           >
@@ -184,7 +184,7 @@ export const NutritionPlanBuilderModal: React.FC<NutritionPlanBuilderModalProps>
             onClick={() => setMobileView('targets')}
             className={`flex-1 py-1 rounded text-center transition-all ${
               mobileView === 'targets'
-                ? 'bg-cyan-500/15 border border-cyan-500/35 text-cyan-300 font-bold shadow-sm'
+                ? 'bg-[var(--main-color)]/15 border border-[var(--main-color)]/35 text-[var(--main-color)] font-bold shadow-sm'
                 : 'text-slate-400 hover:text-white'
             }`}
           >
@@ -196,14 +196,14 @@ export const NutritionPlanBuilderModal: React.FC<NutritionPlanBuilderModalProps>
         <div className="flex-1 flex flex-col md:flex-row overflow-hidden w-full relative">
           
           {/* Left Sidebar: Targets & Macro Engine */}
-          <aside className={`w-full md:w-80 flex-shrink-0 border-b md:border-b-0 md:border-r border-[#141b26] bg-[#080c14] flex flex-col h-full overflow-hidden ${
+          <aside className={`w-full md:w-80 flex-shrink-0 border-b md:border-b-0 md:border-r border-[var(--card-border)] bg-[var(--card-bg)] flex flex-col h-full overflow-hidden ${
             mobileView === 'targets' ? 'flex flex-1 md:flex-none' : 'hidden md:flex'
           }`}>
             {/* Scrollable Form Cards */}
             <div className="flex-1 overflow-y-auto custom-scrollbar p-3 space-y-2.5">
               
               {/* Card 1: Target Athlete & Day Protocol */}
-              <div className="p-3 rounded-xl bg-[#090e17] border border-[#141b26] space-y-2">
+              <div className="p-3 rounded-xl bg-[var(--card-subtle-bg)] border border-[var(--card-border)] space-y-2">
                 <span className="text-[10px] font-mono uppercase tracking-wider text-slate-400 font-semibold block">
                   Athlete & Day Directive
                 </span>
@@ -232,7 +232,7 @@ export const NutritionPlanBuilderModal: React.FC<NutritionPlanBuilderModalProps>
                   <label className="block text-[9.5px] font-mono uppercase tracking-wider text-slate-400 mb-1 font-semibold">
                     Day Type ({currentDateLabel.main})
                   </label>
-                  <div className="grid grid-cols-3 gap-1 p-0.5 rounded-lg bg-[#05080e] border border-[#16202e]">
+                  <div className="grid grid-cols-3 gap-1 p-0.5 rounded-lg bg-[var(--input-bg)] border border-[var(--input-border)]">
                     <button
                       type="button"
                       onClick={() => setDayType('training')}
@@ -278,13 +278,13 @@ export const NutritionPlanBuilderModal: React.FC<NutritionPlanBuilderModalProps>
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
                     placeholder="e.g. Carb cycling, high water intake"
-                    className="w-full px-2.5 py-1.5 rounded-lg bg-[#05080e] border border-[#16202e] text-xs text-slate-300 placeholder-slate-600 focus:outline-none focus:border-slate-500"
+                    className="w-full px-2.5 py-1.5 rounded-lg bg-[var(--input-bg)] border border-[var(--input-border)] text-xs text-slate-300 placeholder-slate-600 focus:outline-none focus:border-[var(--main-color)] transition-colors"
                   />
                 </div>
               </div>
 
               {/* Card 2: Unified Telemetry & Target Engine */}
-              <div className="p-3 rounded-xl bg-[#090e17] border border-[#141b26] space-y-2">
+              <div className="p-3 rounded-xl bg-[var(--card-subtle-bg)] border border-[var(--card-border)] space-y-2">
                 <span className="text-[10px] font-mono uppercase tracking-wider text-slate-400 font-semibold block">
                   Macro & Calorie Telemetry
                 </span>
@@ -293,7 +293,7 @@ export const NutritionPlanBuilderModal: React.FC<NutritionPlanBuilderModalProps>
                 <div className="space-y-1">
                   <div className="flex items-center justify-between">
                     <span className="text-[10px] font-mono text-slate-400 font-semibold">DAILY CALORIES</span>
-                    <div className="flex items-center gap-1 bg-[#05080e] px-2 py-0.5 rounded-md border border-[#16202e] focus-within:border-slate-500">
+                    <div className="flex items-center gap-1 bg-[var(--input-bg)] px-2 py-0.5 rounded-md border border-[var(--input-border)] focus-within:border-[var(--main-color)]">
                       <input
                         type="number"
                         step="50"
@@ -316,9 +316,9 @@ export const NutritionPlanBuilderModal: React.FC<NutritionPlanBuilderModalProps>
                   </div>
 
                   {/* Progress Bar */}
-                  <div className="h-1.5 w-full bg-[#05080e] rounded-full overflow-hidden border border-[#16202e]">
+                  <div className="h-1.5 w-full bg-[var(--card-bg)] rounded-full overflow-hidden border border-[var(--card-border)]">
                     <div
-                      className="h-full bg-slate-300 transition-all duration-300"
+                      className="h-full bg-[var(--main-color)] transition-all duration-300"
                       style={{ width: `${calProgressPct}%` }}
                     />
                   </div>
@@ -327,7 +327,7 @@ export const NutritionPlanBuilderModal: React.FC<NutritionPlanBuilderModalProps>
                 {/* Macronutrients 3-Column Grid */}
                 <div className="grid grid-cols-3 gap-1.5 pt-0.5">
                   {/* Protein */}
-                  <div className="p-2 rounded-lg bg-[#05080e] border border-[#16202e] space-y-1">
+                  <div className="p-2 rounded-lg bg-[var(--input-bg)] border border-[var(--input-border)] space-y-1">
                     <div className="flex items-center justify-between text-[9px] font-mono text-slate-400">
                       <span>PROTEIN</span>
                       <span className="text-slate-300 font-bold">{macroRatios.proteinPct}%</span>
@@ -344,13 +344,13 @@ export const NutritionPlanBuilderModal: React.FC<NutritionPlanBuilderModalProps>
                     <div className="text-[9.5px] font-mono text-slate-300 truncate">
                       <strong className="text-white font-numeric">{dailyTotals.proteinG}</strong>/{targetProteinG}g
                     </div>
-                    <div className="h-1 w-full bg-[#0a101a] rounded-full overflow-hidden">
+                    <div className="h-1 w-full bg-[var(--card-border)] rounded-full overflow-hidden">
                       <div className="h-full bg-slate-400 transition-all" style={{ width: `${proteinProgressPct}%` }} />
                     </div>
                   </div>
 
                   {/* Carbs */}
-                  <div className="p-2 rounded-lg bg-[#05080e] border border-[#16202e] space-y-1">
+                  <div className="p-2 rounded-lg bg-[var(--input-bg)] border border-[var(--input-border)] space-y-1">
                     <div className="flex items-center justify-between text-[9px] font-mono text-slate-400">
                       <span>CARBS</span>
                       <span className="text-slate-300 font-bold">{macroRatios.carbsPct}%</span>
@@ -367,13 +367,13 @@ export const NutritionPlanBuilderModal: React.FC<NutritionPlanBuilderModalProps>
                     <div className="text-[9.5px] font-mono text-slate-300 truncate">
                       <strong className="text-white font-numeric">{dailyTotals.carbsG}</strong>/{targetCarbsG}g
                     </div>
-                    <div className="h-1 w-full bg-[#0a101a] rounded-full overflow-hidden">
+                    <div className="h-1 w-full bg-[var(--card-border)] rounded-full overflow-hidden">
                       <div className="h-full bg-slate-400 transition-all" style={{ width: `${carbsProgressPct}%` }} />
                     </div>
                   </div>
 
                   {/* Fats */}
-                  <div className="p-2 rounded-lg bg-[#05080e] border border-[#16202e] space-y-1">
+                  <div className="p-2 rounded-lg bg-[var(--input-bg)] border border-[var(--input-border)] space-y-1">
                     <div className="flex items-center justify-between text-[9px] font-mono text-slate-400">
                       <span>FATS</span>
                       <span className="text-slate-300 font-bold">{macroRatios.fatsPct}%</span>
@@ -390,16 +390,16 @@ export const NutritionPlanBuilderModal: React.FC<NutritionPlanBuilderModalProps>
                     <div className="text-[9.5px] font-mono text-slate-300 truncate">
                       <strong className="text-white font-numeric">{dailyTotals.fatsG}</strong>/{targetFatsG}g
                     </div>
-                    <div className="h-1 w-full bg-[#0a101a] rounded-full overflow-hidden">
+                    <div className="h-1 w-full bg-[var(--card-border)] rounded-full overflow-hidden">
                       <div className="h-full bg-slate-400 transition-all" style={{ width: `${fatsProgressPct}%` }} />
                     </div>
                   </div>
                 </div>
 
                 {/* Hydration Target Row */}
-                <div className="flex items-center justify-between pt-1 text-xs font-mono text-slate-400 border-t border-[#16202e]">
+                <div className="flex items-center justify-between pt-1 text-xs font-mono text-slate-400 border-t border-[var(--card-border)]">
                   <span className="text-[10px]">Hydration Target:</span>
-                  <div className="flex items-center gap-1 bg-[#05080e] px-2 py-0.5 rounded-md border border-[#16202e]">
+                  <div className="flex items-center gap-1 bg-[var(--input-bg)] px-2 py-0.5 rounded-md border border-[var(--input-border)]">
                     <input
                       type="number"
                       step="0.5"
@@ -412,11 +412,11 @@ export const NutritionPlanBuilderModal: React.FC<NutritionPlanBuilderModalProps>
                 </div>
 
                 {/* Day Action Buttons */}
-                <div className="grid grid-cols-2 gap-1.5 pt-1.5 border-t border-[#16202e]">
+                <div className="grid grid-cols-2 gap-1.5 pt-1.5 border-t border-[var(--card-border)]">
                   <button
                     type="button"
                     onClick={handleCopyToTomorrow}
-                    className="py-1.5 px-2 rounded-lg text-[10.5px] font-medium text-slate-300 hover:text-white bg-[#05080e] hover:bg-white/[0.06] border border-[#16202e] hover:border-white/20 transition-all cursor-pointer active:scale-95 text-center truncate"
+                    className="py-1.5 px-2 rounded-lg text-[10.5px] font-medium text-slate-300 hover:text-white bg-[var(--card-subtle-bg)] hover:bg-white/[0.06] border border-[var(--card-border)] hover:border-white/20 transition-all cursor-pointer active:scale-95 text-center truncate"
                     title="Copy today's meals to tomorrow"
                   >
                     Copy to Tomorrow
@@ -424,7 +424,7 @@ export const NutritionPlanBuilderModal: React.FC<NutritionPlanBuilderModalProps>
                   <button
                     type="button"
                     onClick={handleResetDay}
-                    className="py-1.5 px-2 rounded-lg text-[10.5px] font-medium text-slate-400 hover:text-rose-300 bg-[#05080e] hover:bg-rose-500/10 border border-[#16202e] hover:border-rose-500/20 transition-all cursor-pointer active:scale-95 text-center truncate"
+                    className="py-1.5 px-2 rounded-lg text-[10.5px] font-medium text-slate-400 hover:text-rose-300 bg-[var(--card-subtle-bg)] hover:bg-rose-500/10 border border-[var(--card-border)] hover:border-rose-500/20 transition-all cursor-pointer active:scale-95 text-center truncate"
                     title="Reset meals for this day"
                   >
                     Reset Day
@@ -435,19 +435,19 @@ export const NutritionPlanBuilderModal: React.FC<NutritionPlanBuilderModalProps>
             </div>
 
             {/* Quick Metrics Footer */}
-            <div className="p-3 border-t border-[#141b26] bg-[#090e17] flex items-center justify-between text-[10px] font-mono text-slate-400 flex-shrink-0">
+            <div className="p-3 border-t border-[var(--card-border)] bg-[var(--card-subtle-bg)] flex items-center justify-between text-[10px] font-mono text-slate-400 flex-shrink-0">
               <span>Meals: <strong className="text-white font-numeric">{meals.length} Prescribed</strong></span>
               <span>Water: <strong className="text-slate-200 font-numeric">{waterTargetLiters} L/day</strong></span>
             </div>
           </aside>
 
           {/* Right Main Canvas: Prescribed Daily Meals */}
-          <main className={`flex-1 flex-col bg-[#05080e] overflow-hidden min-w-0 ${
+          <main className={`flex-1 flex-col bg-[var(--card-subtle-bg)] overflow-hidden min-w-0 ${
             mobileView === 'meals' ? 'flex' : 'hidden md:flex'
           }`}>
             
             {/* Canvas Sub-Header */}
-            <div className="min-h-10 py-1.5 flex-shrink-0 px-3 sm:px-4 border-b border-[#141b26] bg-[#070a0f] flex items-center justify-between gap-2 flex-wrap sm:flex-nowrap">
+            <div className="min-h-10 py-1.5 flex-shrink-0 px-3 sm:px-4 border-b border-[var(--card-border)] bg-[var(--card-bg)] flex items-center justify-between gap-2 flex-wrap sm:flex-nowrap">
               {/* Left: Section Title + Day Type Tag + Add Meal Button */}
               <div className="flex items-center gap-2.5 min-w-0">
                 <div className="flex items-center gap-1.5 min-w-0">
@@ -465,7 +465,7 @@ export const NutritionPlanBuilderModal: React.FC<NutritionPlanBuilderModalProps>
                 <button
                   type="button"
                   onClick={handleAddMeal}
-                  className="px-2.5 py-1 rounded-lg text-xs font-bold text-[#080c14] bg-white hover:bg-slate-100 transition-all shadow-xs cursor-pointer active:scale-95 flex-shrink-0"
+                  className="gym-btn-primary text-xs flex-shrink-0"
                   title="Add a new meal to this day"
                 >
                   + Add Meal
@@ -474,7 +474,7 @@ export const NutritionPlanBuilderModal: React.FC<NutritionPlanBuilderModalProps>
 
               {/* Right: View Mode Toggle & Prescribed Calories Telemetry */}
               <div className="flex items-center gap-2 text-xs font-mono text-slate-400 flex-shrink-0">
-                <div className="flex items-center p-0.5 rounded-lg bg-[#05080e] border border-white/[0.06] text-[10px]">
+                <div className="flex items-center p-0.5 rounded-lg bg-[var(--card-subtle-bg)] border border-white/[0.06] text-[10px]">
                   <button
                     type="button"
                     onClick={() => setMealsViewMode('stacked')}

@@ -58,7 +58,7 @@ export const ExerciseVideoModal: React.FC<ExerciseVideoModalProps> = ({
             <span>&bull;</span>
             <span>{exercise.equipment}</span>
             <span>&bull;</span>
-            <span className="text-cyan-400">{exercise.category}</span>
+            <span className="text-[var(--main-color)]">{exercise.category}</span>
           </div>
         </div>
       }
@@ -85,7 +85,7 @@ export const ExerciseVideoModal: React.FC<ExerciseVideoModalProps> = ({
                 className="w-full h-full object-contain bg-black"
               />
               {/* Floating Speed Control */}
-              <div className="absolute top-2 right-2 flex items-center gap-1 p-1 rounded-md bg-[#090d14]/90 border border-white/15 shadow">
+              <div className="absolute top-2 right-2 flex items-center gap-1 p-1 rounded-md bg-[var(--card-bg)]/90 border border-white/15 shadow">
                 <span className="text-[10px] font-mono text-slate-400 mr-1">Speed:</span>
                 {[0.5, 0.75, 1.0].map((rate) => (
                   <button
@@ -94,7 +94,7 @@ export const ExerciseVideoModal: React.FC<ExerciseVideoModalProps> = ({
                     onClick={() => handleSpeedChange(rate)}
                     className={`px-1.5 py-0.5 rounded text-[10px] font-mono font-bold transition-all cursor-pointer ${
                       playbackSpeed === rate
-                        ? 'bg-cyan-500 text-black'
+                        ? 'bg-[var(--main-color)] text-white'
                         : 'text-slate-300 hover:text-white hover:bg-white/10'
                     }`}
                   >
@@ -126,8 +126,8 @@ export const ExerciseVideoModal: React.FC<ExerciseVideoModalProps> = ({
         </div>
 
         {/* Coaching Cues & Key Rules */}
-        <div className="p-3 rounded-xl bg-[#05080e] border border-white/[0.06] space-y-2">
-          <span className="text-[10px] font-mono uppercase tracking-wider text-cyan-400 font-bold block">
+        <div className="p-3 rounded-xl bg-[var(--card-subtle-bg)] border border-white/[0.06] space-y-2">
+          <span className="text-[10px] font-mono uppercase tracking-wider text-[var(--main-color)] font-bold block">
             Key Form Cue
           </span>
           <p className="text-xs text-slate-200 leading-relaxed font-sans">

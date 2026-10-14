@@ -77,10 +77,10 @@ export const MovementCard: React.FC<MovementCardProps> = ({
       onDragEnd={onDragEnd}
       className={`rounded-xl transition-all border ${
         isDragging
-          ? 'opacity-40 scale-[0.99] border-white/30 bg-[#0d131f]'
+          ? 'opacity-40 scale-[0.99] border-white/30 bg-[var(--card-subtle-bg)]'
           : isDragOver
-          ? 'border-white/40 border-dashed bg-[#0d131f] scale-[1.01]'
-          : 'bg-[#080c14] hover:bg-[#0a0f18] border-[#141b26] hover:border-[#1e293b] shadow-xs'
+          ? 'border-white/40 border-dashed bg-[var(--card-subtle-bg)] scale-[1.01]'
+          : 'bg-[var(--card-bg)] hover:bg-[var(--card-subtle-bg)] border-[var(--card-border)] hover:border-white/20 shadow-xs'
       }`}
     >
       {/* Compact Core Row */}
@@ -118,7 +118,7 @@ export const MovementCard: React.FC<MovementCardProps> = ({
           </div>
 
           {/* Index Pill */}
-          <span className="w-5 h-5 rounded bg-[#0d131f] border border-[#16202e] text-slate-400 font-mono text-[10px] flex items-center justify-center font-bold flex-shrink-0">
+          <span className="w-5 h-5 rounded bg-[var(--card-subtle-bg)] border border-[var(--card-border)] text-slate-400 font-mono text-[10px] flex items-center justify-center font-bold flex-shrink-0">
             {String(index + 1).padStart(2, '0')}
           </span>
 
@@ -140,7 +140,7 @@ export const MovementCard: React.FC<MovementCardProps> = ({
         <div className="col-span-7 flex items-center justify-between xl:contents gap-2">
           {/* Col 6: Sets */}
           <div className="xl:col-span-1 flex items-center justify-center">
-            <div className="flex items-center gap-1 bg-[#05080e] border border-[#16202e] px-1.5 py-0.5 rounded-lg w-full justify-center">
+            <div className="flex items-center gap-1 bg-[var(--input-bg)] border border-[var(--input-border)] px-1.5 py-0.5 rounded-lg w-full justify-center">
               <span className="xl:hidden text-[9px] font-mono text-slate-500 uppercase font-semibold">Sets</span>
               <input
                 type="number"
@@ -155,7 +155,7 @@ export const MovementCard: React.FC<MovementCardProps> = ({
 
           {/* Col 7-8: Reps */}
           <div className="xl:col-span-2 flex items-center justify-center">
-            <div className="flex items-center gap-1 bg-[#05080e] border border-[#16202e] px-1.5 py-0.5 rounded-lg w-full justify-center">
+            <div className="flex items-center gap-1 bg-[var(--input-bg)] border border-[var(--input-border)] px-1.5 py-0.5 rounded-lg w-full justify-center">
               <span className="xl:hidden text-[9px] font-mono text-slate-500 uppercase font-semibold">Reps</span>
               <input
                 type="text"
@@ -169,7 +169,7 @@ export const MovementCard: React.FC<MovementCardProps> = ({
 
           {/* Col 9: RIR / RPE */}
           <div className="xl:col-span-1 flex items-center justify-center">
-            <div className="flex items-center gap-1 bg-[#05080e] border border-[#16202e] px-1.5 py-0.5 rounded-lg w-full justify-center">
+            <div className="flex items-center gap-1 bg-[var(--input-bg)] border border-[var(--input-border)] px-1.5 py-0.5 rounded-lg w-full justify-center">
               <span className="xl:hidden text-[9px] font-mono text-slate-500 uppercase font-semibold">RIR</span>
               <input
                 type="text"
@@ -183,7 +183,7 @@ export const MovementCard: React.FC<MovementCardProps> = ({
 
           {/* Col 10: Rest */}
           <div className="xl:col-span-1 flex items-center justify-center">
-            <div className="flex items-center justify-center gap-0.5 bg-[#05080e] border border-[#16202e] px-1.5 py-0.5 rounded-lg w-full">
+            <div className="flex items-center justify-center gap-0.5 bg-[var(--input-bg)] border border-[var(--input-border)] px-1.5 py-0.5 rounded-lg w-full">
               <span className="xl:hidden text-[9px] font-mono text-slate-500 uppercase font-semibold">Rest</span>
               <input
                 type="number"
@@ -219,7 +219,7 @@ export const MovementCard: React.FC<MovementCardProps> = ({
                   ? 'bg-white/[0.1] border-white/20 text-white font-bold'
                   : (altsCount > 0 || hasNotes)
                   ? 'bg-white/[0.04] border-white/[0.1] text-slate-300 hover:text-white'
-                  : 'bg-[#05080e] border-[#16202e] text-slate-500 hover:text-slate-300'
+                  : 'bg-[var(--input-bg)] border-[var(--input-border)] text-slate-500 hover:text-slate-300'
               }`}
               title="Exercise Details, Notes, and Alternatives"
             >
@@ -247,7 +247,7 @@ export const MovementCard: React.FC<MovementCardProps> = ({
 
       {/* Collapsible Section: Coach Notes, Video Demonstration, Equipment & Muscle Selectors, Alternatives */}
       {isExpanded && (
-        <div className="p-3 pt-2.5 border-t border-[#141b26] bg-[#060910] rounded-b-xl space-y-3 animate-in fade-in-0 duration-150">
+        <div className="p-3 pt-2.5 border-t border-[var(--card-border)] bg-[var(--card-subtle-bg)] rounded-b-xl space-y-3 animate-in fade-in-0 duration-150">
           {/* Row 1: Directives & Video Demonstration URL & Selectors */}
           <div className="grid grid-cols-1 md:grid-cols-12 gap-2.5">
             <div className="md:col-span-5">
@@ -259,7 +259,7 @@ export const MovementCard: React.FC<MovementCardProps> = ({
                 value={item.notes || ''}
                 onChange={(e) => onUpdateExercise({ notes: e.target.value })}
                 placeholder="e.g. 3s eccentric tempo, pause at stretch"
-                className="w-full px-2.5 py-1.5 rounded-lg bg-[#05080e] border border-[#16202e] text-xs text-slate-300 placeholder-slate-600 focus:outline-none focus:border-slate-500"
+                className="w-full px-2.5 py-1.5 rounded-lg bg-[var(--input-bg)] border border-[var(--input-border)] text-xs text-slate-300 placeholder-slate-600 focus:outline-none focus:border-[var(--main-color)]"
               />
             </div>
 
@@ -284,7 +284,7 @@ export const MovementCard: React.FC<MovementCardProps> = ({
                 value={item.videoUrl || ''}
                 onChange={(e) => onUpdateExercise({ videoUrl: e.target.value })}
                 placeholder="https://youtube.com/watch?v=..."
-                className="w-full px-2.5 py-1.5 rounded-lg bg-[#05080e] border border-[#16202e] text-xs text-slate-300 placeholder-slate-600 focus:outline-none focus:border-slate-500 font-mono"
+                className="w-full px-2.5 py-1.5 rounded-lg bg-[var(--input-bg)] border border-[var(--input-border)] text-xs text-slate-300 placeholder-slate-600 focus:outline-none focus:border-[var(--main-color)] font-mono"
               />
             </div>
 
@@ -296,7 +296,7 @@ export const MovementCard: React.FC<MovementCardProps> = ({
                 <select
                   value={item.equipment}
                   onChange={(e) => onUpdateExercise({ equipment: e.target.value as EquipmentType })}
-                  className="w-full px-2 py-1.5 rounded-lg bg-[#05080e] border border-[#16202e] text-xs text-slate-200 focus:outline-none focus:border-slate-500 cursor-pointer"
+                  className="w-full px-2 py-1.5 rounded-lg bg-[var(--input-bg)] border border-[var(--input-border)] text-xs text-slate-200 focus:outline-none focus:border-[var(--main-color)] cursor-pointer"
                 >
                   {EQUIPMENT_OPTIONS.map((eq) => (
                     <option key={eq} value={eq}>{eq}</option>
@@ -311,7 +311,7 @@ export const MovementCard: React.FC<MovementCardProps> = ({
                 <select
                   value={item.targetMuscle}
                   onChange={(e) => onUpdateExercise({ targetMuscle: e.target.value as MuscleGroup })}
-                  className="w-full px-2 py-1.5 rounded-lg bg-[#05080e] border border-[#16202e] text-xs text-slate-200 focus:outline-none focus:border-slate-500 cursor-pointer"
+                  className="w-full px-2 py-1.5 rounded-lg bg-[var(--input-bg)] border border-[var(--input-border)] text-xs text-slate-200 focus:outline-none focus:border-[var(--main-color)] cursor-pointer"
                 >
                   {MUSCLE_OPTIONS.map((m) => (
                     <option key={m} value={m}>{m}</option>
@@ -322,7 +322,7 @@ export const MovementCard: React.FC<MovementCardProps> = ({
           </div>
 
           {/* Row 2: Alternatives / Badeel Section */}
-          <div className="pt-2 border-t border-[#141b26] space-y-2">
+          <div className="pt-2 border-t border-[var(--card-border)] space-y-2">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-1.5">
                 <span className="text-[10px] font-mono uppercase tracking-wider text-slate-400 font-semibold">
@@ -354,7 +354,7 @@ export const MovementCard: React.FC<MovementCardProps> = ({
                 {alts.map((alt, altIdx) => (
                   <div
                     key={altIdx}
-                    className="grid grid-cols-1 sm:grid-cols-12 gap-1.5 items-center p-1.5 rounded-lg bg-[#05080e] border border-[#16202e]"
+                    className="grid grid-cols-1 sm:grid-cols-12 gap-1.5 items-center p-1.5 rounded-lg bg-[var(--card-bg)] border border-[var(--card-border)]"
                   >
                     <div className="sm:col-span-6 flex items-center gap-1.5">
                       <span className="text-[9px] font-mono text-slate-500 w-4 text-center flex-shrink-0">
@@ -365,7 +365,7 @@ export const MovementCard: React.FC<MovementCardProps> = ({
                         value={alt.name}
                         onChange={(e) => onUpdateAlternative(altIdx, 'name', e.target.value)}
                         placeholder="Alternative exercise name (e.g. Incline DB Bench)"
-                        className="w-full px-2 py-1 rounded bg-[#090e17] border border-[#16202e] text-xs text-white placeholder-slate-600 focus:outline-none focus:border-slate-500 font-medium"
+                        className="w-full px-2 py-1 rounded bg-[var(--input-bg)] border border-[var(--input-border)] text-xs text-white placeholder-slate-600 focus:outline-none focus:border-[var(--main-color)] font-medium"
                       />
                     </div>
 
@@ -375,13 +375,13 @@ export const MovementCard: React.FC<MovementCardProps> = ({
                         value={alt.videoUrl || ''}
                         onChange={(e) => onUpdateAlternative(altIdx, 'videoUrl', e.target.value)}
                         placeholder="Alternative video URL (optional)"
-                        className="w-full px-2 py-1 rounded bg-[#090e17] border border-[#16202e] text-xs text-slate-300 placeholder-slate-600 focus:outline-none focus:border-slate-500 font-mono"
+                        className="w-full px-2 py-1 rounded bg-[var(--input-bg)] border border-[var(--input-border)] text-xs text-slate-300 placeholder-slate-600 focus:outline-none focus:border-[var(--main-color)] font-mono"
                       />
                       {alt.videoUrl && (
                         <button
                           type="button"
                           onClick={() => onOpenVideo(alt.videoUrl || '')}
-                          className="p-1 rounded bg-[#090e17] hover:bg-white/[0.06] text-slate-300 hover:text-white border border-[#16202e] cursor-pointer flex-shrink-0"
+                          className="p-1 rounded bg-[var(--input-bg)] hover:bg-white/[0.06] text-slate-300 hover:text-white border border-[var(--input-border)] cursor-pointer flex-shrink-0"
                           title="Preview Alt Video"
                         >
                           <Play className="w-3 h-3 fill-current" />

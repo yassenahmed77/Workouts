@@ -47,8 +47,8 @@ export const WorkoutSessionAction: React.FC<WorkoutSessionActionProps> = ({
     const mins = Math.round(selectedDateWorkoutLog.durationSeconds / 60);
 
     return (
-      <div className="space-y-1.5 pt-1.5 border-t border-[#24262e]/60">
-        <div className="px-3 py-2 rounded-xl bg-[#141d1a]/80 border border-emerald-500/25 flex flex-col items-center justify-center text-center shadow-xs">
+      <div className="space-y-1.5 pt-1.5 border-t border-[var(--card-border)]/60">
+        <div className="px-3 py-2 rounded-xl bg-emerald-950/20 border border-emerald-500/25 flex flex-col items-center justify-center text-center shadow-xs">
           <div className="flex items-center justify-center gap-1.5">
             <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 stroke-[2.5] flex-shrink-0" />
             <span className="text-xs font-bold text-white">
@@ -67,7 +67,7 @@ export const WorkoutSessionAction: React.FC<WorkoutSessionActionProps> = ({
           <button
             type="button"
             onClick={onRestartClick}
-            className="py-2 px-2.5 rounded-lg bg-[#141519] hover:bg-[#1c1d22] border border-[#24262e] text-[11px] font-bold text-zinc-200 flex items-center justify-center gap-1.5 cursor-pointer active:scale-98 transition-all"
+            className="py-2 px-2.5 rounded-lg bg-[var(--card-subtle-bg)] hover:bg-white/[0.04] border border-[var(--card-border)] text-[11px] font-bold text-zinc-200 flex items-center justify-center gap-1.5 cursor-pointer active:scale-98 transition-all"
           >
             <RotateCcw className="w-3 h-3" />
             <span>Restart Workout</span>
@@ -76,7 +76,7 @@ export const WorkoutSessionAction: React.FC<WorkoutSessionActionProps> = ({
           <button
             type="button"
             onClick={onDeleteClick}
-            className="py-2 px-2.5 rounded-lg bg-[#141519] hover:bg-rose-950/25 border border-[#24262e] hover:border-rose-500/30 text-[11px] font-bold text-zinc-400 hover:text-rose-400 flex items-center justify-center gap-1.5 cursor-pointer active:scale-98 transition-all"
+            className="py-2 px-2.5 rounded-lg bg-[var(--card-subtle-bg)] hover:bg-rose-950/25 border border-[var(--card-border)] hover:border-rose-500/30 text-[11px] font-bold text-zinc-400 hover:text-rose-400 flex items-center justify-center gap-1.5 cursor-pointer active:scale-98 transition-all"
           >
             <Trash2 className="w-3 h-3" />
             <span>Delete Log</span>
@@ -90,8 +90,8 @@ export const WorkoutSessionAction: React.FC<WorkoutSessionActionProps> = ({
   const isUnfinished = currentUser && activeDay && isDayUnfinished(currentUser.id, activeDay.id);
   if (isUnfinished && !isSelectedDateWorkoutCompleted && !isDraftInProgress && isSelectedDateToday) {
     return (
-      <div className="space-y-1.5 pt-1.5 border-t border-[#24262e]/60">
-        <div className="px-3 py-2 rounded-xl bg-[#141519] border border-amber-500/25 flex flex-col items-center justify-center text-center shadow-xs">
+      <div className="space-y-1.5 pt-1.5 border-t border-[var(--card-border)]/60">
+        <div className="px-3 py-2 rounded-xl bg-[var(--card-subtle-bg)] border border-amber-500/25 flex flex-col items-center justify-center text-center shadow-xs">
           <div className="flex items-center justify-center gap-1.5">
             <span className="w-1.5 h-1.5 rounded-full bg-amber-400 flex-shrink-0" />
             <span className="text-xs font-bold text-white tracking-wide">Session Incomplete</span>
@@ -107,9 +107,9 @@ export const WorkoutSessionAction: React.FC<WorkoutSessionActionProps> = ({
         <button
           type="button"
           onClick={onStartWorkout}
-          className="w-full py-2 px-3 rounded-lg bg-[#141519] hover:bg-[#1c1d22] border border-[#24262e] hover:border-[#2f80ed]/40 text-xs font-bold text-white flex items-center justify-center gap-1.5 cursor-pointer active:scale-98 transition-all"
+          className="w-full py-2 px-3 rounded-lg bg-[var(--card-subtle-bg)] hover:bg-white/[0.04] border border-[var(--card-border)] hover:border-[var(--main-color)]/40 text-xs font-bold text-white flex items-center justify-center gap-1.5 cursor-pointer active:scale-98 transition-all"
         >
-          <RotateCcw className="w-3.5 h-3.5 text-[#2f80ed]" />
+          <RotateCcw className="w-3.5 h-3.5 text-[var(--main-color)]" />
           <span>RESTART SESSION</span>
         </button>
       </div>
@@ -131,15 +131,15 @@ export const WorkoutSessionAction: React.FC<WorkoutSessionActionProps> = ({
     const timeStr = `${mins}:${secs.toString().padStart(2, '0')}`;
 
     return (
-      <div className="space-y-1.5 pt-1.5 border-t border-[#24262e]/60">
-        <div className="px-3 py-2 rounded-xl bg-[#141519] border border-[#2f80ed]/25 flex flex-col items-center justify-center text-center shadow-xs">
+      <div className="space-y-1.5 pt-1.5 border-t border-[var(--card-border)]/60">
+        <div className="px-3 py-2 rounded-xl bg-[var(--card-subtle-bg)] border border-[var(--main-color)]/25 flex flex-col items-center justify-center text-center shadow-xs">
           <div className="flex items-center justify-center gap-1.5">
             <span className="relative flex h-1.5 w-1.5 flex-shrink-0">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#2f80ed] opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-[#2f80ed]"></span>
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[var(--main-color)] opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-[var(--main-color)]"></span>
             </span>
             <span className="text-xs font-bold text-white tracking-wide">Workout In Progress</span>
-            <span className="text-[9px] font-mono font-bold px-1.5 py-0.2 rounded-md bg-[#2f80ed]/15 text-[#2f80ed] border border-[#2f80ed]/30">
+            <span className="text-[9px] font-mono font-bold px-1.5 py-0.2 rounded-md bg-[var(--main-color)]/15 text-[var(--main-color)] border border-[var(--main-color)]/30">
               LIVE
             </span>
           </div>
@@ -152,7 +152,7 @@ export const WorkoutSessionAction: React.FC<WorkoutSessionActionProps> = ({
           <button
             type="button"
             onClick={onResumeWorkout}
-            className="py-2 px-3 rounded-lg btn-electric-blue text-xs font-extrabold flex items-center justify-center gap-1.5 cursor-pointer active:scale-98 transition-all"
+            className="gym-btn-primary text-xs flex items-center justify-center gap-1.5"
           >
             <Play className="w-3.5 h-3.5 fill-current" />
             <span>RESUME WORKOUT</span>
@@ -161,7 +161,7 @@ export const WorkoutSessionAction: React.FC<WorkoutSessionActionProps> = ({
           <button
             type="button"
             onClick={onResetDraftAndStartFresh}
-            className="w-8 h-8 rounded-lg bg-[#141519] hover:bg-[#1c1d22] border border-[#24262e] text-zinc-400 hover:text-white flex items-center justify-center cursor-pointer transition-all"
+            className="w-8 h-8 rounded-lg bg-[var(--gym-surface-base)] hover:bg-[var(--gym-surface-hover)] border border-[var(--gym-border-base)] text-[var(--gym-text-muted)] hover:text-white flex items-center justify-center cursor-pointer transition-all"
             title="Reset draft and start clean"
           >
             <RotateCcw className="w-3.5 h-3.5" />
@@ -174,9 +174,9 @@ export const WorkoutSessionAction: React.FC<WorkoutSessionActionProps> = ({
   // Case 3: Scheduled Active Recovery / Rest Day
   if (activeDay?.isRestDay) {
     return (
-      <div className="px-3 py-2 rounded-xl bg-[#141519] border border-[#24262e] text-center space-y-0.5">
+      <div className="gym-card-subtle text-center space-y-0.5">
         <span className="text-xs font-bold text-white block">Scheduled Active Recovery</span>
-        <p className="text-[10px] text-zinc-400">Focus on hydration, protein intake, and 8 hours of sleep.</p>
+        <p className="gym-subtext">Focus on hydration, protein intake, and 8 hours of sleep.</p>
       </div>
     );
   }
@@ -194,7 +194,7 @@ export const WorkoutSessionAction: React.FC<WorkoutSessionActionProps> = ({
           onNavigateToSplit();
         }
       }}
-      className="w-full py-2.5 sm:py-3 px-4 rounded-xl btn-electric-blue text-xs sm:text-sm font-black flex items-center justify-center gap-2 cursor-pointer active:scale-98 transition-all shadow-md shadow-[#2f80ed]/20"
+      className="gym-btn-primary w-full py-2.5 px-4 text-xs font-bold flex items-center justify-center gap-2"
     >
       <Play className="w-3.5 h-3.5 fill-current" />
       <span>

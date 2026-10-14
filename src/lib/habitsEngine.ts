@@ -118,13 +118,11 @@ export const HABIT_ICON_OPTIONS = [
 ];
 
 export const HABIT_COLOR_OPTIONS = [
-  { value: '#ff6b00', name: 'Cyber Orange' },
+  { value: '#2f80ed', name: 'Sapphire Blue (Brand)' },
   { value: '#10b981', name: 'Emerald Green' },
   { value: '#3b82f6', name: 'Sky Blue' },
   { value: '#8b5cf6', name: 'Electric Purple' },
-  { value: '#ec4899', name: 'Neon Pink' },
-  { value: '#f59e0b', name: 'Amber Gold' },
-  { value: '#2f80ed', name: 'Sapphire Blue' }
+  { value: '#ec4899', name: 'Neon Pink' }
 ];
 
 export const QUIT_HABIT_PRESETS: {
@@ -138,7 +136,7 @@ export const QUIT_HABIT_PRESETS: {
   {
     title: 'Smoke-Free (Cigarettes)',
     iconKey: 'cigarette-off',
-    color: '#ff6b00',
+    color: '#2f80ed',
     category: 'Quit / Break',
     type: 'quit',
     quitConfig: {
@@ -192,7 +190,7 @@ export const QUIT_HABIT_PRESETS: {
   {
     title: 'Caffeine & Energy Drinks Reset',
     iconKey: 'coffee',
-    color: '#f59e0b',
+    color: '#2f80ed',
     category: 'Quit / Break',
     type: 'quit',
     quitConfig: {
@@ -250,7 +248,7 @@ export const DEFAULT_STARTER_HABITS: Omit<UserHabit, 'id' | 'userId' | 'createdA
     targetValue: 90,
     unit: 'days clean',
     iconKey: 'cigarette-off',
-    color: '#ff6b00',
+    color: '#2f80ed',
     quitConfig: {
       startedAt: new Date(Date.now() - 1000 * 60 * 60 * 28).toISOString(), // started 28 hours ago for demo
       targetDays: 90,
@@ -307,12 +305,16 @@ export function getUserHabits(userId: string): UserHabit[] {
     if (raw) {
       const parsed: UserHabit[] = JSON.parse(raw);
       if (Array.isArray(parsed) && parsed.length > 0) {
-        // Auto-normalize any old "Smoke-Free Protocol" text to "Smoke-Free"
+        // Auto-normalize any legacy habit titles and colors to website signature sapphire blue (#2f80ed)
         const cleaned = parsed.map((h) => {
-          if (h.title === 'Smoke-Free Protocol') {
-            return { ...h, title: 'Smoke-Free' };
+          const updated = { ...h };
+          if (updated.title === 'Smoke-Free Protocol') {
+            updated.title = 'Smoke-Free';
           }
-          return h;
+          if (updated.color === '#ff6b00' || updated.color === '#00f0ff' || updated.color === '#f59e0b') {
+            updated.color = '#2f80ed';
+          }
+          return updated;
         });
         return cleaned;
       }

@@ -125,12 +125,12 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
       aria-modal="true"
     >
       <div
-        className="w-full max-w-xl bg-[#090d14] border border-white/[0.1] rounded-2xl shadow-2xl overflow-hidden flex flex-col animate-in zoom-in-95 duration-150 cursor-default"
+        className="w-full max-w-xl bg-[var(--card-bg)] border border-[var(--card-border)] rounded-2xl shadow-2xl overflow-hidden flex flex-col animate-in zoom-in-95 duration-150 cursor-default"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Search Input Bar */}
-        <div className="flex items-center gap-3 px-4 py-3.5 border-b border-white/[0.08] bg-[#0b101b]">
-          <Search className="w-4 h-4 text-cyan-400 flex-shrink-0" />
+        <div className="flex items-center gap-3 px-4 py-3.5 border-b border-[var(--card-border)] bg-[var(--card-subtle-bg)]">
+          <Search className="w-4 h-4 text-[var(--main-color)] flex-shrink-0" />
           <input
             ref={inputRef}
             type="text"
@@ -169,7 +169,7 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
                     onMouseEnter={() => setSelectedIndex(idx)}
                     className={`flex items-center justify-between p-2.5 rounded-xl transition-all cursor-pointer ${
                       isSelected
-                        ? 'bg-cyan-500/15 border border-cyan-500/35 text-white'
+                        ? 'bg-[var(--main-color)]/15 border border-[var(--main-color)]/35 text-white'
                         : 'hover:bg-white/[0.04] text-slate-300 border border-transparent'
                     }`}
                   >
@@ -212,7 +212,7 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
                   onMouseEnter={() => setSelectedIndex(idx)}
                   className={`flex items-center justify-between p-2.5 rounded-xl transition-all cursor-pointer ${
                     isSelected
-                      ? 'bg-cyan-500/15 border border-cyan-500/35 text-white'
+                      ? 'bg-[var(--main-color)]/15 border border-[var(--main-color)]/35 text-white'
                       : 'hover:bg-white/[0.04] text-slate-300 border border-transparent'
                   }`}
                 >
@@ -235,7 +235,7 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
         </div>
 
         {/* Footer shortcuts */}
-        <div className="px-4 py-2 bg-[#05080e] border-t border-white/[0.06] flex items-center justify-between text-[10px] font-mono text-slate-500">
+        <div className="px-4 py-2 bg-[var(--bg-main)] border-t border-[var(--card-border)] flex items-center justify-between text-[10px] font-mono text-slate-500">
           <div className="flex items-center gap-3">
             <span>&uarr;&darr; to navigate</span>
             <span>&crarr; to select</span>

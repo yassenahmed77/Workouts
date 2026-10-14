@@ -141,7 +141,7 @@ export const FormCheckModal: React.FC<FormCheckModalProps> = ({
       title={
         <div className="flex items-center gap-2">
           <div className="w-8 h-8 rounded-lg bg-white/[0.06] border border-white/10 flex items-center justify-center">
-            <Dumbbell className="w-4 h-4 text-cyan-400" />
+            <Dumbbell className="w-4 h-4 text-[var(--main-color)]" />
           </div>
           <div>
             <h3 className="text-base font-bold text-white leading-tight">
@@ -166,8 +166,8 @@ export const FormCheckModal: React.FC<FormCheckModalProps> = ({
           />
 
           {/* Slow-Motion Speed Floating Control Ribbon */}
-          <div className="absolute top-3 right-3 flex items-center gap-1 p-1 rounded-lg bg-[#090d14]/90 backdrop-blur-md border border-white/15 shadow-lg">
-            <Gauge className="w-3.5 h-3.5 text-cyan-400 ml-1.5 mr-0.5" />
+          <div className="absolute top-3 right-3 flex items-center gap-1 p-1 rounded-lg bg-[var(--card-bg)]/90 backdrop-blur-md border border-white/15 shadow-lg">
+            <Gauge className="w-3.5 h-3.5 text-[var(--main-color)] ml-1.5 mr-0.5" />
             <span className="text-[10px] font-mono uppercase text-slate-400 font-semibold mr-1">
               Speed:
             </span>
@@ -178,7 +178,7 @@ export const FormCheckModal: React.FC<FormCheckModalProps> = ({
                 onClick={() => handleSpeedChange(rate)}
                 className={`px-2 py-0.5 rounded text-[11px] font-mono font-bold transition-all cursor-pointer ${
                   playbackRate === rate
-                    ? 'bg-cyan-500 text-black shadow-sm'
+                    ? 'bg-[var(--main-color)] text-white shadow-sm'
                     : 'text-slate-300 hover:text-white hover:bg-white/10'
                 }`}
               >
@@ -190,7 +190,7 @@ export const FormCheckModal: React.FC<FormCheckModalProps> = ({
 
         {/* 2. Metadata Bar: Exercise Name, Date, Set info, Status */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-          <div className="p-2.5 rounded-lg bg-[#05080e] border border-white/[0.06]">
+          <div className="p-2.5 rounded-lg bg-[var(--card-subtle-bg)] border border-[var(--card-border)]">
             <span className="text-[10px] font-mono uppercase tracking-wider text-slate-400 block font-semibold">
               Recorded Date
             </span>
@@ -199,7 +199,7 @@ export const FormCheckModal: React.FC<FormCheckModalProps> = ({
             </span>
           </div>
 
-          <div className="p-2.5 rounded-lg bg-[#05080e] border border-white/[0.06]">
+          <div className="p-2.5 rounded-lg bg-[var(--card-subtle-bg)] border border-[var(--card-border)]">
             <span className="text-[10px] font-mono uppercase tracking-wider text-slate-400 block font-semibold">
               Sets &amp; Load
             </span>
@@ -208,7 +208,7 @@ export const FormCheckModal: React.FC<FormCheckModalProps> = ({
             </span>
           </div>
 
-          <div className="p-2.5 rounded-lg bg-[#05080e] border border-white/[0.06]">
+          <div className="p-2.5 rounded-lg bg-[var(--card-subtle-bg)] border border-[var(--card-border)]">
             <span className="text-[10px] font-mono uppercase tracking-wider text-slate-400 block font-semibold">
               Target Muscle
             </span>
@@ -219,7 +219,7 @@ export const FormCheckModal: React.FC<FormCheckModalProps> = ({
 
           <div 
             onClick={handleToggleStatus}
-            className="p-2.5 rounded-lg bg-[#05080e] border border-white/[0.06] hover:border-white/20 transition-colors cursor-pointer group"
+            className="p-2.5 rounded-lg bg-[var(--card-subtle-bg)] border border-[var(--card-border)] hover:border-white/20 transition-colors cursor-pointer group"
             title="Click to toggle review status"
           >
             <span className="text-[10px] font-mono uppercase tracking-wider text-slate-400 block font-semibold group-hover:text-slate-200">
@@ -251,14 +251,14 @@ export const FormCheckModal: React.FC<FormCheckModalProps> = ({
         {/* 4. Coach Technique Notes Input */}
         <div className="space-y-1.5">
           <div className="flex items-center justify-between">
-            <label className="text-[11px] font-mono uppercase tracking-wider text-cyan-400/90 font-bold">
+            <label className="text-[11px] font-mono uppercase tracking-wider text-[var(--main-color)] font-bold">
               Coach Form Feedback &amp; Execution Cues:
             </label>
             <button
               type="button"
               onClick={handleSaveNotes}
               disabled={isSaving}
-              className="px-2.5 py-0.5 rounded-md bg-white/[0.06] hover:bg-white/[0.12] active:scale-95 border border-white/10 text-xs font-semibold text-slate-200 cursor-pointer disabled:opacity-50"
+              className="gym-btn-secondary gym-btn-sm"
             >
               {isSaving ? 'Saving...' : 'Save Feedback'}
             </button>
@@ -268,7 +268,7 @@ export const FormCheckModal: React.FC<FormCheckModalProps> = ({
             value={coachNotes}
             onChange={(e) => setCoachNotes(e.target.value)}
             placeholder="e.g. Good depth! Next time slow down the eccentric descent and keep your chest upright..."
-            className="w-full p-2.5 rounded-lg bg-black border border-white/10 text-xs text-slate-100 placeholder-slate-500 focus:outline-none focus:border-cyan-500/50 resize-none leading-relaxed font-sans"
+            className="gym-input w-full h-auto p-2.5 resize-none leading-relaxed font-sans"
           />
         </div>
 

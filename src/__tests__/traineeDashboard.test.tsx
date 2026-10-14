@@ -1,5 +1,5 @@
 import React from 'react';
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { TraineeDashboard } from '@/components/trainee/TraineeDashboard';
 import { User, WorkoutPlan, WorkoutLog } from '@/types';
@@ -112,9 +112,15 @@ vi.mock('@/context/GymContext', () => ({
 
 describe('TraineeDashboard Component — Mobile-First Obsidian & Horizon Theme', () => {
   beforeEach(() => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date('2026-10-05T10:00:00Z'));
     mockLogs = [];
     mockDraft = null;
     vi.clearAllMocks();
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
   });
 
   it('starts page directly with interactive 7-day calendar strip and week navigation', () => {

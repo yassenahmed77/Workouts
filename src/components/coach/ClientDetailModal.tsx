@@ -74,19 +74,19 @@ export const ClientDetailModal: React.FC<ClientDetailModalProps> = ({
       }}
     >
       <div 
-        className="w-full max-w-3xl bg-[#18191e] border border-[#24262e] rounded-3xl p-6 shadow-2xl relative max-h-[90vh] flex flex-col animate-in zoom-in-95 duration-150"
+        className="w-full max-w-3xl bg-[var(--card-bg)] border border-[var(--card-border)] rounded-3xl p-6 shadow-2xl relative max-h-[90vh] flex flex-col animate-in zoom-in-95 duration-150"
         onClick={(e) => e.stopPropagation()}
       >
         <button
           onClick={onClose}
-          className="absolute top-5 right-5 text-zinc-500 hover:text-white p-1.5 rounded-xl hover:bg-[#141519] transition-colors"
+          className="absolute top-5 right-5 text-zinc-500 hover:text-white p-1.5 rounded-xl hover:bg-[var(--card-subtle-bg)] transition-colors"
         >
           <X className="w-5 h-5" />
         </button>
 
         {/* Athlete Header */}
-        <div className="flex items-center gap-4 pb-5 border-b border-[#24262e]">
-          <div className="w-12 h-12 rounded-2xl bg-[#141519] border border-[#24262e] flex items-center justify-center text-base font-bold text-[#2f80ed]">
+        <div className="flex items-center gap-4 pb-5 border-b border-[var(--card-border)]">
+          <div className="w-12 h-12 rounded-2xl bg-[var(--card-subtle-bg)] border border-[var(--card-border)] flex items-center justify-center text-base font-bold text-[var(--main-color)]">
             {user.avatarText}
           </div>
           <div>
@@ -94,7 +94,7 @@ export const ClientDetailModal: React.FC<ClientDetailModalProps> = ({
               <h2 className="text-base font-bold text-white tracking-tight">
                 {user.name}
               </h2>
-              <span className="text-[10px] font-mono uppercase px-2 py-0.5 rounded bg-[#141519] text-zinc-300 border border-[#24262e]">
+              <span className="text-[10px] font-mono uppercase px-2 py-0.5 rounded bg-[var(--card-subtle-bg)] text-zinc-300 border border-[var(--card-border)]">
                 {user.goal}
               </span>
             </div>
@@ -106,26 +106,26 @@ export const ClientDetailModal: React.FC<ClientDetailModalProps> = ({
         <div className="flex-1 overflow-y-auto py-5 space-y-5 pr-1">
           {/* Biometrics Strip */}
           <div className="grid grid-cols-4 gap-3 text-center">
-            <div className="p-3 rounded-xl bg-[#141519] border border-[#24262e]">
+            <div className="p-3 rounded-xl bg-[var(--card-subtle-bg)] border border-[var(--card-border)]">
               <span className="block text-[9px] font-mono uppercase text-zinc-500">Weight</span>
               <span className="text-sm font-bold font-numeric text-white">{user.weightKg} kg</span>
             </div>
-            <div className="p-3 rounded-xl bg-[#141519] border border-[#24262e]">
+            <div className="p-3 rounded-xl bg-[var(--card-subtle-bg)] border border-[var(--card-border)]">
               <span className="block text-[9px] font-mono uppercase text-zinc-500">Target</span>
               <span className="text-sm font-bold font-numeric text-zinc-200">{user.targetWeightKg} kg</span>
             </div>
-            <div className="p-3 rounded-xl bg-[#141519] border border-[#24262e]">
+            <div className="p-3 rounded-xl bg-[var(--card-subtle-bg)] border border-[var(--card-border)]">
               <span className="block text-[9px] font-mono uppercase text-zinc-500">Height</span>
               <span className="text-sm font-bold font-numeric text-white">{user.heightCm} cm</span>
             </div>
-            <div className="p-3 rounded-xl bg-[#141519] border border-[#24262e]">
+            <div className="p-3 rounded-xl bg-[var(--card-subtle-bg)] border border-[var(--card-border)]">
               <span className="block text-[9px] font-mono uppercase text-zinc-500">Workouts</span>
               <span className="text-sm font-bold font-numeric text-zinc-200">{traineeLogs.length}</span>
             </div>
           </div>
 
           {/* Assigned Protocol Box */}
-          <div className="p-4 rounded-xl bg-[#141519] border border-[#24262e]">
+          <div className="p-4 rounded-xl bg-[var(--card-subtle-bg)] border border-[var(--card-border)]">
             <div className="flex items-center justify-between mb-2">
               <span className="text-[10px] font-mono uppercase tracking-wider text-zinc-400 font-semibold">
                 Assigned Workout Plan
@@ -135,7 +135,7 @@ export const ClientDetailModal: React.FC<ClientDetailModalProps> = ({
                   onClose();
                   onOpenAssignPlan(user);
                 }}
-                className="text-xs font-bold text-[#2f80ed] hover:text-[#3897f0] transition-colors"
+                className="text-xs font-bold text-[var(--main-color)] hover:text-[var(--main-color-hover)] transition-colors"
               >
                 {assignedPlan ? 'Edit Routine' : '+ Build Custom Routine'}
               </button>
@@ -167,7 +167,7 @@ export const ClientDetailModal: React.FC<ClientDetailModalProps> = ({
             </span>
 
             {traineeLogs.length === 0 ? (
-              <p className="text-xs text-zinc-500 italic p-4 rounded-xl bg-[#141519] border border-[#24262e] text-center">
+              <p className="text-xs text-zinc-500 italic p-4 rounded-xl bg-[var(--card-subtle-bg)] border border-[var(--card-border)] text-center">
                 Athlete has not logged any workouts yet.
               </p>
             ) : (
@@ -175,7 +175,7 @@ export const ClientDetailModal: React.FC<ClientDetailModalProps> = ({
                 {traineeLogs.map((log) => (
                   <div
                     key={log.id}
-                    className="p-3 rounded-xl bg-[#141519] border border-[#24262e] flex items-center justify-between text-xs"
+                    className="p-3 rounded-xl bg-[var(--card-subtle-bg)] border border-[var(--card-border)] flex items-center justify-between text-xs"
                   >
                     <div>
                       <span className="font-semibold text-white block">
@@ -211,13 +211,13 @@ export const ClientDetailModal: React.FC<ClientDetailModalProps> = ({
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               placeholder="Enter technique focus, injury modifications, or progression targets..."
-              className="w-full p-3 rounded-xl bg-[#141519] border border-[#24262e] text-xs text-zinc-200 placeholder-zinc-600 focus:outline-none focus:border-[#2f80ed]"
+              className="w-full p-3 rounded-xl bg-[var(--input-bg)] border border-[var(--input-border)] text-xs text-zinc-200 placeholder-zinc-600 focus:outline-none focus:border-[var(--main-color)]"
             />
             <div className="flex justify-end mt-2">
               <button
                 type="button"
                 onClick={handleSaveNotes}
-                className="btn-cyan px-4 py-2 text-xs font-bold rounded-xl transition-all shadow-sm"
+                className="gym-btn-primary text-xs"
               >
                 Save Notes
               </button>

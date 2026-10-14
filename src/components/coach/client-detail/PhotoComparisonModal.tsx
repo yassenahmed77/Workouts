@@ -62,11 +62,11 @@ export const PhotoComparisonModal: React.FC<PhotoComparisonModalProps> = ({
       }}
     >
       <div
-        className="w-full max-w-4xl rounded-xl bg-[#090d14] border border-white/[0.08] shadow-2xl overflow-hidden flex flex-col max-h-[92vh]"
+        className="w-full max-w-4xl rounded-xl bg-[var(--card-bg)] border border-[var(--card-border)] shadow-2xl overflow-hidden flex flex-col max-h-[92vh]"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header (Clean Typography, Calm Monochrome) */}
-        <div className="p-3.5 sm:p-4 border-b border-white/[0.06] flex items-center justify-between gap-3 bg-[#070a10]">
+        <div className="p-3.5 sm:p-4 border-b border-[var(--card-border)] flex items-center justify-between gap-3 bg-[var(--card-subtle-bg)]">
           <div>
             <div className="flex items-center gap-2">
               <span className="text-[10px] font-mono uppercase tracking-wider text-slate-400 font-semibold">
@@ -117,7 +117,7 @@ export const PhotoComparisonModal: React.FC<PhotoComparisonModalProps> = ({
         </div>
 
         {/* Angle Filter Selector Bar */}
-        <div className="px-3 sm:px-4 py-2 border-b border-white/[0.05] bg-[#05080e] flex items-center justify-between gap-3">
+        <div className="px-3 sm:px-4 py-2 border-b border-[var(--card-border)] bg-[var(--card-subtle-bg)] flex items-center justify-between gap-3">
           <div className="flex items-center gap-1.5">
             {(['front', 'side', 'back'] as const).map((angle) => (
               <button
@@ -248,13 +248,13 @@ export const PhotoComparisonModal: React.FC<PhotoComparisonModalProps> = ({
         </div>
 
         {/* Footer */}
-        <div className="p-3 sm:p-3.5 border-t border-white/[0.06] bg-[#070a10] flex items-center justify-between">
+        <div className="p-3 sm:p-3.5 border-t border-[var(--card-border)] bg-[var(--card-subtle-bg)] flex items-center justify-between">
           <span className="text-[10px] text-slate-400 font-mono">
             Direct visual comparison of client physique progress
           </span>
           <button
             onClick={onClose}
-            className="px-3.5 py-1 rounded-lg bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] text-xs font-medium text-slate-200 hover:text-white transition-colors cursor-pointer"
+            className="gym-btn-ghost text-xs"
           >
             Close
           </button>

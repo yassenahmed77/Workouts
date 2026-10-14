@@ -119,4 +119,56 @@ describe('clientService — Domain Logic & Zod Contracts', () => {
       expect(res.data.privateCoachNotes).toContain('Client needs to increase protein intake.');
     }
   });
+
+  it('validates target weight vs athlete goal consistency', () => {
+    // Fat Loss: Target cannot be higher than current
+    const invalidFatLoss = clientService.validateGoalWeight('Fat Loss & Conditioning', 80, 85);
+    expect(invalidFatLoss.isValid).toBe(false);
+    expect(invalidFatLoss.error).toContain('Target weight must be ≤ current weight');
+
+    const validFatLoss = clientService.validateGoalWeight('Fat Loss & Conditioning', 80, 75);
+    expect(validFatLoss.isValid).toBe(true);
+    expect(validFatLoss.trend).toBe('loss');
+    expect(validFatLoss.deltaKg).toBe(-5);
+
+    // Hypertrophy: Target cannot be lower than current
+    const invalidGain = clientService.validateGoalWeight('Hypertrophy / Muscle Gain', 75, 70);
+    expect(invalidGain.isValid).toBe(false);
+    expect(invalidGain.error).toContain('Target weight must be ≥ current weight');
+
+    const validGain = clientService.validateGoalWeight('Hypertrophy / Muscle Gain', 75, 80);
+    expect(validGain.isValid).toBe(true);
+    expect(validGain.trend).toBe('gain');
+    expect(validGain.deltaKg).toBe(5);
+  });
+
+  it('detects existing athlete duplicate by email or phone normalization', () => {
+    const mockUsers: User[] = [
+      {
+        id: 'u1',
+        name: 'Ahmed Hassan',
+        email: 'ahmed@fit.com',
+        phone: '+20 101 234 5678',
+        role: 'trainee',
+        avatarText: 'AH',
+        status: 'active',
+        joinedDate: '2026-10-01',
+        weightKg: 80,
+        targetWeightKg: 85,
+        heightCm: 175,
+        goal: 'Hypertrophy / Muscle Gain'
+      }
+    ];
+
+    // Match by email
+    expect(clientService.findExistingAthlete(mockUsers, 'AHMED@FIT.COM')).not.toBeNull();
+    expect(clientService.findExistingAthlete(mockUsers, 'AHMED@FIT.COM')?.id).toBe('u1');
+
+    // Match by phone with different formatting
+    expect(clientService.findExistingAthlete(mockUsers, undefined, '01012345678')).not.toBeNull();
+    expect(clientService.findExistingAthlete(mockUsers, undefined, '+201012345678')?.id).toBe('u1');
+
+    // No match
+    expect(clientService.findExistingAthlete(mockUsers, 'other@fit.com', '01199999999')).toBeNull();
+  });
 });

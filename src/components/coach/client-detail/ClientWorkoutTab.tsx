@@ -51,10 +51,10 @@ export const ClientWorkoutTab: React.FC<ClientWorkoutTabProps> = ({
 
   if (!currentPlan) {
     return (
-      <div className="p-8 text-center rounded-xl bg-[#090d14] border border-white/[0.07] space-y-3 select-none">
+      <div className="gym-card p-8 text-center space-y-3 select-none">
         <div>
-          <h3 className="text-sm font-bold text-white">No Workout Routine Assigned</h3>
-          <p className="text-xs text-slate-400 max-w-sm mx-auto mt-1 font-sans">
+          <h3 className="gym-heading-card">No Workout Routine Assigned</h3>
+          <p className="gym-subtext max-w-sm mx-auto mt-1">
             Design and architect a bespoke 1-on-1 periodized training routine tailored for {client.name}.
           </p>
         </div>
@@ -63,7 +63,7 @@ export const ClientWorkoutTab: React.FC<ClientWorkoutTabProps> = ({
           <button
             type="button"
             onClick={() => onOpenPlanBuilderForUser(client.id)}
-            className="px-4 py-2 rounded-xl bg-white hover:bg-slate-100 text-[#080c14] text-xs font-bold transition-all cursor-pointer shadow-sm active:scale-95"
+            className="gym-btn-primary text-xs"
           >
             + Build Custom Routine for {client.name}
           </button>
@@ -78,17 +78,17 @@ export const ClientWorkoutTab: React.FC<ClientWorkoutTabProps> = ({
     <div className="flex flex-col h-full space-y-1.5 select-none">
       
       {/* 1. Protocol Overview Telemetry Banner (Slim Executive Capsule) */}
-      <div className="p-2.5 rounded-xl bg-[#090d14] border border-white/[0.07] space-y-2 flex-shrink-0">
+      <div className="gym-card space-y-2 flex-shrink-0">
         <div className="flex items-center justify-between gap-2">
           <div className="flex items-center gap-2 min-w-0">
-            <span className="text-[10px] font-mono uppercase tracking-wider text-slate-400 font-semibold flex-shrink-0">
+            <span className="gym-label-mono text-[var(--gym-text-muted)] flex-shrink-0">
               Training Split
             </span>
-            <span className="text-slate-600 text-xs hidden sm:inline">&bull;</span>
-            <h3 className="text-xs sm:text-sm font-bold text-white tracking-tight truncate">
+            <span className="text-[var(--gym-border-base)] text-xs hidden sm:inline">&bull;</span>
+            <h3 className="gym-heading-card truncate">
               {currentPlan.title}
             </h3>
-            <span className="px-1.5 py-0.2 rounded bg-white/[0.05] border border-white/[0.08] text-[9.5px] font-mono text-slate-300 font-medium flex-shrink-0 hidden sm:inline">
+            <span className="gym-delta-neutral flex-shrink-0 hidden sm:inline">
               {currentPlan.level}
             </span>
           </div>
@@ -97,14 +97,14 @@ export const ClientWorkoutTab: React.FC<ClientWorkoutTabProps> = ({
             <button
               type="button"
               onClick={() => setIsVaultOpen(true)}
-              className="px-2.5 py-1 rounded-lg bg-white/[0.04] hover:bg-white/[0.08] active:scale-95 border border-white/[0.08] text-xs font-medium text-slate-200 hover:text-white transition-all cursor-pointer shadow-xs"
+              className="gym-btn-secondary text-xs"
             >
               Exercise History
             </button>
             <button
               type="button"
               onClick={() => onOpenPlanBuilderForUser(client.id, currentPlan)}
-              className="px-3 py-1 rounded-lg bg-white hover:bg-slate-100 active:scale-95 text-[#080c14] text-xs font-bold transition-all cursor-pointer shadow-xs"
+              className="gym-btn-primary text-xs"
             >
               Edit Routine
             </button>
@@ -112,29 +112,29 @@ export const ClientWorkoutTab: React.FC<ClientWorkoutTabProps> = ({
         </div>
 
         {/* 4 Compact Telemetry Boxes */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-1.5 pt-1 border-t border-white/[0.05]">
-          <div className="p-1.5 rounded-lg bg-[#05080e] border border-white/[0.04] text-center">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-1.5 pt-1 border-t border-[var(--card-border)]">
+          <div className="p-1.5 rounded-lg bg-[var(--card-subtle-bg)] border border-[var(--card-border)] text-center">
             <span className="text-[9px] font-mono uppercase text-slate-400 block font-semibold">Frequency</span>
             <span className="text-xs font-bold text-white mt-0.5 block font-mono">
               {currentPlan.daysPerWeek} Days / Week
             </span>
           </div>
 
-          <div className="p-1.5 rounded-lg bg-[#05080e] border border-white/[0.04] text-center">
+          <div className="p-1.5 rounded-lg bg-[var(--card-subtle-bg)] border border-[var(--card-border)] text-center">
             <span className="text-[9px] font-mono uppercase text-slate-400 block font-semibold">Duration</span>
             <span className="text-xs font-bold text-white mt-0.5 block font-mono">
               {currentPlan.durationWeeks} Weeks
             </span>
           </div>
 
-          <div className="p-1.5 rounded-lg bg-[#05080e] border border-white/[0.04] text-center">
+          <div className="p-1.5 rounded-lg bg-[var(--card-subtle-bg)] border border-[var(--card-border)] text-center">
             <span className="text-[9px] font-mono uppercase text-slate-400 block font-semibold">Experience</span>
             <span className="text-xs font-bold text-white mt-0.5 block font-mono">
               {currentPlan.level}
             </span>
           </div>
 
-          <div className="p-1.5 rounded-lg bg-[#05080e] border border-white/[0.04] text-center">
+          <div className="p-1.5 rounded-lg bg-[var(--card-subtle-bg)] border border-[var(--card-border)] text-center">
             <span className="text-[9px] font-mono uppercase text-slate-400 block font-semibold">Movements</span>
             <span className="text-xs font-bold text-emerald-400 mt-0.5 block font-mono">
               {totalExercises} Exercises
@@ -177,8 +177,8 @@ export const ClientWorkoutTab: React.FC<ClientWorkoutTabProps> = ({
                 key={day.id}
                 className={`rounded-xl border transition-all duration-150 overflow-hidden ${
                   isExpanded
-                    ? 'bg-[#090d14] border-white/20 shadow-xs'
-                    : 'bg-[#090d14] border-white/[0.06] hover:border-white/12'
+                    ? 'bg-[var(--card-bg)] border-[var(--card-border)] shadow-xs'
+                    : 'bg-[var(--card-bg)] border-[var(--card-border)] opacity-90 hover:opacity-100'
                 }`}
               >
                 {/* Accordion Header (Click to toggle) */}
@@ -248,9 +248,9 @@ export const ClientWorkoutTab: React.FC<ClientWorkoutTabProps> = ({
 
                 {/* Accordion Content (Reveals when expanded) */}
                 {isExpanded && (
-                  <div className="p-2.5 pt-0 border-t border-white/[0.04] space-y-1.5 mt-1">
+                  <div className="p-2.5 pt-0 border-t border-[var(--card-border)] space-y-1.5 mt-1">
                     {day.isRestDay ? (
-                      <div className="p-3 rounded-lg bg-[#05080e] border border-white/[0.04] text-center space-y-1">
+                      <div className="p-3 rounded-lg bg-[var(--card-subtle-bg)] border border-[var(--card-border)] text-center space-y-1">
                         <span className="text-[10px] font-mono uppercase text-slate-400 font-semibold block">
                           Scheduled Recovery Day
                         </span>
@@ -263,7 +263,7 @@ export const ClientWorkoutTab: React.FC<ClientWorkoutTabProps> = ({
                         {day.exercises.map((ex, exIdx) => (
                           <div
                             key={ex.id}
-                            className="p-2 rounded-lg bg-[#05080e] border border-white/[0.04] space-y-1 text-xs hover:border-white/10 transition-colors"
+                            className="p-2 rounded-lg bg-[var(--card-subtle-bg)] border border-[var(--card-border)] space-y-1 text-xs hover:border-white/10 transition-colors"
                           >
                             {/* Exercise Title Row */}
                             <div className="flex items-center justify-between gap-3">
@@ -289,7 +289,7 @@ export const ClientWorkoutTab: React.FC<ClientWorkoutTabProps> = ({
                                   {ex.restSeconds}s rest
                                 </span>
                                 {ex.targetRpe && (
-                                  <span className="text-[10px] text-cyan-400 font-medium hidden sm:inline">
+                                  <span className="text-[10px] text-[var(--main-color)] font-medium hidden sm:inline">
                                     RIR {ex.targetRpe}
                                   </span>
                                 )}
@@ -298,9 +298,9 @@ export const ClientWorkoutTab: React.FC<ClientWorkoutTabProps> = ({
 
                             {/* Execution Notes / Form Cues / Alternatives / Video Link */}
                             {(ex.notes || ex.alternativeExercise || (ex.alternatives && ex.alternatives.length > 0) || ex.videoUrl) && (
-                              <div className="pt-1 border-t border-white/[0.04] space-y-1 text-[10px] text-slate-400 font-mono">
+                              <div className="pt-1 border-t border-[var(--card-border)] space-y-1 text-[10px] text-slate-400 font-mono">
                                 {ex.notes && (
-                                  <div className="px-2 py-1 rounded bg-white/[0.02] border-l-2 border-cyan-400/60 text-slate-300 font-sans italic text-[11px] leading-relaxed">
+                                  <div className="px-2 py-1 rounded bg-white/[0.02] border-l-2 border-[var(--main-color)]/60 text-slate-300 font-sans italic text-[11px] leading-relaxed">
                                     {ex.notes}
                                   </div>
                                 )}
@@ -319,7 +319,7 @@ export const ClientWorkoutTab: React.FC<ClientWorkoutTabProps> = ({
                                               href={sanitizeUrl(alt.videoUrl)}
                                               target="_blank"
                                               rel="noopener noreferrer"
-                                              className="text-cyan-400 hover:text-cyan-300 underline font-mono text-[9px]"
+                                              className="text-[var(--main-color)] hover:underline font-mono text-[9px]"
                                             >
                                               Demo ↗
                                             </a>

@@ -140,20 +140,20 @@ export const EditTraineeModal: React.FC<EditTraineeModalProps> = ({ isOpen, onCl
       aria-modal="true"
     >
       <div 
-        className="w-full max-w-lg bg-[#0b0f17] border border-white/[0.1] rounded-2xl p-5 sm:p-6 shadow-2xl relative max-h-[92vh] flex flex-col animate-in zoom-in-95 duration-150 cursor-default"
+        className="gym-card w-full max-w-lg p-4 sm:p-5 shadow-2xl relative max-h-[92vh] flex flex-col animate-in zoom-in-95 duration-150 cursor-default"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="flex items-center justify-between pb-4 border-b border-white/[0.08] flex-shrink-0">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-white/[0.05] border border-white/[0.08] flex items-center justify-center text-white font-bold font-mono">
+        <div className="flex items-center justify-between pb-3 border-b border-white/[0.08] flex-shrink-0">
+          <div className="flex items-center gap-2.5">
+            <div className="w-9 h-9 rounded-lg bg-white/[0.05] border border-white/[0.08] flex items-center justify-center text-white font-bold font-mono text-xs">
               {clientService.getInitials(user.name)}
             </div>
             <div>
-              <h2 className="text-base sm:text-lg font-bold text-white tracking-tight">
+              <h2 className="gym-heading-section">
                 Edit Athlete Profile
               </h2>
-              <p className="text-xs text-slate-400">
+              <p className="gym-subtext mt-0.5">
                 Update account details, target metrics, and coaching status
               </p>
             </div>
@@ -161,20 +161,20 @@ export const EditTraineeModal: React.FC<EditTraineeModalProps> = ({ isOpen, onCl
           <button 
             type="button"
             onClick={onClose}
-            className="w-8 h-8 rounded-lg bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.06] flex items-center justify-center text-slate-400 hover:text-white transition-colors cursor-pointer"
+            className="w-7 h-7 rounded-lg bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.06] flex items-center justify-center text-slate-400 hover:text-white transition-colors cursor-pointer"
           >
-            <X className="w-4 h-4" />
+            <X className="w-3.5 h-3.5" />
           </button>
         </div>
 
         {/* Validation Errors Alert Banner */}
         {validationErrors.length > 0 && (
-          <div className="mt-3 p-3 rounded-xl bg-rose-500/10 border border-rose-500/20 text-xs text-rose-300 space-y-1">
+          <div className="mt-3 p-2.5 rounded-lg bg-rose-500/10 border border-rose-500/20 text-xs text-rose-300 space-y-1">
             <div className="flex items-center gap-1.5 font-bold">
               <AlertTriangle className="w-3.5 h-3.5 text-rose-400" />
               <span>Please correct the following:</span>
             </div>
-            <ul className="list-disc list-inside space-y-0.5 text-[11px] text-rose-300/80">
+            <ul className="list-disc list-inside space-y-0.5 text-[11px] text-rose-300/80 font-mono">
               {validationErrors.map((err, i) => (
                 <li key={i}>{err}</li>
               ))}
@@ -183,22 +183,22 @@ export const EditTraineeModal: React.FC<EditTraineeModalProps> = ({ isOpen, onCl
         )}
 
         {/* Form Body */}
-        <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto custom-scrollbar py-4 space-y-4">
+        <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto custom-scrollbar py-3 space-y-3">
           {/* Name & Email */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <div className="space-y-1.5">
-              <label className="text-xs font-semibold text-slate-300">Athlete Name</label>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+            <div className="space-y-1">
+              <label className="gym-label-mono block text-slate-300">Athlete Name</label>
               <input
                 type="text"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="Full Name"
-                className="w-full px-3 py-2 bg-[#05080e] border border-white/[0.08] rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-cyan-500/40"
+                className="gym-input w-full"
                 required
               />
             </div>
-            <div className="space-y-1.5">
-              <label className="text-xs font-semibold text-slate-300 flex items-center gap-1">
+            <div className="space-y-1">
+              <label className="gym-label-mono block text-slate-300 flex items-center gap-1">
                 <Mail className="w-3 h-3 text-slate-400" />
                 <span>Email Address</span>
               </label>
@@ -207,16 +207,16 @@ export const EditTraineeModal: React.FC<EditTraineeModalProps> = ({ isOpen, onCl
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="athlete@example.com"
-                className="w-full px-3 py-2 bg-[#05080e] border border-white/[0.08] rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-cyan-500/40"
+                className="gym-input w-full"
                 required
               />
             </div>
           </div>
 
           {/* Vitals: Weight, Target Weight, Height */}
-          <div className="grid grid-cols-3 gap-2.5">
-            <div className="space-y-1.5">
-              <label className="text-xs font-semibold text-slate-300 flex items-center gap-1">
+          <div className="grid grid-cols-3 gap-2">
+            <div className="space-y-1">
+              <label className="gym-label-mono block text-slate-300 flex items-center gap-1">
                 <Scale className="w-3 h-3 text-slate-400" />
                 <span>Weight (kg)</span>
               </label>
@@ -227,14 +227,14 @@ export const EditTraineeModal: React.FC<EditTraineeModalProps> = ({ isOpen, onCl
                 max="300"
                 value={weightKg}
                 onChange={(e) => setWeightKg(e.target.value)}
-                className="w-full px-3 py-2 bg-[#05080e] border border-white/[0.08] rounded-xl text-xs text-white focus:outline-none focus:border-cyan-500/40 font-mono"
+                className="gym-input w-full font-mono tabular-nums"
                 required
               />
             </div>
 
-            <div className="space-y-1.5">
-              <label className="text-xs font-semibold text-slate-300 flex items-center gap-1">
-                <Target className="w-3 h-3 text-cyan-400" />
+            <div className="space-y-1">
+              <label className="gym-label-mono block text-slate-300 flex items-center gap-1">
+                <Target className="w-3 h-3 text-[var(--main-color)]" />
                 <span>Goal (kg)</span>
               </label>
               <input
@@ -244,13 +244,13 @@ export const EditTraineeModal: React.FC<EditTraineeModalProps> = ({ isOpen, onCl
                 max="300"
                 value={targetWeightKg}
                 onChange={(e) => setTargetWeightKg(e.target.value)}
-                className="w-full px-3 py-2 bg-[#05080e] border border-white/[0.08] rounded-xl text-xs text-cyan-300 focus:outline-none focus:border-cyan-500/40 font-mono"
+                className="gym-input w-full font-mono tabular-nums text-[var(--main-color)]"
                 required
               />
             </div>
 
-            <div className="space-y-1.5">
-              <label className="text-xs font-semibold text-slate-300 flex items-center gap-1">
+            <div className="space-y-1">
+              <label className="gym-label-mono block text-slate-300 flex items-center gap-1">
                 <Ruler className="w-3 h-3 text-slate-400" />
                 <span>Height (cm)</span>
               </label>
@@ -260,50 +260,50 @@ export const EditTraineeModal: React.FC<EditTraineeModalProps> = ({ isOpen, onCl
                 max="250"
                 value={heightCm}
                 onChange={(e) => setHeightCm(e.target.value)}
-                className="w-full px-3 py-2 bg-[#05080e] border border-white/[0.08] rounded-xl text-xs text-white focus:outline-none focus:border-cyan-500/40 font-mono"
+                className="gym-input w-full font-mono tabular-nums"
                 required
               />
             </div>
           </div>
 
           {/* Goal & Status */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <div className="space-y-1.5">
-              <label className="text-xs font-semibold text-slate-300">Primary Goal</label>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+            <div className="space-y-1">
+              <label className="gym-label-mono block text-slate-300">Primary Goal</label>
               <select
                 value={goal}
                 onChange={(e) => setGoal(e.target.value as UserGoal)}
-                className="w-full px-3 py-2 bg-[#05080e] border border-white/[0.08] rounded-xl text-xs text-white focus:outline-none focus:border-cyan-500/40"
+                className="gym-input w-full"
               >
                 {GOALS.map((g) => (
-                  <option key={g} value={g} className="bg-[#0b0f17]">
+                  <option key={g} value={g} className="bg-[var(--card-bg)] text-white">
                     {g}
                   </option>
                 ))}
               </select>
             </div>
 
-            <div className="space-y-1.5">
-              <label className="text-xs font-semibold text-slate-300 flex items-center gap-1">
+            <div className="space-y-1">
+              <label className="gym-label-mono block text-slate-300 flex items-center gap-1">
                 <Shield className="w-3 h-3 text-slate-400" />
                 <span>Status</span>
               </label>
               <select
                 value={status}
                 onChange={(e) => setStatus(e.target.value as any)}
-                className="w-full px-3 py-2 bg-[#05080e] border border-white/[0.08] rounded-xl text-xs text-white focus:outline-none focus:border-cyan-500/40"
+                className="gym-input w-full"
               >
-                <option value="active" className="bg-[#0b0f17]">Active</option>
-                <option value="on_hold" className="bg-[#0b0f17]">On Hold</option>
-                <option value="pending" className="bg-[#0b0f17]">Pending Setup</option>
-                <option value="inactive" className="bg-[#0b0f17]">Inactive</option>
+                <option value="active" className="bg-[var(--card-bg)] text-white">Active</option>
+                <option value="on_hold" className="bg-[var(--card-bg)] text-white">On Hold</option>
+                <option value="pending" className="bg-[var(--card-bg)] text-white">Pending Setup</option>
+                <option value="inactive" className="bg-[var(--card-bg)] text-white">Inactive</option>
               </select>
             </div>
           </div>
 
           {/* Private Notes */}
-          <div className="space-y-1.5">
-            <label className="text-xs font-semibold text-slate-300">
+          <div className="space-y-1">
+            <label className="gym-label-mono block text-slate-300">
               Coach Directives &amp; Background Notes
             </label>
             <textarea
@@ -311,7 +311,7 @@ export const EditTraineeModal: React.FC<EditTraineeModalProps> = ({ isOpen, onCl
               onChange={(e) => setNotes(e.target.value)}
               placeholder="Private athlete history, injuries, preferences..."
               rows={3}
-              className="w-full px-3 py-2 bg-[#05080e] border border-white/[0.08] rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-cyan-500/40 resize-none leading-relaxed"
+              className="w-full px-2.5 py-2 rounded-lg bg-[var(--input-bg)] border border-[var(--input-border)] text-xs text-white placeholder-slate-500 focus:outline-none focus:border-[var(--main-color)] resize-none leading-relaxed transition-colors"
             />
           </div>
 
@@ -327,7 +327,7 @@ export const EditTraineeModal: React.FC<EditTraineeModalProps> = ({ isOpen, onCl
                 <span>Delete Athlete Account</span>
               </button>
             ) : (
-              <div className="p-3 bg-rose-500/10 border border-rose-500/20 rounded-xl space-y-2">
+              <div className="p-2.5 bg-rose-500/10 border border-rose-500/20 rounded-lg space-y-2">
                 <p className="text-xs text-rose-300">
                   Are you sure? This will remove <strong>{user.name}</strong> and all associated logs permanently.
                 </p>
@@ -335,14 +335,14 @@ export const EditTraineeModal: React.FC<EditTraineeModalProps> = ({ isOpen, onCl
                   <button
                     type="button"
                     onClick={handleDelete}
-                    className="px-3 py-1 bg-rose-500 hover:bg-rose-600 text-white rounded-lg text-xs font-bold transition-colors cursor-pointer"
+                    className="gym-btn-danger gym-btn-sm"
                   >
                     Confirm Delete
                   </button>
                   <button
                     type="button"
                     onClick={() => setShowDeleteConfirm(false)}
-                    className="px-3 py-1 bg-white/[0.04] hover:bg-white/[0.08] text-slate-300 rounded-lg text-xs transition-colors cursor-pointer"
+                    className="gym-btn-secondary gym-btn-sm"
                   >
                     Cancel
                   </button>
@@ -352,18 +352,18 @@ export const EditTraineeModal: React.FC<EditTraineeModalProps> = ({ isOpen, onCl
           </div>
 
           {/* Actions */}
-          <div className="flex items-center justify-end gap-2 pt-3 border-t border-white/[0.08]">
+          <div className="flex items-center justify-end gap-2 pt-2.5 border-t border-white/[0.08]">
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] text-xs font-medium text-slate-300 hover:text-white transition-colors cursor-pointer"
+              className="gym-btn-ghost text-xs"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={isSaving}
-              className="px-5 py-2 rounded-xl bg-white hover:bg-slate-100 active:scale-95 text-[#080c14] text-xs font-bold flex items-center gap-1.5 cursor-pointer disabled:opacity-50 transition-all shadow-sm"
+              className="gym-btn-primary text-xs flex items-center gap-1.5"
             >
               <Check className="w-3.5 h-3.5" />
               <span>{isSaving ? 'Saving...' : 'Save Changes'}</span>

@@ -16,7 +16,7 @@ export interface SegmentedTabsProps<T extends string = string> {
   className?: string;
   buttonClassName?: string;
   size?: 'xs' | 'sm' | 'md';
-  variant?: 'slate' | 'glass' | 'solid-white' | 'cyan';
+  variant?: 'slate' | 'glass' | 'solid-white' | 'blue';
   noScroll?: boolean;
 }
 
@@ -36,7 +36,7 @@ export function SegmentedTabs<T extends string = string>({
 }: SegmentedTabsProps<T>) {
   // Height & padding scale
   const sizeStyles = {
-    xs: noScroll ? 'py-1 px-1.5 text-[10px]' : 'py-1 px-2.5 text-[10px]',
+    xs: 'py-0.5 px-1.5 sm:px-2 text-[9.5px]',
     sm: 'py-1 px-3 text-xs',
     md: 'py-1.5 px-3.5 text-xs'
   }[size];
@@ -44,29 +44,29 @@ export function SegmentedTabs<T extends string = string>({
   // Active state variants
   const getActiveStyles = () => {
     switch (variant) {
-      case 'cyan':
-        return 'bg-cyan-500/15 text-cyan-300 border-cyan-500/35 shadow-sm shadow-cyan-950/40 font-bold';
+      case 'blue':
+        return 'bg-[var(--main-color)]/15 text-[var(--main-color)] border-[var(--main-color)]/35 shadow-sm font-bold';
       case 'glass':
         return 'bg-white/[0.12] text-white border-white/20 shadow-sm font-bold';
       case 'solid-white':
-        return 'bg-white text-[#080c14] border-white shadow-sm font-bold';
+        return 'bg-white text-[var(--bg-main)] border-white shadow-sm font-bold';
       case 'slate':
       default:
-        return 'bg-[#151f2e] text-white border-[#233146] shadow-sm font-semibold';
+        return 'bg-[var(--card-subtle-bg)] text-white border-[var(--card-border)] shadow-sm font-semibold';
     }
   };
 
   const getInactiveStyles = () => {
     switch (variant) {
-      case 'cyan':
+      case 'blue':
         return 'text-slate-400 hover:text-slate-200 hover:bg-white/[0.04] bg-transparent border-transparent';
       case 'glass':
         return 'text-slate-400 hover:text-slate-200 bg-transparent border-transparent';
       case 'solid-white':
-        return 'bg-[#0f1724] text-[#64748b] hover:text-white border-[#16202e]';
+        return 'bg-[var(--card-bg)] text-slate-400 hover:text-white border-[var(--card-border)]';
       case 'slate':
       default:
-        return 'text-[#64748b] hover:text-white bg-transparent border-transparent';
+        return 'text-slate-400 hover:text-white bg-transparent border-transparent';
     }
   };
 
@@ -83,8 +83,10 @@ export function SegmentedTabs<T extends string = string>({
       className={`flex items-center ${
         noScroll 
           ? 'w-full justify-between gap-0.5 overflow-hidden' 
-          : 'gap-1 overflow-x-auto custom-scrollbar scroll-smooth pb-1.5'
-      } p-1 rounded-xl bg-[#05080e] border border-[#16202e] select-none ${className}`}
+          : size === 'xs'
+            ? 'gap-0.5 overflow-x-auto custom-scrollbar scroll-smooth pb-0.5'
+            : 'gap-1 overflow-x-auto custom-scrollbar scroll-smooth pb-0.5'
+      } ${size === 'xs' ? 'p-0.5' : 'p-1'} rounded-xl bg-[var(--bg-main)] border border-[var(--card-border)] select-none ${className}`}
     >
       {items.map((tab) => {
         const isSelected = value === tab.key;
@@ -95,20 +97,20 @@ export function SegmentedTabs<T extends string = string>({
             aria-selected={isSelected}
             onClick={() => onChange(tab.key)}
             className={`${
-              noScroll ? 'flex-1 min-w-0' : ''
-            } flex items-center justify-center gap-1 rounded-lg whitespace-nowrap transition-all cursor-pointer border ${sizeStyles} ${
+              noScroll ? 'flex-1 min-w-0' : 'flex-1 min-w-max'
+            } flex items-center justify-center gap-0.5 rounded-lg whitespace-nowrap transition-all cursor-pointer border ${sizeStyles} ${
               isSelected ? getActiveStyles() : getInactiveStyles()
             } ${buttonClassName}`}
           >
-            <span>{tab.label}</span>
+            <span className={noScroll ? 'truncate' : ''}>{tab.label}</span>
 
             {/* Optional count or status badge */}
             {tab.count !== undefined && (
               <span
-                className={`text-[9.5px] font-mono px-1 rounded-full ${
+                className={`text-[9px] font-mono px-0.5 rounded-full flex-shrink-0 ${
                   isSelected 
-                    ? (variant === 'cyan' ? 'text-cyan-400 font-bold' : 'text-white/80') 
-                    : (variant === 'cyan' ? 'text-slate-500' : 'text-[#64748b]')
+                    ? (variant === 'blue' ? 'text-[var(--main-color)] font-bold' : 'text-white/80') 
+                    : (variant === 'blue' ? 'text-slate-500' : 'text-[var(--muted-color)]')
                 }`}
               >
                 ({tab.count})
@@ -116,7 +118,7 @@ export function SegmentedTabs<T extends string = string>({
             )}
 
             {tab.badge !== undefined && Boolean(tab.badge) && (
-              <span className="px-1.5 py-0.2 rounded-full bg-cyan-500/20 text-cyan-300 text-[10px] font-mono font-bold border border-cyan-500/30">
+              <span className="px-1.5 py-0.2 rounded-full bg-[var(--main-color)]/15 text-[var(--main-color)] text-[9.5px] font-mono font-bold border border-[var(--main-color)]/30 flex-shrink-0">
                 {tab.badge}
               </span>
             )}

@@ -4,10 +4,13 @@ import React, { useState, useMemo } from 'react';
 import { useGym } from '@/context/GymContext';
 import { User, ClientSubscription } from '@/types';
 import { clientService } from '@/services/clientService';
+import { PanelLeft } from 'lucide-react';
 
 interface CalendarViewProps {
   onSelectClient?: (client: User) => void;
   onOpenNewTraineeModal?: () => void;
+  isSidebarOpen?: boolean;
+  onToggleSidebar?: () => void;
 }
 
 type CalendarFilter = 'all' | 'starts' | 'expirations' | 'checkins';
@@ -22,7 +25,9 @@ interface DayEvent {
 
 export const CalendarView: React.FC<CalendarViewProps> = ({
   onSelectClient,
-  onOpenNewTraineeModal
+  onOpenNewTraineeModal,
+  isSidebarOpen,
+  onToggleSidebar
 }) => {
   const { users, currentUser, coachSettings } = useGym();
 
@@ -258,17 +263,28 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
     <div className="flex flex-col flex-1 h-full min-h-0 w-full space-y-2.5 pb-2 font-sans text-slate-100 select-none overflow-hidden">
       
       {/* 1. Ultra-Clean Executive Header */}
-      <div className="flex-shrink-0 flex flex-col md:flex-row md:items-center justify-between gap-2.5 pb-2 border-b border-[#141b26]">
+      <div className="flex-shrink-0 flex flex-col md:flex-row md:items-center justify-between gap-2.5 pb-2 border-b border-[var(--card-border)]">
         <div className="min-w-0">
           <div className="flex items-center gap-2">
-            <h1 className="text-base sm:text-lg font-bold text-white tracking-tight leading-tight">
+            {onToggleSidebar && (
+              <button
+                type="button"
+                onClick={onToggleSidebar}
+                className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-white/[0.06] border border-white/[0.08] transition-colors flex items-center justify-center cursor-pointer shrink-0 min-[1025px]:hidden"
+                title={isSidebarOpen ? "Collapse sidebar (Ctrl+B)" : "Expand sidebar (Ctrl+B)"}
+                aria-label="Toggle Navigation Sidebar"
+              >
+                <PanelLeft className="w-4 h-4 text-slate-300" />
+              </button>
+            )}
+            <h1 className="gym-heading-page">
               Subscription &amp; Schedule Calendar
             </h1>
-            <span className="px-1.5 py-0.2 rounded bg-white/[0.04] border border-white/10 text-[9.5px] font-mono text-slate-300 font-bold hidden sm:inline">
+            <span className="gym-delta-blue hidden sm:inline">
               Schedule OS
             </span>
           </div>
-          <p className="text-xs text-slate-400 mt-0.5 truncate">
+          <p className="gym-subtext mt-0.5 truncate">
             Monitor client subscription start dates, expiration pipelines, and weekly check-in audits.
           </p>
         </div>
@@ -276,7 +292,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
         {/* Action Controls & Month Switcher */}
         <div className="flex items-center gap-2 flex-wrap sm:flex-nowrap flex-shrink-0">
           {/* Month Switcher Controls */}
-          <div className="flex items-center gap-1 p-0.5 rounded-lg bg-[#05080e] border border-[#16202e]">
+          <div className="flex items-center gap-1 p-0.5 rounded-lg bg-[var(--card-subtle-bg)] border border-[var(--card-border)]">
             <button
               type="button"
               onClick={handlePrevMonth}
@@ -299,7 +315,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
           <button
             type="button"
             onClick={handleGoToToday}
-            className="px-3 py-1.5 rounded-lg bg-[#05080e] hover:bg-white/[0.06] border border-[#16202e] text-xs font-semibold text-slate-300 hover:text-white transition-all cursor-pointer active:scale-95"
+            className="gym-btn-secondary text-xs"
           >
             Today
           </button>
@@ -308,7 +324,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
             <button
               type="button"
               onClick={onOpenNewTraineeModal}
-              className="py-1.5 px-3.5 rounded-lg bg-white hover:bg-slate-100 active:scale-95 text-[#080c14] text-xs font-bold cursor-pointer shadow-xs transition-all whitespace-nowrap"
+              className="gym-btn-primary text-xs whitespace-nowrap"
             >
               + Add Athlete
             </button>
@@ -318,7 +334,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
 
       {/* 2. Top KPI Metric Cards Strip (Pure Obsidian Monochrome) */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 flex-shrink-0">
-        <div className="p-2.5 rounded-xl bg-[#090e17] border border-[#141b26] flex items-center justify-between shadow-xs">
+        <div className="p-2.5 rounded-xl bg-[var(--card-bg)] border border-[var(--card-border)] flex items-center justify-between shadow-xs">
           <div>
             <span className="text-[10px] font-mono uppercase tracking-wider text-slate-500 font-semibold block">
               New Starts ({monthNames[currentMonth].slice(0, 3)})
@@ -332,7 +348,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
           </span>
         </div>
 
-        <div className="p-2.5 rounded-xl bg-[#090e17] border border-[#141b26] flex items-center justify-between shadow-xs">
+        <div className="p-2.5 rounded-xl bg-[var(--card-bg)] border border-[var(--card-border)] flex items-center justify-between shadow-xs">
           <div>
             <span className="text-[10px] font-mono uppercase tracking-wider text-slate-500 font-semibold block">
               Expiring Renewals
@@ -346,7 +362,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
           </span>
         </div>
 
-        <div className="p-2.5 rounded-xl bg-[#090e17] border border-[#141b26] flex items-center justify-between shadow-xs">
+        <div className="p-2.5 rounded-xl bg-[var(--card-bg)] border border-[var(--card-border)] flex items-center justify-between shadow-xs">
           <div>
             <span className="text-[10px] font-mono uppercase tracking-wider text-slate-500 font-semibold block">
               Active Roster
@@ -360,7 +376,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
           </span>
         </div>
 
-        <div className="p-2.5 rounded-xl bg-[#090e17] border border-[#141b26] flex items-center justify-between shadow-xs">
+        <div className="p-2.5 rounded-xl bg-[var(--card-bg)] border border-[var(--card-border)] flex items-center justify-between shadow-xs">
           <div>
             <span className="text-[10px] font-mono uppercase tracking-wider text-slate-500 font-semibold block">
               Active Volume Value
@@ -379,16 +395,16 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-2.5 flex-1 min-h-0 overflow-hidden items-stretch">
         
         {/* Left Column: Calendar Grid (Col span 8) */}
-        <div className="lg:col-span-8 flex flex-col min-h-0 rounded-xl bg-[#090e17] border border-[#141b26] overflow-hidden shadow-xs">
+        <div className="lg:col-span-8 flex flex-col min-h-0 rounded-xl bg-[var(--card-bg)] border border-[var(--card-border)] overflow-hidden shadow-xs">
           {/* Day of Week Header */}
-          <div className="grid grid-cols-7 border-b border-[#141b26] bg-[#070a0f] py-2 text-center text-[10px] font-mono font-bold uppercase tracking-wider text-slate-400 flex-shrink-0">
+          <div className="grid grid-cols-7 border-b border-[var(--card-border)] bg-[var(--card-subtle-bg)] py-2 text-center text-[10px] font-mono font-bold uppercase tracking-wider text-slate-400 flex-shrink-0">
             {daysOfWeek.map((day) => (
               <div key={day}>{day}</div>
             ))}
           </div>
 
           {/* Month Cells Grid */}
-          <div className="grid grid-cols-7 flex-1 min-h-0 divide-x divide-y divide-[#141b26] overflow-y-auto custom-scrollbar">
+          <div className="grid grid-cols-7 flex-1 min-h-0 divide-x divide-y divide-[var(--card-border)] overflow-y-auto custom-scrollbar">
             {calendarCells.map((cell) => {
               const isSelected = cell.dateStr === selectedDateStr;
               const starts = cell.events.filter((e) => e.type === 'start');
@@ -403,15 +419,15 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
                     isSelected
                       ? 'bg-white/[0.06] ring-1 ring-inset ring-white/20'
                       : cell.isCurrentMonth
-                        ? 'bg-[#090e17] hover:bg-white/[0.02]'
-                        : 'bg-[#05080e]/50 opacity-40 hover:bg-[#070a0f]'
+                        ? 'bg-[var(--card-bg)] hover:bg-white/[0.02]'
+                        : 'bg-[var(--card-subtle-bg)]/50 opacity-40 hover:bg-[var(--card-subtle-bg)]'
                   }`}
                 >
                   {/* Cell Header: Day Number + Today Indicator */}
                   <div className="flex items-center justify-between">
                     <span className={`text-xs font-mono font-bold ${
                       cell.isToday
-                        ? 'w-5 h-5 rounded-full bg-white text-[#080c14] flex items-center justify-center font-black shadow-xs'
+                        ? 'w-5 h-5 rounded-full bg-white text-slate-900 flex items-center justify-center font-black shadow-xs'
                         : isSelected
                           ? 'text-white'
                           : cell.isCurrentMonth
@@ -467,9 +483,9 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
         </div>
 
         {/* Right Column: Selected Day Inspector Drawer (Col span 4) */}
-        <div className="lg:col-span-4 flex flex-col min-h-0 rounded-xl bg-[#090e17] border border-[#141b26] overflow-hidden shadow-xs">
+        <div className="lg:col-span-4 flex flex-col min-h-0 rounded-xl bg-[var(--card-bg)] border border-[var(--card-border)] overflow-hidden shadow-xs">
           {/* Day Inspector Header */}
-          <div className="px-3.5 py-2 bg-[#070a0f] border-b border-[#141b26] flex items-center justify-between flex-shrink-0">
+          <div className="px-3.5 py-2 bg-[var(--card-subtle-bg)] border-b border-[var(--card-border)] flex items-center justify-between flex-shrink-0">
             <div>
               <span className="text-[10px] font-mono uppercase tracking-wider text-slate-400 font-semibold block">
                 Day Inspector
@@ -485,8 +501,8 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
           </div>
 
           {/* Filter Pills */}
-          <div className="p-2 border-b border-[#141b26] bg-[#090e17] flex-shrink-0">
-            <div className="flex items-center gap-1 p-0.5 rounded-lg bg-[#05080e] border border-[#16202e]">
+          <div className="p-2 border-b border-[var(--card-border)] bg-[var(--card-bg)] flex-shrink-0">
+            <div className="flex items-center gap-1 p-0.5 rounded-lg bg-[var(--card-subtle-bg)] border border-[var(--card-border)]">
               <button
                 type="button"
                 onClick={() => setActiveFilter('all')}
@@ -553,7 +569,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
                   return (
                     <div
                       key={evt.id}
-                      className="p-3 rounded-xl bg-[#05080e] border border-[#16202e] space-y-1"
+                      className="p-3 rounded-xl bg-[var(--card-subtle-bg)] border border-[var(--card-border)] space-y-1"
                     >
                       <div className="flex items-center justify-between">
                         <span className="text-[10px] font-mono uppercase tracking-wider text-slate-400 font-bold">
@@ -574,7 +590,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
                 return (
                   <div
                     key={evt.id}
-                    className="p-3 rounded-xl bg-[#05080e] border border-[#16202e] hover:border-[#1e293b] transition-all space-y-2.5"
+                    className="p-3 rounded-xl bg-[var(--card-subtle-bg)] border border-[var(--card-border)] hover:border-[var(--card-border)] transition-all space-y-2.5"
                   >
                     {/* Athlete Info Row */}
                     <div className="flex items-center justify-between gap-2">
@@ -615,7 +631,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
                     </div>
 
                     {/* Subscription Details Strip */}
-                    <div className="p-2 rounded-lg bg-[#090e17] border border-[#141b26] flex items-center justify-between text-[11px] font-mono">
+                    <div className="p-2 rounded-lg bg-[var(--card-bg)] border border-[var(--card-border)] flex items-center justify-between text-[11px] font-mono">
                       <div>
                         <span className="text-slate-500 block text-[9px] uppercase tracking-wider font-semibold">Duration</span>
                         <span className="text-white font-bold font-numeric">{sub?.durationMonths || 1} Months</span>
@@ -644,7 +660,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
                           href={getWhatsAppRenewalLink(evt.user, sub)}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="px-3 py-1 rounded-lg bg-white hover:bg-slate-100 text-[#080c14] text-xs font-bold transition-all cursor-pointer active:scale-95 text-center shadow-xs"
+                          className="gym-btn-primary text-xs text-center"
                         >
                           Send WhatsApp Reminder
                         </a>
@@ -656,7 +672,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
                       <button
                         type="button"
                         onClick={() => onSelectClient(evt.user)}
-                        className="w-full py-1 text-center text-xs text-slate-400 hover:text-white transition-colors cursor-pointer block border-t border-[#141b26] pt-1.5 font-medium"
+                        className="w-full py-1 text-center text-xs text-slate-400 hover:text-white transition-colors cursor-pointer block border-t border-[var(--card-border)] pt-1.5 font-medium"
                       >
                         View Athlete Profile &bull; 360
                       </button>

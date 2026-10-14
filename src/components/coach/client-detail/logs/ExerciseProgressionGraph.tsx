@@ -96,7 +96,7 @@ export const ExerciseProgressionGraph: React.FC<ExerciseProgressionGraphProps> =
       </div>
 
       {/* SVG Container */}
-      <div className="w-full rounded-lg bg-[#05080e] border border-white/[0.05] p-1.5 relative overflow-hidden">
+      <div className="w-full rounded-lg bg-[var(--card-subtle-bg)] border border-[var(--card-border)] p-1.5 relative overflow-hidden">
         <svg
           viewBox={`0 0 ${width} ${height}`}
           className="w-full h-24 sm:h-26 overflow-visible select-none"
@@ -178,7 +178,7 @@ export const ExerciseProgressionGraph: React.FC<ExerciseProgressionGraphProps> =
                   cy={p.y}
                   r={isHovered ? 4.5 : 3}
                   fill={isPR ? '#34d399' : '#ffffff'}
-                  stroke="#090d14"
+                  stroke="var(--card-bg)"
                   strokeWidth="1.5"
                   className="transition-all duration-150"
                 />

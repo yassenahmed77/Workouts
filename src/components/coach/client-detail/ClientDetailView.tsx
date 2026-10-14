@@ -85,15 +85,15 @@ export const ClientDetailView: React.FC<ClientDetailViewProps> = ({
 
   return (
     <ErrorBoundary fallbackTitle="Unable to render Client 360 profile">
-      <div className="flex flex-col h-full space-y-1 w-full max-w-none select-none overflow-hidden">
+      <div className="flex flex-col h-full space-y-1.5 w-full max-w-none select-none overflow-hidden">
         {/* 1. ZONE 1: Ultra-Slim Executive Command Bar (Typography-First, Zero Banner Bloat) */}
-        <div className="flex items-center justify-between gap-3 px-3 py-1.5 rounded-xl bg-[#090d14] border border-white/[0.08] flex-shrink-0">
+        <div className="flex items-center justify-between fluid-gap-controls fluid-card-p rounded-xl bg-[var(--card-bg)] border border-[var(--card-border)] flex-shrink-0">
         {/* Left: Back + Identity */}
         <div className="flex items-center gap-2.5 min-w-0">
           <button
             type="button"
             onClick={onBack}
-            className="flex items-center gap-1.5 py-1 px-2.5 rounded-lg bg-white/[0.04] hover:bg-white/[0.08] active:scale-95 border border-white/[0.08] text-xs font-medium text-slate-300 hover:text-white transition-all cursor-pointer shadow-xs flex-shrink-0"
+            className="gym-btn-secondary gym-btn-sm"
           >
             <ArrowLeft className="w-3.5 h-3.5" />
             <span className="hidden sm:inline">Back</span>
@@ -112,11 +112,11 @@ export const ClientDetailView: React.FC<ClientDetailViewProps> = ({
               </div>
             )}
 
-            <h2 className="text-sm font-bold text-white tracking-tight truncate">
+            <h2 className="gym-heading-card truncate">
               {client.name}
             </h2>
 
-            <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-white/[0.04] border border-white/[0.06] text-[10px] font-mono text-slate-300 flex-shrink-0">
+            <span className="gym-delta-neutral text-[10px]">
               <span className={`w-1.5 h-1.5 rounded-full ${
                 client.status === 'active' ? 'bg-emerald-400' : 'bg-amber-400'
               }`} />
@@ -126,7 +126,7 @@ export const ClientDetailView: React.FC<ClientDetailViewProps> = ({
         </div>
 
         {/* Center: The Unified Telemetry Capsule (Linear-Grade Segmented Capsule) */}
-        <div className="hidden md:flex items-center rounded-lg bg-[#05080e] border border-white/[0.08] divide-x divide-white/[0.06] text-xs font-mono overflow-hidden shadow-inner">
+        <div className="hidden md:flex items-center rounded-lg bg-[var(--bg-main)] border border-[var(--card-border)] divide-x divide-[var(--card-border)] text-xs font-mono overflow-hidden shadow-inner">
           {/* Height */}
           {client.heightCm > 0 && (
             <div className="px-2.5 py-1 flex items-center gap-1">
@@ -138,14 +138,14 @@ export const ClientDetailView: React.FC<ClientDetailViewProps> = ({
           {/* Current Weight */}
           <div className="px-2.5 py-1 flex items-center gap-1">
             <span className="text-slate-500 text-[10px]">W:</span>
-            <span className="text-white font-bold">{client.weightKg}kg</span>
+            <span className="gym-num text-white">{client.weightKg}kg</span>
           </div>
 
           {/* Goal Weight (Zero Arrows) */}
           {client.targetWeightKg && client.targetWeightKg !== client.weightKg && (
             <div className="px-2.5 py-1 flex items-center gap-1">
               <span className="text-slate-500 text-[10px]">Goal:</span>
-              <span className="text-cyan-400 font-medium">{client.targetWeightKg}kg</span>
+              <span className="text-[var(--main-color)] font-semibold">{client.targetWeightKg}kg</span>
             </div>
           )}
 
@@ -189,7 +189,7 @@ export const ClientDetailView: React.FC<ClientDetailViewProps> = ({
               href={whatsappUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="py-1 px-2.5 rounded-lg bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] text-slate-300 hover:text-emerald-400 transition-colors text-xs font-medium cursor-pointer"
+              className="gym-btn-secondary gym-btn-sm"
             >
               WhatsApp
             </a>
@@ -198,18 +198,18 @@ export const ClientDetailView: React.FC<ClientDetailViewProps> = ({
           <button
             type="button"
             onClick={() => setIsNotesModalOpen(true)}
-            className="py-1 px-2.5 rounded-lg bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] text-slate-300 hover:text-white transition-colors cursor-pointer text-xs font-medium relative shadow-sm active:scale-95"
+            className="gym-btn-secondary gym-btn-sm relative"
           >
             <span>Notes</span>
             {client.notes && client.notes.trim().length > 0 && (
-              <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 ml-1.5 inline-block" />
+              <span className="w-1.5 h-1.5 rounded-full bg-[var(--main-color)] ml-1.5 inline-block" />
             )}
           </button>
 
           <button
             type="button"
             onClick={() => onSwitchToTrainee(client.id)}
-            className="py-1 px-2.5 rounded-lg bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] text-slate-300 hover:text-white text-xs font-medium transition-colors cursor-pointer shadow-sm active:scale-95"
+            className="gym-btn-primary gym-btn-sm"
           >
             Athlete View
           </button>
@@ -231,7 +231,7 @@ export const ClientDetailView: React.FC<ClientDetailViewProps> = ({
         value={activeSubTab}
         onChange={(key) => handleSelectSubTab(key as any)}
         variant="glass"
-        className="flex-shrink-0 bg-[#090d14] border-white/[0.07]"
+        className="flex-shrink-0 bg-[var(--card-bg)] border-[var(--card-border)]"
       />
 
       {/* 3. Active Tab Content Rendering */}
@@ -290,16 +290,16 @@ export const ClientDetailView: React.FC<ClientDetailViewProps> = ({
           }}
         >
           <div 
-            className="w-full max-w-lg rounded-2xl bg-[#0b0f17] border border-white/[0.12] shadow-2xl overflow-hidden flex flex-col relative animate-in zoom-in-95 duration-150"
+            className="w-full max-w-lg rounded-2xl bg-[var(--card-bg)] border border-[var(--card-border)] shadow-2xl overflow-hidden flex flex-col relative animate-in zoom-in-95 duration-150"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Notes Header */}
-            <div className="p-3.5 sm:p-4 bg-gradient-to-r from-[#0d1420] via-[#101826] to-[#0d1420] border-b border-white/[0.08] flex items-center justify-between">
+            <div className="p-3.5 sm:p-4 bg-[var(--card-subtle-bg)] border-b border-[var(--card-border)] flex items-center justify-between">
               <div>
-                <h3 className="text-sm font-bold text-white tracking-wide">
+                <h3 className="gym-heading-section text-white tracking-wide">
                   Coach Notes
                 </h3>
-                <p className="text-[11px] font-mono text-cyan-300/90 font-medium">
+                <p className="text-[11px] font-mono text-[var(--main-color)] font-medium">
                   {client.name}
                 </p>
               </div>
@@ -314,8 +314,8 @@ export const ClientDetailView: React.FC<ClientDetailViewProps> = ({
             </div>
 
             {/* Notes Body */}
-            <div className="p-4 sm:p-5 bg-[#080c13] relative">
-              <div className="relative rounded-xl border border-white/[0.07] bg-[#05080e] overflow-hidden focus-within:border-cyan-500/40 transition-colors">
+            <div className="p-4 sm:p-5 bg-[var(--bg-main)] relative">
+              <div className="relative rounded-xl border border-[var(--card-border)] bg-[var(--input-bg)] overflow-hidden focus-within:border-[var(--main-color)]/40 transition-colors">
                 <div className="absolute left-3.5 top-0 bottom-0 w-[1px] bg-red-500/20 pointer-events-none" />
                 <textarea
                   value={notesInput}
@@ -329,7 +329,7 @@ export const ClientDetailView: React.FC<ClientDetailViewProps> = ({
             </div>
 
             {/* Notes Bottom Action Bar */}
-            <div className="px-4 py-3 bg-[#090d14] border-t border-white/[0.08] flex items-center justify-between">
+            <div className="px-4 py-3 bg-[var(--card-subtle-bg)] border-t border-[var(--card-border)] flex items-center justify-between">
               <span className="text-[11px] font-mono text-slate-400">
                 Visible to coach only
               </span>
@@ -338,7 +338,7 @@ export const ClientDetailView: React.FC<ClientDetailViewProps> = ({
                 <button
                   type="button"
                   onClick={() => setIsNotesModalOpen(false)}
-                  className="px-3 py-1.5 rounded-lg bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] text-slate-300 hover:text-white text-xs font-semibold cursor-pointer transition-colors"
+                  className="gym-btn-ghost text-xs"
                 >
                   Cancel
                 </button>
@@ -346,7 +346,7 @@ export const ClientDetailView: React.FC<ClientDetailViewProps> = ({
                   type="button"
                   onClick={handleSaveNotes}
                   disabled={isSavingNotes}
-                  className="px-4 py-1.5 rounded-lg bg-white hover:bg-slate-100 active:scale-95 text-[#080c14] text-xs font-bold flex items-center gap-1.5 cursor-pointer disabled:opacity-50 transition-all shadow-sm"
+                  className="gym-btn-primary text-xs"
                 >
                   <span>{isSavingNotes ? 'Saving...' : 'Save Notes'}</span>
                 </button>

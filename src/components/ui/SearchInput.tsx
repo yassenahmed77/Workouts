@@ -40,14 +40,14 @@ export function SearchInput({
 
   return (
     <div className={`relative ${className}`}>
-      <Search className="w-3.5 h-3.5 text-[#526075] absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+      <Search className="w-3.5 h-3.5 text-slate-500 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
       <input
         type="text"
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
         autoFocus={autoFocus}
-        className={`w-full rounded-xl bg-[#090e17] border border-[#16202e] text-white placeholder-[#526075] focus:outline-none focus:border-[#334155] transition-colors ${sizeStyles} ${inputClassName}`}
+        className={`w-full rounded-xl bg-[var(--input-bg)] border border-[var(--input-border)] text-white placeholder-slate-500 focus:outline-none focus:border-[var(--main-color)] transition-colors ${sizeStyles} ${inputClassName}`}
       />
 
       {/* Clear Button or Keyboard Shortcut */}
@@ -55,13 +55,13 @@ export function SearchInput({
         <button
           type="button"
           onClick={handleClear}
-          className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[#64748b] hover:text-white p-0.5 rounded cursor-pointer transition-colors"
+          className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white p-0.5 rounded cursor-pointer transition-colors"
           title="Clear search"
         >
           <X className="w-3.5 h-3.5" />
         </button>
       ) : showShortcut ? (
-        <span className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[9px] font-mono px-1.5 py-0.2 rounded bg-[#111622] text-[#64748b] border border-[#1c2637] pointer-events-none">
+        <span className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[9px] font-mono px-1.5 py-0.2 rounded bg-[var(--card-subtle-bg)] text-slate-400 border border-[var(--card-border)] pointer-events-none">
           {shortcutText}
         </span>
       ) : null}

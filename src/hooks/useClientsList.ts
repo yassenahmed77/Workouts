@@ -19,7 +19,7 @@ export type AthleteComputedStatus =
  * Encapsulates all search filtering, multi-criteria sorting, status evaluations,
  * pagination math, and optimistic deletion with "Undo" safety.
  */
-export function useClientsList() {
+export function useClientsList(options?: { customItemsPerPage?: number }) {
   const { 
     users, 
     currentUser,
@@ -40,7 +40,13 @@ export function useClientsList() {
   const [planFilter, setPlanFilter] = useState<'all' | string>('all');
   const [sortBy, setSortBy] = useState<'name' | 'weight' | 'adherence'>('name');
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 10;
+  const [itemsPerPage, setItemsPerPage] = useState(options?.customItemsPerPage ?? 15);
+
+  useEffect(() => {
+    if (options?.customItemsPerPage !== undefined && options.customItemsPerPage > 0) {
+      setItemsPerPage(options.customItemsPerPage);
+    }
+  }, [options?.customItemsPerPage]);
 
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [editingTrainee, setEditingTrainee] = useState<User | null>(null);
@@ -301,6 +307,8 @@ export function useClientsList() {
     totalPages,
     currentPage: activePage,
     setCurrentPage,
+    itemsPerPage,
+    setItemsPerPage,
     // Filters & Sorting
     searchQuery,
     setSearchQuery,

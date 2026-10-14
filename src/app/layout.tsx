@@ -48,7 +48,7 @@ export default function RootLayout({
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full dark`}
     >
-      <body className="min-h-full flex flex-col bg-[#0a0a0c] text-[#f4f4f6]">
+      <body className="min-h-full flex flex-col bg-[var(--bg-page)] text-slate-100">
         <ToastProvider>
           <GymProvider>
             {children}

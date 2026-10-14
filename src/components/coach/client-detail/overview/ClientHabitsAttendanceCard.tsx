@@ -28,11 +28,11 @@ export const ClientHabitsAttendanceCard: React.FC<ClientHabitsAttendanceCardProp
   setWeekOffset
 }) => {
   return (
-    <div className="p-3 rounded-xl bg-[#090d14] border border-white/[0.07] space-y-2">
+    <div className="gym-card space-y-2">
       {/* Header: Title + Week Navigation Arrows + Sessions & Adherence */}
-      <div className="flex items-center justify-between pb-1 border-b border-white/[0.05]">
+      <div className="flex items-center justify-between pb-1.5 border-b border-white/[0.07]">
         <div className="flex items-center gap-2">
-          <span className="text-[10px] font-mono uppercase tracking-wider text-slate-300 font-bold">
+          <span className="gym-label-mono">
             WEEKLY ATTENDANCE
           </span>
 
@@ -61,7 +61,7 @@ export const ClientHabitsAttendanceCard: React.FC<ClientHabitsAttendanceCardProp
               <button
                 type="button"
                 onClick={() => setWeekOffset(0)}
-                className="text-[8px] text-cyan-400 hover:text-cyan-300 ml-0.5 font-bold cursor-pointer"
+                className="text-[8px] text-[var(--main-color)] hover:text-blue-400 ml-0.5 font-bold cursor-pointer"
                 title="Reset to current week"
               >
                 Now
@@ -72,16 +72,16 @@ export const ClientHabitsAttendanceCard: React.FC<ClientHabitsAttendanceCardProp
 
         {/* Progress & Adherence */}
         <div className="flex items-center gap-2">
-          <span className="text-[10px] font-mono text-slate-400">
+          <span className="gym-subtext font-mono">
             {weekAttendance.completedCount} / {weekAttendance.targetSessions} Sessions
           </span>
           <span
             className={`text-[10px] font-mono px-2 py-0.5 rounded-full font-bold border ${
               weekAttendance.percentage >= 75
-                ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400'
+                ? 'gym-delta-pos'
                 : weekAttendance.percentage >= 50
                 ? 'bg-amber-500/10 border-amber-500/20 text-amber-400'
-                : 'bg-white/[0.05] border-white/10 text-slate-400'
+                : 'gym-delta-neutral'
             }`}
           >
             {weekAttendance.percentage}% Adherence
@@ -101,8 +101,8 @@ export const ClientHabitsAttendanceCard: React.FC<ClientHabitsAttendanceCardProp
                 isCompleted
                   ? 'bg-emerald-500/[0.08] border-emerald-500/30'
                   : day.isToday
-                  ? 'bg-white/[0.04] border-cyan-500/40 shadow-xs'
-                  : 'bg-[#05080e] border-white/[0.04]'
+                  ? 'bg-white/[0.04] border-[var(--main-color)]/40 shadow-xs'
+                  : 'bg-[var(--card-subtle-bg)] border-[var(--card-border)]'
               }`}
             >
               {/* Top Row: Day Name & Calendar Date */}
@@ -110,7 +110,7 @@ export const ClientHabitsAttendanceCard: React.FC<ClientHabitsAttendanceCardProp
                 <span className={day.isToday ? 'text-white font-bold' : ''}>
                   {day.dayName}
                 </span>
-                <span className={day.isToday ? 'text-cyan-400 font-bold' : 'text-slate-500'}>
+                <span className={day.isToday ? 'text-[var(--main-color)] font-bold' : 'text-slate-500'}>
                   {day.dayNum}
                 </span>
               </div>
@@ -122,7 +122,7 @@ export const ClientHabitsAttendanceCard: React.FC<ClientHabitsAttendanceCardProp
                     Done
                   </span>
                 ) : day.isToday ? (
-                  <span className="text-[9px] font-mono text-cyan-400 font-medium block">
+                  <span className="text-[9px] font-mono text-[var(--main-color)] font-medium block">
                     Today
                   </span>
                 ) : (

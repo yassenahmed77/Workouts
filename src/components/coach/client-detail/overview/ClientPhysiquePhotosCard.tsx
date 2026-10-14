@@ -19,11 +19,11 @@ export const ClientPhysiquePhotosCard: React.FC<ClientPhysiquePhotosCardProps> =
   onOpenFullscreenCompare
 }) => {
   return (
-    <div className="p-3 rounded-xl bg-[#090d14] border border-white/[0.07] space-y-2">
-      <div className="flex items-center justify-between pb-1 border-b border-white/[0.05]">
-        <h4 className="text-[10px] font-mono uppercase tracking-wider text-slate-300 font-bold">
+    <div className="gym-card space-y-2">
+      <div className="flex items-center justify-between pb-1.5 border-b border-white/[0.07]">
+        <span className="gym-label-mono">
           VISUAL TRANSFORMATION
-        </h4>
+        </span>
 
         {/* Angle Selector */}
         <div className="flex items-center gap-1 p-0.5 rounded bg-black/50 border border-white/[0.06] text-[10px] font-mono">
@@ -48,7 +48,7 @@ export const ClientPhysiquePhotosCard: React.FC<ClientPhysiquePhotosCardProps> =
       <div className="grid grid-cols-2 gap-2 w-full">
         {/* Baseline Photo */}
         <div className="w-full flex flex-col items-center">
-          <div className="relative w-full h-[270px] rounded-lg bg-[#05080e] border border-white/[0.06] overflow-hidden flex flex-col items-center justify-center">
+          <div className="relative w-full h-[270px] rounded-lg bg-[var(--card-subtle-bg)] border border-[var(--card-border)] overflow-hidden flex flex-col items-center justify-center">
             {firstCheckIn?.photos?.find((p) => p.angle === activePhotoAngle)?.url ? (
               <img
                 src={firstCheckIn.photos.find((p) => p.angle === activePhotoAngle)?.url}
@@ -56,7 +56,7 @@ export const ClientPhysiquePhotosCard: React.FC<ClientPhysiquePhotosCardProps> =
                 className="w-full h-full object-cover"
               />
             ) : (
-              <span className="text-xs text-slate-400 font-mono">No Photo</span>
+              <span className="gym-subtext font-mono">No Photo</span>
             )}
             <span className="absolute bottom-2 left-2 px-1.5 py-0.5 rounded bg-black/75 border border-white/[0.1] text-[9px] font-mono text-slate-300">
               Start
@@ -69,7 +69,7 @@ export const ClientPhysiquePhotosCard: React.FC<ClientPhysiquePhotosCardProps> =
 
         {/* Latest Photo */}
         <div className="w-full flex flex-col items-center">
-          <div className="relative w-full h-[270px] rounded-lg bg-[#05080e] border border-white/[0.06] overflow-hidden flex flex-col items-center justify-center">
+          <div className="relative w-full h-[270px] rounded-lg bg-[var(--card-subtle-bg)] border border-[var(--card-border)] overflow-hidden flex flex-col items-center justify-center">
             {latestCheckIn?.photos?.find((p) => p.angle === activePhotoAngle)?.url ? (
               <img
                 src={latestCheckIn.photos.find((p) => p.angle === activePhotoAngle)?.url}
@@ -77,13 +77,13 @@ export const ClientPhysiquePhotosCard: React.FC<ClientPhysiquePhotosCardProps> =
                 className="w-full h-full object-cover"
               />
             ) : (
-              <span className="text-xs text-slate-400 font-mono">No Photo</span>
+              <span className="gym-subtext font-mono">No Photo</span>
             )}
             <span className="absolute bottom-2 left-2 px-1.5 py-0.5 rounded bg-black/75 border border-white/[0.1] text-[9px] font-mono text-slate-300">
               Now
             </span>
           </div>
-          <span className="text-[10px] font-mono text-cyan-400 block text-center mt-1.5 w-full">
+          <span className="text-[10px] font-mono text-[var(--main-color)] font-semibold block text-center mt-1.5 w-full">
             {latestCheckIn?.date ? latestCheckIn.date : 'Latest'}
           </span>
         </div>
@@ -92,7 +92,7 @@ export const ClientPhysiquePhotosCard: React.FC<ClientPhysiquePhotosCardProps> =
       <button
         type="button"
         onClick={onOpenFullscreenCompare}
-        className="w-full py-1.5 rounded-lg bg-white/[0.04] hover:bg-white/[0.08] active:scale-[0.99] border border-white/[0.08] text-xs font-semibold text-slate-200 text-center cursor-pointer transition-all mt-1"
+        className="gym-btn-secondary w-full text-xs"
       >
         Compare Fullscreen
       </button>

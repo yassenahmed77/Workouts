@@ -152,6 +152,7 @@ export interface Exercise {
   executionCue: string;
   tips: string[];
   alternativeExercise?: string; // e.g. "Dumbbell Press / Smith Machine"
+  alternativeVideoUrl?: string; // Video URL for the alternative movement
   videoUrl?: string; // YouTube or video explanation link
 }
 
@@ -172,6 +173,7 @@ export interface RoutineExercise {
   restSeconds: number; // e.g., 90
   notes?: string;
   alternativeExercise?: string; // Legacy string e.g. "Dumbbell Press / Smith Machine"
+  alternativeVideoUrl?: string; // Video URL for the alternative movement
   alternatives?: ExerciseAlternative[]; // Multiple alternatives with video links
   videoUrl?: string; // Link el video elly byshra7
   tips?: string[]; // Tips & form cues

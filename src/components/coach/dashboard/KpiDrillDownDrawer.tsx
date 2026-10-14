@@ -418,13 +418,13 @@ export const KpiDrillDownDrawer: React.FC<KpiDrillDownDrawerProps> = ({
       onClick={onClose}
     >
       <div
-        className="w-full max-w-xl bg-[#090d15] border-l border-[#16202e] flex flex-col h-full shadow-2xl animate-in slide-in-from-right duration-300 select-none text-[#f8fafc]"
+        className="w-full max-w-xl bg-[var(--card-bg)] border-l border-[var(--card-border)] flex flex-col h-full shadow-2xl animate-in slide-in-from-right duration-300 select-none text-[#f8fafc]"
         onClick={(e) => e.stopPropagation()}
       >
         {/* 1. Header */}
-        <div className="p-4 sm:p-5 border-b border-[#141b26] flex items-center justify-between gap-3">
+        <div className="p-4 sm:p-5 border-b border-[var(--card-border)] flex items-center justify-between gap-3">
           <div className="flex items-center gap-3 min-w-0">
-            <div className="w-9 h-9 rounded-xl bg-[#0e1624] border border-[#1d2a3e] flex items-center justify-center text-[#00c5ff] flex-shrink-0">
+            <div className="w-9 h-9 rounded-xl bg-[var(--card-subtle-bg)] border border-[var(--card-border)] flex items-center justify-center text-[var(--main-color)] flex-shrink-0">
               <Icon className="w-4 h-4" />
             </div>
             <div className="min-w-0">
@@ -432,11 +432,11 @@ export const KpiDrillDownDrawer: React.FC<KpiDrillDownDrawerProps> = ({
                 <h2 className="text-sm sm:text-base font-bold text-white tracking-tight truncate">
                   {header.title}
                 </h2>
-                <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-[#111827] text-[#00c5ff] border border-[#1f293d] font-bold flex-shrink-0">
+                <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-[var(--card-subtle-bg)] text-[var(--main-color)] border border-[var(--card-border)] font-bold flex-shrink-0">
                   {header.badge}
                 </span>
               </div>
-              <p className="text-[11px] text-[#64748b] truncate mt-0.5">
+              <p className="text-[11px] text-slate-400 truncate mt-0.5">
                 {header.subtitle}
               </p>
             </div>
@@ -444,7 +444,7 @@ export const KpiDrillDownDrawer: React.FC<KpiDrillDownDrawerProps> = ({
 
           <button
             onClick={onClose}
-            className="p-1.5 rounded-xl bg-[#0e1624] hover:bg-[#152033] border border-[#1b2637] text-[#8896aa] hover:text-white transition-colors cursor-pointer flex-shrink-0"
+            className="p-1.5 rounded-xl bg-[var(--card-subtle-bg)] hover:bg-[var(--card-border)] border border-[var(--card-border)] text-slate-400 hover:text-white transition-colors cursor-pointer flex-shrink-0"
             title="Close Drawer"
           >
             <X className="w-4 h-4" />
@@ -452,15 +452,15 @@ export const KpiDrillDownDrawer: React.FC<KpiDrillDownDrawerProps> = ({
         </div>
 
         {/* 2. Sub-Tab Filter Pills */}
-        <div className="px-4 sm:px-5 py-2.5 border-b border-[#141b26] flex items-center gap-2 overflow-x-auto custom-scrollbar">
+        <div className="px-4 sm:px-5 py-2.5 border-b border-[var(--card-border)] flex items-center gap-2 overflow-x-auto custom-scrollbar">
           {(type === 'training_today' || type === 'roster_training') && (
             <>
               <button
                 onClick={() => setActiveSubTab('completed')}
                 className={`px-3 py-1 rounded-xl text-xs font-medium transition-all cursor-pointer whitespace-nowrap ${
                   activeSubTab === 'completed'
-                    ? 'bg-white text-[#080c14] font-bold shadow-sm'
-                    : 'bg-[#0d131f] text-[#8896aa] hover:text-white border border-[#162130]'
+                    ? 'bg-white text-slate-900 font-bold shadow-sm'
+                    : 'bg-[var(--card-subtle-bg)] text-slate-400 hover:text-white border border-[var(--card-border)]'
                 }`}
               >
                 Logged Today ({trainingLoggedToday.length})
@@ -469,8 +469,8 @@ export const KpiDrillDownDrawer: React.FC<KpiDrillDownDrawerProps> = ({
                 onClick={() => setActiveSubTab('not_logged')}
                 className={`px-3 py-1 rounded-xl text-xs font-medium transition-all cursor-pointer whitespace-nowrap ${
                   activeSubTab === 'not_logged'
-                    ? 'bg-white text-[#080c14] font-bold shadow-sm'
-                    : 'bg-[#0d131f] text-[#8896aa] hover:text-white border border-[#162130]'
+                    ? 'bg-white text-slate-900 font-bold shadow-sm'
+                    : 'bg-[var(--card-subtle-bg)] text-slate-400 hover:text-white border border-[var(--card-border)]'
                 }`}
               >
                 Not Logged Today ({trainingNotLoggedToday.length})
@@ -479,8 +479,8 @@ export const KpiDrillDownDrawer: React.FC<KpiDrillDownDrawerProps> = ({
                 onClick={() => setActiveSubTab('review')}
                 className={`px-3 py-1 rounded-xl text-xs font-medium transition-all cursor-pointer whitespace-nowrap ${
                   activeSubTab === 'review'
-                    ? 'bg-white text-[#080c14] font-bold shadow-sm'
-                    : 'bg-[#0d131f] text-[#8896aa] hover:text-white border border-[#162130]'
+                    ? 'bg-white text-slate-900 font-bold shadow-sm'
+                    : 'bg-[var(--card-subtle-bg)] text-slate-400 hover:text-white border border-[var(--card-border)]'
                 }`}
               >
                 Needs Review ({trainingPlansNeedReview.length})
@@ -494,8 +494,8 @@ export const KpiDrillDownDrawer: React.FC<KpiDrillDownDrawerProps> = ({
                 onClick={() => setActiveSubTab('on_target')}
                 className={`px-3 py-1 rounded-xl text-xs font-medium transition-all cursor-pointer whitespace-nowrap ${
                   activeSubTab === 'on_target'
-                    ? 'bg-white text-[#080c14] font-bold shadow-sm'
-                    : 'bg-[#0d131f] text-[#8896aa] hover:text-white border border-[#162130]'
+                    ? 'bg-white text-slate-900 font-bold shadow-sm'
+                    : 'bg-[var(--card-subtle-bg)] text-slate-400 hover:text-white border border-[var(--card-border)]'
                 }`}
               >
                 On Target ({nutritionOnTarget.length})
@@ -504,8 +504,8 @@ export const KpiDrillDownDrawer: React.FC<KpiDrillDownDrawerProps> = ({
                 onClick={() => setActiveSubTab('needs_adjustment')}
                 className={`px-3 py-1 rounded-xl text-xs font-medium transition-all cursor-pointer whitespace-nowrap ${
                   activeSubTab === 'needs_adjustment'
-                    ? 'bg-white text-[#080c14] font-bold shadow-sm'
-                    : 'bg-[#0d131f] text-[#8896aa] hover:text-white border border-[#162130]'
+                    ? 'bg-white text-slate-900 font-bold shadow-sm'
+                    : 'bg-[var(--card-subtle-bg)] text-slate-400 hover:text-white border border-[var(--card-border)]'
                 }`}
               >
                 Needs Adjustment ({nutritionNeedsAdjustment.length})
@@ -519,8 +519,8 @@ export const KpiDrillDownDrawer: React.FC<KpiDrillDownDrawerProps> = ({
                 onClick={() => setActiveSubTab('overdue')}
                 className={`px-3 py-1 rounded-xl text-xs font-medium transition-all cursor-pointer whitespace-nowrap ${
                   activeSubTab === 'overdue'
-                    ? 'bg-white text-[#080c14] font-bold shadow-sm'
-                    : 'bg-[#0d131f] text-[#8896aa] hover:text-white border border-[#162130]'
+                    ? 'bg-white text-slate-900 font-bold shadow-sm'
+                    : 'bg-[var(--card-subtle-bg)] text-slate-400 hover:text-white border border-[var(--card-border)]'
                 }`}
               >
                 Late ({checkinsOverdue.length})
@@ -529,8 +529,8 @@ export const KpiDrillDownDrawer: React.FC<KpiDrillDownDrawerProps> = ({
                 onClick={() => setActiveSubTab('submitted')}
                 className={`px-3 py-1 rounded-xl text-xs font-medium transition-all cursor-pointer whitespace-nowrap ${
                   activeSubTab === 'submitted'
-                    ? 'bg-white text-[#080c14] font-bold shadow-sm'
-                    : 'bg-[#0d131f] text-[#8896aa] hover:text-white border border-[#162130]'
+                    ? 'bg-white text-slate-900 font-bold shadow-sm'
+                    : 'bg-[var(--card-subtle-bg)] text-slate-400 hover:text-white border border-[var(--card-border)]'
                 }`}
               >
                 Submitted ({checkinsSubmitted.length})
@@ -544,8 +544,8 @@ export const KpiDrillDownDrawer: React.FC<KpiDrillDownDrawerProps> = ({
                 onClick={() => setActiveSubTab('engaged')}
                 className={`px-3 py-1 rounded-xl text-xs font-medium transition-all cursor-pointer whitespace-nowrap ${
                   activeSubTab === 'engaged'
-                    ? 'bg-white text-[#080c14] font-bold shadow-sm'
-                    : 'bg-[#0d131f] text-[#8896aa] hover:text-white border border-[#162130]'
+                    ? 'bg-white text-slate-900 font-bold shadow-sm'
+                    : 'bg-[var(--card-subtle-bg)] text-slate-400 hover:text-white border border-[var(--card-border)]'
                 }`}
               >
                 Engaged (11)
@@ -554,8 +554,8 @@ export const KpiDrillDownDrawer: React.FC<KpiDrillDownDrawerProps> = ({
                 onClick={() => setActiveSubTab('at_risk')}
                 className={`px-3 py-1 rounded-xl text-xs font-medium transition-all cursor-pointer whitespace-nowrap ${
                   activeSubTab === 'at_risk'
-                    ? 'bg-white text-[#080c14] font-bold shadow-sm'
-                    : 'bg-[#0d131f] text-[#8896aa] hover:text-white border border-[#162130]'
+                    ? 'bg-white text-slate-900 font-bold shadow-sm'
+                    : 'bg-[var(--card-subtle-bg)] text-slate-400 hover:text-white border border-[var(--card-border)]'
                 }`}
               >
                 At Risk (2)
@@ -569,8 +569,8 @@ export const KpiDrillDownDrawer: React.FC<KpiDrillDownDrawerProps> = ({
                 onClick={() => setActiveSubTab('progressing')}
                 className={`px-3 py-1 rounded-xl text-xs font-medium transition-all cursor-pointer whitespace-nowrap ${
                   activeSubTab === 'progressing'
-                    ? 'bg-white text-[#080c14] font-bold shadow-sm'
-                    : 'bg-[#0d131f] text-[#8896aa] hover:text-white border border-[#162130]'
+                    ? 'bg-white text-slate-900 font-bold shadow-sm'
+                    : 'bg-[var(--card-subtle-bg)] text-slate-400 hover:text-white border border-[var(--card-border)]'
                 }`}
               >
                 Showing Progress (10)
@@ -579,8 +579,8 @@ export const KpiDrillDownDrawer: React.FC<KpiDrillDownDrawerProps> = ({
                 onClick={() => setActiveSubTab('stalled')}
                 className={`px-3 py-1 rounded-xl text-xs font-medium transition-all cursor-pointer whitespace-nowrap ${
                   activeSubTab === 'stalled'
-                    ? 'bg-white text-[#080c14] font-bold shadow-sm'
-                    : 'bg-[#0d131f] text-[#8896aa] hover:text-white border border-[#162130]'
+                    ? 'bg-white text-slate-900 font-bold shadow-sm'
+                    : 'bg-[var(--card-subtle-bg)] text-slate-400 hover:text-white border border-[var(--card-border)]'
                 }`}
               >
                 Plateaued (3)
@@ -594,7 +594,7 @@ export const KpiDrillDownDrawer: React.FC<KpiDrillDownDrawerProps> = ({
           {/* TRAINING: Logged Today */}
           {(type === 'training_today' || type === 'roster_training') && (activeSubTab === 'completed' || activeSubTab === 'active') && (
             <div className="space-y-2">
-              <div className="flex items-center justify-between text-[11px] text-[#64748b] pb-1 font-mono">
+              <div className="flex items-center justify-between text-[11px] text-slate-400 pb-1 font-mono">
                 <span>8 ATHLETES COMPLETED SESSIONS TODAY</span>
                 <span>STATUS: VERIFIED</span>
               </div>
@@ -605,27 +605,27 @@ export const KpiDrillDownDrawer: React.FC<KpiDrillDownDrawerProps> = ({
                     onSelectClient(item.user, 'workout');
                     onClose();
                   }}
-                  className="p-3 rounded-xl bg-[#0d131f] hover:bg-[#121a2a] border border-[#16202e] hover:border-[#223046] transition-all cursor-pointer group flex items-center justify-between gap-3"
+                  className="p-3 rounded-xl bg-[var(--card-subtle-bg)] hover:bg-[var(--card-border)] border border-[var(--card-border)] hover:border-[var(--card-border)] transition-all cursor-pointer group flex items-center justify-between gap-3"
                 >
                   <div className="flex items-center gap-2.5 min-w-0">
                     <img
                       src={item.user.avatarUrl}
                       alt={item.user.name}
-                      className="w-8 h-8 rounded-full object-cover border border-[#1d2a3d] flex-shrink-0"
+                      className="w-8 h-8 rounded-full object-cover border border-[var(--card-border)] flex-shrink-0"
                     />
                     <div className="min-w-0">
                       <div className="flex items-center gap-1.5">
-                        <span className="text-xs font-bold text-white group-hover:text-[#00c5ff] transition-colors truncate">
+                        <span className="text-xs font-bold text-white group-hover:text-[var(--main-color)] transition-colors truncate">
                           {item.user.name}
                         </span>
-                        <span className="text-[9px] font-mono px-1.5 py-0.5 rounded bg-[#0e2118] text-emerald-400 border border-emerald-500/20">
+                        <span className="text-[9px] font-mono px-1.5 py-0.5 rounded bg-emerald-950/40 text-emerald-400 border border-emerald-500/20">
                           {item.status}
                         </span>
                       </div>
-                      <p className="text-[10px] text-[#8896aa] truncate mt-0.5">
+                      <p className="text-[10px] text-slate-400 truncate mt-0.5">
                         <strong className="text-zinc-300 font-semibold">{item.workoutName}</strong> • {item.sets} sets • {item.duration}
                       </p>
-                      <p className="text-[9px] font-mono text-[#526075] mt-0.5">{item.time}</p>
+                      <p className="text-[9px] font-mono text-slate-500 mt-0.5">{item.time}</p>
                     </div>
                   </div>
 
@@ -636,11 +636,11 @@ export const KpiDrillDownDrawer: React.FC<KpiDrillDownDrawerProps> = ({
                         onSelectClient(item.user, 'logs');
                         onClose();
                       }}
-                      className="px-2.5 py-1 rounded-lg bg-[#141c2a] hover:bg-[#1d273a] text-[#00c5ff] text-[10px] font-mono font-medium border border-[#1e2a3c] transition-colors"
+                      className="px-2.5 py-1 rounded-lg bg-[var(--card-bg)] hover:bg-[var(--card-border)] text-[var(--main-color)] text-[10px] font-mono font-medium border border-[var(--card-border)] transition-colors"
                     >
                       View Log
                     </button>
-                    <ChevronRight className="w-3.5 h-3.5 text-[#526075] group-hover:text-white transition-colors" />
+                    <ChevronRight className="w-3.5 h-3.5 text-slate-500 group-hover:text-white transition-colors" />
                   </div>
                 </div>
               ))}
@@ -650,32 +650,32 @@ export const KpiDrillDownDrawer: React.FC<KpiDrillDownDrawerProps> = ({
           {/* TRAINING: Not Logged Today */}
           {(type === 'training_today' || type === 'roster_training') && activeSubTab === 'not_logged' && (
             <div className="space-y-2">
-              <div className="flex items-center justify-between text-[11px] text-[#64748b] pb-1 font-mono">
+              <div className="flex items-center justify-between text-[11px] text-slate-400 pb-1 font-mono">
                 <span>3 ATHLETES PENDING TODAY&apos;S WORKOUT</span>
                 <span>ACTION REQUIRED</span>
               </div>
               {trainingNotLoggedToday.map((item, idx) => (
                 <div
                   key={idx}
-                  className="p-3 rounded-xl bg-[#0d131f] border border-[#16202e] flex items-center justify-between gap-3"
+                  className="p-3 rounded-xl bg-[var(--card-subtle-bg)] border border-[var(--card-border)] flex items-center justify-between gap-3"
                 >
                   <div className="flex items-center gap-2.5 min-w-0">
                     <img
                       src={item.user.avatarUrl}
                       alt={item.user.name}
-                      className="w-8 h-8 rounded-full object-cover border border-[#1d2a3d] flex-shrink-0"
+                      className="w-8 h-8 rounded-full object-cover border border-[var(--card-border)] flex-shrink-0"
                     />
                     <div className="min-w-0">
                       <div className="flex items-center gap-1.5">
                         <span className="text-xs font-bold text-white truncate">{item.user.name}</span>
-                        <span className="text-[9px] font-mono px-1.5 py-0.5 rounded bg-[#201811] text-[#94a3b8] border border-[#2d251d]">
+                        <span className="text-[9px] font-mono px-1.5 py-0.5 rounded bg-amber-950/40 text-slate-300 border border-amber-500/20">
                           Pending
                         </span>
                       </div>
-                      <p className="text-[10px] text-[#8896aa] truncate mt-0.5">
+                      <p className="text-[10px] text-slate-400 truncate mt-0.5">
                         Scheduled: <strong className="text-zinc-300 font-medium">{item.scheduledWorkout}</strong>
                       </p>
-                      <p className="text-[9px] font-mono text-[#526075] mt-0.5">
+                      <p className="text-[9px] font-mono text-slate-500 mt-0.5">
                         Last trained: {item.lastTrained} • {item.reason}
                       </p>
                     </div>
@@ -684,7 +684,7 @@ export const KpiDrillDownDrawer: React.FC<KpiDrillDownDrawerProps> = ({
                   <div className="flex items-center gap-2 flex-shrink-0">
                     <button
                       onClick={() => handleRemindAthlete(item.user.name, 'workout log')}
-                      className="px-2.5 py-1 rounded-lg bg-[#141c2a] hover:bg-[#1d273a] text-white hover:text-[#00c5ff] text-[10px] font-mono font-medium border border-[#1e2a3c] flex items-center gap-1 transition-colors cursor-pointer"
+                      className="px-2.5 py-1 rounded-lg bg-[var(--card-bg)] hover:bg-[var(--card-border)] text-white hover:text-[var(--main-color)] text-[10px] font-mono font-medium border border-[var(--card-border)] flex items-center gap-1 transition-colors cursor-pointer"
                     >
                       <Send className="w-2.5 h-2.5" />
                       <span>Remind</span>
@@ -694,7 +694,7 @@ export const KpiDrillDownDrawer: React.FC<KpiDrillDownDrawerProps> = ({
                         onSelectClient(item.user, 'overview');
                         onClose();
                       }}
-                      className="p-1 text-[#526075] hover:text-white transition-colors"
+                      className="p-1 text-slate-500 hover:text-white transition-colors"
                       title="View Profile"
                     >
                       <ExternalLink className="w-3.5 h-3.5" />
@@ -708,32 +708,32 @@ export const KpiDrillDownDrawer: React.FC<KpiDrillDownDrawerProps> = ({
           {/* TRAINING: Needs Review */}
           {(type === 'training_today' || type === 'roster_training') && activeSubTab === 'review' && (
             <div className="space-y-2">
-              <div className="flex items-center justify-between text-[11px] text-[#64748b] pb-1 font-mono">
+              <div className="flex items-center justify-between text-[11px] text-slate-400 pb-1 font-mono">
                 <span>2 TRAINING PLANS NEED COACH REVISION</span>
                 <span>EXPIRING / STALLED</span>
               </div>
               {trainingPlansNeedReview.map((item, idx) => (
                 <div
                   key={idx}
-                  className="p-3 rounded-xl bg-[#0d131f] border border-[#16202e] flex items-center justify-between gap-3"
+                  className="p-3 rounded-xl bg-[var(--card-subtle-bg)] border border-[var(--card-border)] flex items-center justify-between gap-3"
                 >
                   <div className="flex items-center gap-2.5 min-w-0">
                     <img
                       src={item.user.avatarUrl}
                       alt={item.user.name}
-                      className="w-8 h-8 rounded-full object-cover border border-[#1d2a3d] flex-shrink-0"
+                      className="w-8 h-8 rounded-full object-cover border border-[var(--card-border)] flex-shrink-0"
                     />
                     <div className="min-w-0">
                       <div className="flex items-center gap-1.5">
                         <span className="text-xs font-bold text-white truncate">{item.user.name}</span>
-                        <span className="text-[9px] font-mono px-1.5 py-0.5 rounded bg-[#25131a] text-rose-400 border border-rose-500/20 font-bold">
+                        <span className="text-[9px] font-mono px-1.5 py-0.5 rounded bg-rose-950/40 text-rose-400 border border-rose-500/20 font-bold">
                           {item.issue}
                         </span>
                       </div>
-                      <p className="text-[10px] text-[#8896aa] truncate mt-0.5">
+                      <p className="text-[10px] text-slate-400 truncate mt-0.5">
                         Current: <span className="text-zinc-300">{item.currentPlan}</span>
                       </p>
-                      <p className="text-[9px] font-mono text-[#526075] mt-0.5">{item.actionRequired}</p>
+                      <p className="text-[9px] font-mono text-slate-500 mt-0.5">{item.actionRequired}</p>
                     </div>
                   </div>
 
@@ -742,7 +742,7 @@ export const KpiDrillDownDrawer: React.FC<KpiDrillDownDrawerProps> = ({
                       if (onOpenAssignModal) onOpenAssignModal(item.user);
                       onClose();
                     }}
-                    className="px-2.5 py-1 rounded-lg bg-[#00c5ff] hover:bg-[#38bdf8] text-[#070a0f] text-[10px] font-bold font-mono transition-colors flex-shrink-0 cursor-pointer flex items-center gap-1"
+                    className="gym-btn-primary text-[10px] font-bold flex items-center gap-1 flex-shrink-0"
                   >
                     <Edit3 className="w-2.5 h-2.5 stroke-[2.5]" />
                     <span>Update Plan</span>
@@ -755,7 +755,7 @@ export const KpiDrillDownDrawer: React.FC<KpiDrillDownDrawerProps> = ({
           {/* NUTRITION: On Target */}
           {(type === 'nutrition_today' || type === 'roster_nutrition') && activeSubTab === 'on_target' && (
             <div className="space-y-2">
-              <div className="flex items-center justify-between text-[11px] text-[#64748b] pb-1 font-mono">
+              <div className="flex items-center justify-between text-[11px] text-slate-400 pb-1 font-mono">
                 <span>7 ATHLETES HITTING MACRO & CALORIE TARGETS</span>
                 <span>ON TRACK</span>
               </div>
@@ -766,27 +766,27 @@ export const KpiDrillDownDrawer: React.FC<KpiDrillDownDrawerProps> = ({
                     onSelectClient(item.user, 'nutrition');
                     onClose();
                   }}
-                  className="p-3 rounded-xl bg-[#0d131f] hover:bg-[#121a2a] border border-[#16202e] hover:border-[#223046] transition-all cursor-pointer group flex items-center justify-between gap-3"
+                  className="p-3 rounded-xl bg-[var(--card-subtle-bg)] hover:bg-[var(--card-border)] border border-[var(--card-border)] hover:border-[var(--card-border)] transition-all cursor-pointer group flex items-center justify-between gap-3"
                 >
                   <div className="flex items-center gap-2.5 min-w-0">
                     <img
                       src={item.user.avatarUrl}
                       alt={item.user.name}
-                      className="w-8 h-8 rounded-full object-cover border border-[#1d2a3d] flex-shrink-0"
+                      className="w-8 h-8 rounded-full object-cover border border-[var(--card-border)] flex-shrink-0"
                     />
                     <div className="min-w-0">
                       <div className="flex items-center gap-1.5">
-                        <span className="text-xs font-bold text-white group-hover:text-[#00c5ff] transition-colors truncate">
+                        <span className="text-xs font-bold text-white group-hover:text-[var(--main-color)] transition-colors truncate">
                           {item.user.name}
                         </span>
-                        <span className="text-[9px] font-mono px-1.5 py-0.5 rounded bg-[#0d2218] text-emerald-400 border border-emerald-500/20">
+                        <span className="text-[9px] font-mono px-1.5 py-0.5 rounded bg-emerald-950/40 text-emerald-400 border border-emerald-500/20">
                           {item.adherence}% On Target
                         </span>
                       </div>
-                      <p className="text-[10px] text-[#8896aa] truncate mt-0.5">
+                      <p className="text-[10px] text-slate-400 truncate mt-0.5">
                         <strong className="text-zinc-300 font-medium">{item.intake}</strong> • {item.protein}
                       </p>
-                      <p className="text-[9px] font-mono text-[#526075] mt-0.5">Protocol: {item.planName}</p>
+                      <p className="text-[9px] font-mono text-slate-500 mt-0.5">Protocol: {item.planName}</p>
                     </div>
                   </div>
 
@@ -797,11 +797,11 @@ export const KpiDrillDownDrawer: React.FC<KpiDrillDownDrawerProps> = ({
                         onSelectClient(item.user, 'nutrition');
                         onClose();
                       }}
-                      className="px-2.5 py-1 rounded-lg bg-[#141c2a] hover:bg-[#1d273a] text-[#00c5ff] text-[10px] font-mono font-medium border border-[#1e2a3c] transition-colors"
+                      className="px-2.5 py-1 rounded-lg bg-[var(--card-bg)] hover:bg-[var(--card-border)] text-[var(--main-color)] text-[10px] font-mono font-medium border border-[var(--card-border)] transition-colors"
                     >
                       View Diet
                     </button>
-                    <ChevronRight className="w-3.5 h-3.5 text-[#526075] group-hover:text-white transition-colors" />
+                    <ChevronRight className="w-3.5 h-3.5 text-slate-500 group-hover:text-white transition-colors" />
                   </div>
                 </div>
               ))}
@@ -811,39 +811,39 @@ export const KpiDrillDownDrawer: React.FC<KpiDrillDownDrawerProps> = ({
           {/* NUTRITION: Needs Adjustment */}
           {(type === 'nutrition_today' || type === 'roster_nutrition') && activeSubTab === 'needs_adjustment' && (
             <div className="space-y-2">
-              <div className="flex items-center justify-between text-[11px] text-[#64748b] pb-1 font-mono">
+              <div className="flex items-center justify-between text-[11px] text-slate-400 pb-1 font-mono">
                 <span>2 ATHLETES OFF TRACK / LOW ADHERENCE</span>
                 <span>LOW CALORIES / UNDER TARGET</span>
               </div>
               {nutritionNeedsAdjustment.map((item, idx) => (
                 <div
                   key={idx}
-                  className="p-3 rounded-xl bg-[#0d131f] border border-[#16202e] flex items-center justify-between gap-3"
+                  className="p-3 rounded-xl bg-[var(--card-subtle-bg)] border border-[var(--card-border)] flex items-center justify-between gap-3"
                 >
                   <div className="flex items-center gap-2.5 min-w-0">
                     <img
                       src={item.user.avatarUrl}
                       alt={item.user.name}
-                      className="w-8 h-8 rounded-full object-cover border border-[#1d2a3d] flex-shrink-0"
+                      className="w-8 h-8 rounded-full object-cover border border-[var(--card-border)] flex-shrink-0"
                     />
                     <div className="min-w-0">
                       <div className="flex items-center gap-1.5">
                         <span className="text-xs font-bold text-white truncate">{item.user.name}</span>
-                        <span className="text-[9px] font-mono px-1.5 py-0.5 rounded bg-[#281615] text-[#cbd5e1] border border-[#3d2422]">
+                        <span className="text-[9px] font-mono px-1.5 py-0.5 rounded bg-rose-950/40 text-slate-300 border border-rose-500/20">
                           {item.adherence}% Adherence
                         </span>
                       </div>
                       <p className="text-[10px] text-zinc-300 font-medium truncate mt-0.5">
                         Intake: {item.intake} • {item.protein}
                       </p>
-                      <p className="text-[9px] font-mono text-[#94a3b8] mt-0.5">{item.issue}</p>
+                      <p className="text-[9px] font-mono text-slate-400 mt-0.5">{item.issue}</p>
                     </div>
                   </div>
 
                   <div className="flex items-center gap-2 flex-shrink-0">
                     <button
                       onClick={() => handleRemindAthlete(item.user.name, 'diet compliance')}
-                      className="px-2 py-1 rounded-lg bg-[#141c2a] hover:bg-[#1d273a] text-white hover:text-[#00c5ff] text-[10px] font-mono font-medium border border-[#1e2a3c] flex items-center gap-1 transition-colors cursor-pointer"
+                      className="px-2 py-1 rounded-lg bg-[var(--card-bg)] hover:bg-[var(--card-border)] text-white hover:text-[var(--main-color)] text-[10px] font-mono font-medium border border-[var(--card-border)] flex items-center gap-1 transition-colors cursor-pointer"
                     >
                       <Send className="w-2.5 h-2.5" />
                       <span>Remind</span>
@@ -853,7 +853,7 @@ export const KpiDrillDownDrawer: React.FC<KpiDrillDownDrawerProps> = ({
                         if (onNavigateToDiet) onNavigateToDiet();
                         onClose();
                       }}
-                      className="px-2.5 py-1 rounded-lg bg-[#00c5ff] hover:bg-[#38bdf8] text-[#070a0f] text-[10px] font-bold font-mono transition-colors cursor-pointer"
+                      className="gym-btn-primary text-[10px] font-bold"
                     >
                       Adjust
                     </button>
@@ -866,39 +866,39 @@ export const KpiDrillDownDrawer: React.FC<KpiDrillDownDrawerProps> = ({
           {/* CHECKINS: Overdue */}
           {(type === 'checkins_status' || type === 'roster_checkins') && activeSubTab === 'overdue' && (
             <div className="space-y-2">
-              <div className="flex items-center justify-between text-[11px] text-[#64748b] pb-1 font-mono">
+              <div className="flex items-center justify-between text-[11px] text-slate-400 pb-1 font-mono">
                 <span>2 ATHLETES WITH LATE CHECK-INS</span>
                 <span>MISSING SUBMISSIONS</span>
               </div>
               {checkinsOverdue.map((item, idx) => (
                 <div
                   key={idx}
-                  className="p-3 rounded-xl bg-[#0d131f] border border-[#16202e] flex items-center justify-between gap-3"
+                  className="p-3 rounded-xl bg-[var(--card-subtle-bg)] border border-[var(--card-border)] flex items-center justify-between gap-3"
                 >
                   <div className="flex items-center gap-2.5 min-w-0">
                     <img
                       src={item.user.avatarUrl}
                       alt={item.user.name}
-                      className="w-8 h-8 rounded-full object-cover border border-[#1d2a3d] flex-shrink-0"
+                      className="w-8 h-8 rounded-full object-cover border border-[var(--card-border)] flex-shrink-0"
                     />
                     <div className="min-w-0">
                       <div className="flex items-center gap-1.5">
                         <span className="text-xs font-bold text-white truncate">{item.user.name}</span>
-                        <span className="text-[9px] font-mono px-1.5 py-0.5 rounded bg-[#2a111a] text-rose-400 border border-rose-500/25 font-bold">
+                        <span className="text-[9px] font-mono px-1.5 py-0.5 rounded bg-rose-950/40 text-rose-400 border border-rose-500/25 font-bold">
                           {item.status}
                         </span>
                       </div>
                       <p className="text-[10px] text-zinc-300 font-medium truncate mt-0.5">
                         {item.dueDate}
                       </p>
-                      <p className="text-[9px] font-mono text-[#526075] mt-0.5">Last entry: {item.lastCheckIn}</p>
+                      <p className="text-[9px] font-mono text-slate-500 mt-0.5">Last entry: {item.lastCheckIn}</p>
                     </div>
                   </div>
 
                   <div className="flex items-center gap-2 flex-shrink-0">
                     <button
                       onClick={() => handleRemindAthlete(item.user.name, 'check-in prompt')}
-                      className="px-2.5 py-1 rounded-lg bg-[#141c2a] hover:bg-[#1d273a] text-white hover:text-[#00c5ff] text-[10px] font-mono font-medium border border-[#1e2a3c] flex items-center gap-1 transition-colors cursor-pointer"
+                      className="px-2.5 py-1 rounded-lg bg-[var(--card-bg)] hover:bg-[var(--card-border)] text-white hover:text-[var(--main-color)] text-[10px] font-mono font-medium border border-[var(--card-border)] flex items-center gap-1 transition-colors cursor-pointer"
                     >
                       <Send className="w-2.5 h-2.5" />
                       <span>Prompt</span>
@@ -908,7 +908,7 @@ export const KpiDrillDownDrawer: React.FC<KpiDrillDownDrawerProps> = ({
                         onSelectClient(item.user, 'checkins');
                         onClose();
                       }}
-                      className="p-1 text-[#526075] hover:text-white transition-colors"
+                      className="p-1 text-slate-500 hover:text-white transition-colors"
                       title="View Check-ins"
                     >
                       <ExternalLink className="w-3.5 h-3.5" />
@@ -922,7 +922,7 @@ export const KpiDrillDownDrawer: React.FC<KpiDrillDownDrawerProps> = ({
           {/* CHECKINS: Submitted */}
           {(type === 'checkins_status' || type === 'roster_checkins') && activeSubTab === 'submitted' && (
             <div className="space-y-2">
-              <div className="flex items-center justify-between text-[11px] text-[#64748b] pb-1 font-mono">
+              <div className="flex items-center justify-between text-[11px] text-slate-400 pb-1 font-mono">
                 <span>9 CHECK-IN SUBMISSIONS RECEIVED</span>
                 <span>READY FOR REVIEW</span>
               </div>
@@ -933,27 +933,27 @@ export const KpiDrillDownDrawer: React.FC<KpiDrillDownDrawerProps> = ({
                     onSelectClient(item.user, 'checkins');
                     onClose();
                   }}
-                  className="p-3 rounded-xl bg-[#0d131f] hover:bg-[#121a2a] border border-[#16202e] hover:border-[#223046] transition-all cursor-pointer group flex items-center justify-between gap-3"
+                  className="p-3 rounded-xl bg-[var(--card-subtle-bg)] hover:bg-[var(--card-border)] border border-[var(--card-border)] hover:border-[var(--card-border)] transition-all cursor-pointer group flex items-center justify-between gap-3"
                 >
                   <div className="flex items-center gap-2.5 min-w-0">
                     <img
                       src={item.user.avatarUrl}
                       alt={item.user.name}
-                      className="w-8 h-8 rounded-full object-cover border border-[#1d2a3d] flex-shrink-0"
+                      className="w-8 h-8 rounded-full object-cover border border-[var(--card-border)] flex-shrink-0"
                     />
                     <div className="min-w-0">
                       <div className="flex items-center gap-1.5">
-                        <span className="text-xs font-bold text-white group-hover:text-[#00c5ff] transition-colors truncate">
+                        <span className="text-xs font-bold text-white group-hover:text-[var(--main-color)] transition-colors truncate">
                           {item.user.name}
                         </span>
-                        <span className="text-[9px] font-mono px-1.5 py-0.5 rounded bg-[#0e2118] text-emerald-400 border border-emerald-500/20">
+                        <span className="text-[9px] font-mono px-1.5 py-0.5 rounded bg-emerald-950/40 text-emerald-400 border border-emerald-500/20">
                           {item.weight}
                         </span>
                       </div>
-                      <p className="text-[10px] text-[#8896aa] truncate mt-0.5">
+                      <p className="text-[10px] text-slate-400 truncate mt-0.5">
                         Submitted: {item.date} • {item.photos} photos
                       </p>
-                      <p className="text-[9px] font-mono text-[#526075] mt-0.5">Adherence score: {item.adherence}%</p>
+                      <p className="text-[9px] font-mono text-slate-500 mt-0.5">Adherence score: {item.adherence}%</p>
                     </div>
                   </div>
 
@@ -964,11 +964,11 @@ export const KpiDrillDownDrawer: React.FC<KpiDrillDownDrawerProps> = ({
                         onSelectClient(item.user, 'checkins');
                         onClose();
                       }}
-                      className="px-2.5 py-1 rounded-lg bg-[#141c2a] hover:bg-[#1d273a] text-[#00c5ff] text-[10px] font-mono font-medium border border-[#1e2a3c] transition-colors"
+                      className="px-2.5 py-1 rounded-lg bg-[var(--card-bg)] hover:bg-[var(--card-border)] text-[var(--main-color)] text-[10px] font-mono font-medium border border-[var(--card-border)] transition-colors"
                     >
                       Review
                     </button>
-                    <ChevronRight className="w-3.5 h-3.5 text-[#526075] group-hover:text-white transition-colors" />
+                    <ChevronRight className="w-3.5 h-3.5 text-slate-500 group-hover:text-white transition-colors" />
                   </div>
                 </div>
               ))}
@@ -978,7 +978,7 @@ export const KpiDrillDownDrawer: React.FC<KpiDrillDownDrawerProps> = ({
           {/* ENGAGEMENT & PROGRESS VIEWS */}
           {type === 'roster_engagement' && (
             <div className="space-y-2">
-              <div className="flex items-center justify-between text-[11px] text-[#64748b] pb-1 font-mono">
+              <div className="flex items-center justify-between text-[11px] text-slate-400 pb-1 font-mono">
                 <span>{activeSubTab === 'engaged' ? '11 ENGAGED ATHLETES (ACTIVE <48H)' : '2 AT-RISK ATHLETES (>4 DAYS INACTIVE)'}</span>
                 <span>RETENTION STATUS</span>
               </div>
@@ -989,26 +989,26 @@ export const KpiDrillDownDrawer: React.FC<KpiDrillDownDrawerProps> = ({
                     onSelectClient(user, 'overview');
                     onClose();
                   }}
-                  className="p-3 rounded-xl bg-[#0d131f] hover:bg-[#121a2a] border border-[#16202e] hover:border-[#223046] transition-all cursor-pointer group flex items-center justify-between gap-3"
+                  className="p-3 rounded-xl bg-[var(--card-subtle-bg)] hover:bg-[var(--card-border)] border border-[var(--card-border)] hover:border-[var(--card-border)] transition-all cursor-pointer group flex items-center justify-between gap-3"
                 >
                   <div className="flex items-center gap-2.5 min-w-0">
                     <img
                       src={user.avatarUrl}
                       alt={user.name}
-                      className="w-8 h-8 rounded-full object-cover border border-[#1d2a3d] flex-shrink-0"
+                      className="w-8 h-8 rounded-full object-cover border border-[var(--card-border)] flex-shrink-0"
                     />
                     <div className="min-w-0">
-                      <span className="text-xs font-bold text-white group-hover:text-[#00c5ff] transition-colors truncate block">
+                      <span className="text-xs font-bold text-white group-hover:text-[var(--main-color)] transition-colors truncate block">
                         {user.name}
                       </span>
-                      <p className="text-[10px] text-[#8896aa] truncate mt-0.5">{user.goal}</p>
+                      <p className="text-[10px] text-slate-400 truncate mt-0.5">{user.goal}</p>
                     </div>
                   </div>
 
                   <span className={`text-[9px] font-mono px-2 py-0.5 rounded-full ${
                     activeSubTab === 'engaged'
-                      ? 'bg-[#0e2118] text-emerald-400 border border-emerald-500/20'
-                      : 'bg-[#25121b] text-rose-400 border border-rose-500/25 font-bold'
+                      ? 'bg-emerald-950/40 text-emerald-400 border border-emerald-500/20'
+                      : 'bg-rose-950/40 text-rose-400 border border-rose-500/25 font-bold'
                   }`}>
                     {activeSubTab === 'engaged' ? 'Active App User' : 'At Risk'}
                   </span>
@@ -1019,7 +1019,7 @@ export const KpiDrillDownDrawer: React.FC<KpiDrillDownDrawerProps> = ({
 
           {type === 'roster_progress' && (
             <div className="space-y-2">
-              <div className="flex items-center justify-between text-[11px] text-[#64748b] pb-1 font-mono">
+              <div className="flex items-center justify-between text-[11px] text-slate-400 pb-1 font-mono">
                 <span>{activeSubTab === 'progressing' ? '10 ATHLETES PROGRESSING TOWARDS GOAL' : '3 PLATEAUED ATHLETES'}</span>
                 <span>METABOLIC ADAPTATION</span>
               </div>
@@ -1030,19 +1030,19 @@ export const KpiDrillDownDrawer: React.FC<KpiDrillDownDrawerProps> = ({
                     onSelectClient(user, 'overview');
                     onClose();
                   }}
-                  className="p-3 rounded-xl bg-[#0d131f] hover:bg-[#121a2a] border border-[#16202e] hover:border-[#223046] transition-all cursor-pointer group flex items-center justify-between gap-3"
+                  className="p-3 rounded-xl bg-[var(--card-subtle-bg)] hover:bg-[var(--card-border)] border border-[var(--card-border)] hover:border-[var(--card-border)] transition-all cursor-pointer group flex items-center justify-between gap-3"
                 >
                   <div className="flex items-center gap-2.5 min-w-0">
                     <img
                       src={user.avatarUrl}
                       alt={user.name}
-                      className="w-8 h-8 rounded-full object-cover border border-[#1d2a3d] flex-shrink-0"
+                      className="w-8 h-8 rounded-full object-cover border border-[var(--card-border)] flex-shrink-0"
                     />
                     <div className="min-w-0">
-                      <span className="text-xs font-bold text-white group-hover:text-[#00c5ff] transition-colors truncate block">
+                      <span className="text-xs font-bold text-white group-hover:text-[var(--main-color)] transition-colors truncate block">
                         {user.name}
                       </span>
-                      <p className="text-[10px] text-[#8896aa] truncate mt-0.5">
+                      <p className="text-[10px] text-slate-400 truncate mt-0.5">
                         Current: {user.weightKg} kg &rarr; Target: {user.targetWeightKg} kg
                       </p>
                     </div>
@@ -1050,8 +1050,8 @@ export const KpiDrillDownDrawer: React.FC<KpiDrillDownDrawerProps> = ({
 
                   <span className={`text-[9px] font-mono px-2 py-0.5 rounded-full ${
                     activeSubTab === 'progressing'
-                      ? 'bg-[#0e2118] text-emerald-400 border border-emerald-500/20'
-                      : 'bg-[#181a24] text-[#cbd5e1] border border-[#232738]'
+                      ? 'bg-emerald-950/40 text-emerald-400 border border-emerald-500/20'
+                      : 'bg-[var(--card-bg)] text-slate-300 border border-[var(--card-border)]'
                   }`}>
                     {activeSubTab === 'progressing' ? 'Progressing' : 'Plateaued'}
                   </span>
@@ -1063,7 +1063,7 @@ export const KpiDrillDownDrawer: React.FC<KpiDrillDownDrawerProps> = ({
           {/* ACTIVE CLIENTS FULL ROSTER */}
           {type === 'active_clients' && (
             <div className="space-y-2">
-              <div className="flex items-center justify-between text-[11px] text-[#64748b] pb-1 font-mono">
+              <div className="flex items-center justify-between text-[11px] text-slate-400 pb-1 font-mono">
                 <span>ALL 13 ACTIVE CLIENTS</span>
                 <span>COACHING ROSTER</span>
               </div>
@@ -1074,29 +1074,29 @@ export const KpiDrillDownDrawer: React.FC<KpiDrillDownDrawerProps> = ({
                     onSelectClient(user, 'overview');
                     onClose();
                   }}
-                  className="p-3 rounded-xl bg-[#0d131f] hover:bg-[#121a2a] border border-[#16202e] hover:border-[#223046] transition-all cursor-pointer group flex items-center justify-between gap-3"
+                  className="p-3 rounded-xl bg-[var(--card-subtle-bg)] hover:bg-[var(--card-border)] border border-[var(--card-border)] hover:border-[var(--card-border)] transition-all cursor-pointer group flex items-center justify-between gap-3"
                 >
                   <div className="flex items-center gap-2.5 min-w-0">
                     <img
                       src={user.avatarUrl}
                       alt={user.name}
-                      className="w-8 h-8 rounded-full object-cover border border-[#1d2a3d] flex-shrink-0"
+                      className="w-8 h-8 rounded-full object-cover border border-[var(--card-border)] flex-shrink-0"
                     />
                     <div className="min-w-0">
-                      <span className="text-xs font-bold text-white group-hover:text-[#00c5ff] transition-colors truncate block">
+                      <span className="text-xs font-bold text-white group-hover:text-[var(--main-color)] transition-colors truncate block">
                         {user.name}
                       </span>
-                      <p className="text-[10px] text-[#8896aa] truncate mt-0.5">
+                      <p className="text-[10px] text-slate-400 truncate mt-0.5">
                         {user.goal} • {user.weightKg} kg
                       </p>
                     </div>
                   </div>
 
                   <div className="flex items-center gap-2 flex-shrink-0">
-                    <span className="text-[9px] font-mono px-2 py-0.5 rounded-full bg-[#0d1726] text-[#00c5ff] border border-[#162940]">
+                    <span className="text-[9px] font-mono px-2 py-0.5 rounded-full bg-[var(--main-color)]/10 text-[var(--main-color)] border border-[var(--main-color)]/30">
                       Active
                     </span>
-                    <ChevronRight className="w-3.5 h-3.5 text-[#526075] group-hover:text-white transition-colors" />
+                    <ChevronRight className="w-3.5 h-3.5 text-slate-500 group-hover:text-white transition-colors" />
                   </div>
                 </div>
               ))}

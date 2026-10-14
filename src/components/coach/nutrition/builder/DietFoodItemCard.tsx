@@ -31,7 +31,7 @@ export const DietFoodItemCard: React.FC<DietFoodItemCardProps> = ({
   return (
     <div
       data-food-card="true"
-      className="p-2 sm:px-3 sm:py-2 rounded-lg bg-[#05080e] border border-[#16202e] hover:border-[#223044] transition-all space-y-2"
+      className="p-2 sm:px-3 sm:py-2 rounded-lg bg-[var(--card-subtle-bg)] border border-[var(--card-border)] hover:border-slate-700 transition-all space-y-2"
     >
       <div className="flex items-center justify-between gap-2 flex-wrap">
         <div className="flex items-center gap-2 min-w-0">
@@ -47,7 +47,7 @@ export const DietFoodItemCard: React.FC<DietFoodItemCardProps> = ({
 
         <div className="flex items-center gap-2.5 flex-shrink-0">
           {/* Grams Input */}
-          <div className="flex items-center gap-1 bg-[#090d14] px-2 py-0.5 rounded-lg border border-[#16202e] focus-within:border-slate-500">
+          <div className="flex items-center gap-1 bg-[var(--input-bg)] px-2 py-0.5 rounded-lg border border-[var(--input-border)] focus-within:border-[var(--main-color)]">
             <input
               type="number"
               min="1"
@@ -70,10 +70,10 @@ export const DietFoodItemCard: React.FC<DietFoodItemCardProps> = ({
             onClick={onToggleExpand}
             className={`px-2 py-0.5 rounded-lg text-[10px] font-mono border transition-all cursor-pointer flex items-center gap-1 ${
               isExpanded
-                ? 'bg-cyan-500/15 border-cyan-500/35 text-cyan-300 font-bold'
+                ? 'bg-[var(--main-color)]/15 border-[var(--main-color)]/35 text-[var(--main-color)] font-bold'
                 : altsCount > 0
                 ? 'bg-white/[0.04] border-white/[0.1] text-slate-300 hover:text-white'
-                : 'bg-[#090d14] border-[#16202e] text-slate-500 hover:text-slate-300'
+                : 'bg-[var(--card-bg)] border-[var(--card-border)] text-slate-500 hover:text-slate-300'
             }`}
             title="View and configure food alternatives"
           >
@@ -95,7 +95,7 @@ export const DietFoodItemCard: React.FC<DietFoodItemCardProps> = ({
 
       {/* Expanded Badeel Section */}
       {isExpanded && (
-        <div className="pt-2 border-t border-[#16202e] space-y-1.5 pl-2">
+        <div className="pt-2 border-t border-[var(--card-border)] space-y-1.5 pl-2">
           <div className="flex items-center justify-between">
             <span className="text-[10px] font-mono uppercase tracking-wider text-slate-400 font-semibold">
               Approved Food Alternatives (Badeel)
@@ -103,7 +103,7 @@ export const DietFoodItemCard: React.FC<DietFoodItemCardProps> = ({
             <button
               type="button"
               onClick={onOpenAltSearch}
-              className="text-[10px] font-mono text-cyan-400 hover:text-cyan-300 font-bold transition-colors cursor-pointer"
+              className="text-[10px] font-mono text-[var(--main-color)] hover:brightness-110 font-bold transition-colors cursor-pointer"
             >
               + Add Alternative
             </button>
@@ -114,7 +114,7 @@ export const DietFoodItemCard: React.FC<DietFoodItemCardProps> = ({
               {item.badeel.map((alt) => (
                 <div
                   key={alt.id}
-                  className="p-1.5 px-2.5 rounded-lg bg-[#090d14] border border-[#16202e] flex items-center justify-between text-xs font-mono"
+                  className="p-1.5 px-2.5 rounded-lg bg-[var(--card-bg)] border border-[var(--card-border)] flex items-center justify-between text-xs font-mono"
                 >
                   <span className="text-slate-200">{alt.name}</span>
                   <div className="flex items-center gap-2">

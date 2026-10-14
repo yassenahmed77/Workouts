@@ -48,11 +48,11 @@ export function AthleteAvatar({
         <img
           src={src}
           alt={name}
-          className={`${SIZE_CLASSES[size]} rounded-full object-cover border border-[#1a2333]`}
+          className={`${SIZE_CLASSES[size]} rounded-full object-cover border border-[var(--card-border)]`}
         />
       ) : (
         <div
-          className={`${SIZE_CLASSES[size]} rounded-full bg-[#16202e] border border-[#233146] flex items-center justify-center font-bold text-slate-200 font-mono`}
+          className={`${SIZE_CLASSES[size]} rounded-full bg-[var(--card-subtle-bg)] border border-[var(--card-border)] flex items-center justify-center font-bold text-slate-200 font-mono`}
         >
           {initials}
         </div>
@@ -60,7 +60,7 @@ export function AthleteAvatar({
 
       {showStatusDot && (
         <span
-          className={`absolute -bottom-0.5 -right-0.5 w-2 h-2 rounded-full border border-[#080c14] ${statusDotColor}`}
+          className={`absolute -bottom-0.5 -right-0.5 w-2 h-2 rounded-full border border-[var(--bg-main)] ${statusDotColor}`}
         />
       )}
     </div>
@@ -94,13 +94,13 @@ export function AvatarGroup({
           name={a.name}
           size={size}
           onClick={onSelect ? () => onSelect(a) : undefined}
-          className="border-2 border-[#080c14] hover:z-10 hover:scale-115 transition-transform"
+          className="border-2 border-[var(--bg-main)] hover:z-10 hover:scale-115 transition-transform"
         />
       ))}
 
       {remaining > 0 && (
         <div
-          className={`${SIZE_CLASSES[size]} rounded-full bg-[#16202e] border-2 border-[#080c14] flex items-center justify-center font-mono font-bold text-slate-300 text-[10px]`}
+          className={`${SIZE_CLASSES[size]} rounded-full bg-[var(--card-subtle-bg)] border-2 border-[var(--bg-main)] flex items-center justify-center font-mono font-bold text-slate-300 text-[10px]`}
         >
           +{remaining}
         </div>

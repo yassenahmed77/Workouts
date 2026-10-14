@@ -58,19 +58,19 @@ export const QuitHabitCard: React.FC<QuitHabitCardProps> = ({
   const strokeDashoffset = circumference - (progress / 100) * circumference;
 
   return (
-    <div className="relative rounded-3xl bg-[#18191e] border border-[#24262e] p-4 sm:p-5 shadow-xl overflow-hidden space-y-4">
+    <div className="relative rounded-3xl bg-[var(--card-bg)] border border-[var(--card-border)] p-4 sm:p-5 shadow-xl overflow-hidden space-y-4">
       {/* Subtle Ambient Glow */}
       <div 
         className="absolute top-0 right-0 w-48 h-48 rounded-full blur-[80px] pointer-events-none opacity-15"
-        style={{ backgroundColor: stats.currentStage.color || habit.color || '#2f80ed' }}
+        style={{ backgroundColor: stats.currentStage.color || habit.color || 'var(--main-color)' }}
       />
 
       {/* 1. Header: Full-Width Title & Icon (Row 1), Goal Info & Actions (Row 2) */}
-      <div className="space-y-2.5 relative z-10 pb-2.5 border-b border-[#24262e]">
+      <div className="space-y-2.5 relative z-10 pb-2.5 border-b border-[var(--card-border)]">
         {/* Row 1: Full-Width Icon + Title (No Truncation) */}
         <div className="flex items-center gap-2.5">
           <div 
-            className="w-8 h-8 rounded-xl flex items-center justify-center font-bold text-sm flex-shrink-0 bg-[#2f80ed]/10 text-[#2f80ed] border border-[#2f80ed]/25 shadow-sm"
+            className="w-8 h-8 rounded-xl flex items-center justify-center font-bold text-sm flex-shrink-0 bg-[var(--main-color)]/10 text-[var(--main-color)] border border-[var(--main-color)]/25 shadow-sm"
           >
             <RenderHabitIcon iconKey={habit.iconKey} className="w-4 h-4" />
           </div>
@@ -88,7 +88,7 @@ export const QuitHabitCard: React.FC<QuitHabitCardProps> = ({
         {/* Row 2: Target Goal on Left, Action Buttons on Right */}
         <div className="flex items-center justify-between gap-2 pt-0.5">
           <div className="flex items-center gap-2 min-w-0">
-            <span className="text-zinc-300 font-bold px-2.5 py-0.5 rounded-full text-[10px] bg-white/[0.04] border border-[#24262e]">
+            <span className="text-zinc-300 font-bold px-2.5 py-0.5 rounded-full text-[10px] bg-white/[0.04] border border-[var(--card-border)]">
               <span>{stats.targetDays} Days Goal</span>
             </span>
             <span className="text-zinc-400 font-mono text-[10px] font-bold whitespace-nowrap">
@@ -124,13 +124,13 @@ export const QuitHabitCard: React.FC<QuitHabitCardProps> = ({
       </div>
 
       {/* 2. Dynamic Circular Radial Progress Dial */}
-      <div className="p-4 sm:p-5 rounded-2xl bg-[#141519] border border-[#24262e] relative z-10 flex flex-col items-center justify-center">
+      <div className="p-4 sm:p-5 rounded-2xl bg-[var(--card-subtle-bg)] border border-[var(--card-border)] relative z-10 flex flex-col items-center justify-center">
         <div className="relative w-44 h-44 sm:w-48 sm:h-48 flex items-center justify-center">
           <svg className="w-full h-full -rotate-90 transform" viewBox="0 0 160 160">
             <defs>
               <linearGradient id={`circleGrad-${habit.id}`} x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stopColor="#2f80ed" />
-                <stop offset="100%" stopColor="#00f0ff" />
+                <stop offset="0%" stopColor="var(--main-color)" />
+                <stop offset="100%" stopColor="var(--main-color-hover)" />
               </linearGradient>
             </defs>
 
@@ -138,7 +138,7 @@ export const QuitHabitCard: React.FC<QuitHabitCardProps> = ({
               cx="80"
               cy="80"
               r={radius}
-              stroke="#24262e"
+              stroke="var(--card-border)"
               strokeWidth="9"
               fill="transparent"
             />
@@ -168,7 +168,7 @@ export const QuitHabitCard: React.FC<QuitHabitCardProps> = ({
               {stats.days === 1 ? 'DAY CLEAN' : 'DAYS CLEAN'}
             </span>
 
-            <div className="mt-1 px-2.5 py-0.5 rounded-full bg-[#18191e] border border-[#24262e] text-[10px] font-mono font-bold text-[#2f80ed] tracking-wider">
+            <div className="mt-1 px-2.5 py-0.5 rounded-full bg-[var(--card-bg)] border border-[var(--card-border)] text-[10px] font-mono font-bold text-[var(--main-color)] tracking-wider">
               {String(stats.hours).padStart(2, '0')}:{String(stats.minutes).padStart(2, '0')}:{String(stats.seconds).padStart(2, '0')}
             </div>
 
@@ -180,8 +180,8 @@ export const QuitHabitCard: React.FC<QuitHabitCardProps> = ({
 
         {/* Removed duplicate "Target 90 Days Clean" since it is already in the header goal badge */}
         {stats.nextMilestone && (
-          <div className="w-full mt-2.5 pt-2 border-t border-[#24262e] text-center text-xs font-mono">
-            <span className="text-[#2f80ed] font-bold text-[11px]">
+          <div className="w-full mt-2.5 pt-2 border-t border-[var(--card-border)] text-center text-xs font-mono">
+            <span className="text-[var(--main-color)] font-bold text-[11px]">
               Next milestone in {stats.nextMilestone.remainingDays > 0 ? `${stats.nextMilestone.remainingDays}d ` : ''}{stats.nextMilestone.remainingHours}h {stats.nextMilestone.remainingMinutes}m
             </span>
           </div>
@@ -191,8 +191,8 @@ export const QuitHabitCard: React.FC<QuitHabitCardProps> = ({
       {/* 3. Simplified Financial & Physical Impact Tiles (Differentiated Header vs Value) */}
       <div className="grid grid-cols-2 gap-2 font-numeric relative z-10 text-xs">
         {/* Tile 1: Saved So Far */}
-        <div className="p-2 sm:p-2.5 rounded-xl bg-[#141519] border border-[#24262e] flex items-center gap-2">
-          <div className="w-6 h-6 rounded-lg bg-[#2f80ed]/10 text-[#2f80ed] flex items-center justify-center font-bold flex-shrink-0">
+        <div className="p-2 sm:p-2.5 rounded-xl bg-[var(--card-subtle-bg)] border border-[var(--card-border)] flex items-center gap-2">
+          <div className="w-6 h-6 rounded-lg bg-[var(--main-color)]/10 text-[var(--main-color)] flex items-center justify-center font-bold flex-shrink-0">
             <Wallet className="w-3 h-3" />
           </div>
           <div className="min-w-0 flex-1">
@@ -206,8 +206,8 @@ export const QuitHabitCard: React.FC<QuitHabitCardProps> = ({
         </div>
 
         {/* Tile 2: Cigs / Units Avoided */}
-        <div className="p-2 sm:p-2.5 rounded-xl bg-[#141519] border border-[#24262e] flex items-center gap-2">
-          <div className="w-6 h-6 rounded-lg bg-[#2f80ed]/10 text-[#2f80ed] flex items-center justify-center font-bold flex-shrink-0">
+        <div className="p-2 sm:p-2.5 rounded-xl bg-[var(--card-subtle-bg)] border border-[var(--card-border)] flex items-center gap-2">
+          <div className="w-6 h-6 rounded-lg bg-[var(--main-color)]/10 text-[var(--main-color)] flex items-center justify-center font-bold flex-shrink-0">
             <CigaretteOff className="w-3 h-3" />
           </div>
           <div className="min-w-0 flex-1">
@@ -221,8 +221,8 @@ export const QuitHabitCard: React.FC<QuitHabitCardProps> = ({
         </div>
 
         {/* Tile 3: Time Gained / Monthly Savings */}
-        <div className="p-2 sm:p-2.5 rounded-xl bg-[#141519] border border-[#24262e] flex items-center gap-2">
-          <div className="w-6 h-6 rounded-lg bg-[#2f80ed]/10 text-[#2f80ed] flex items-center justify-center font-bold flex-shrink-0">
+        <div className="p-2 sm:p-2.5 rounded-xl bg-[var(--card-subtle-bg)] border border-[var(--card-border)] flex items-center gap-2">
+          <div className="w-6 h-6 rounded-lg bg-[var(--main-color)]/10 text-[var(--main-color)] flex items-center justify-center font-bold flex-shrink-0">
             <Clock className="w-3 h-3" />
           </div>
           <div className="min-w-0 flex-1">
@@ -236,8 +236,8 @@ export const QuitHabitCard: React.FC<QuitHabitCardProps> = ({
         </div>
 
         {/* Tile 4: 1-Year Savings */}
-        <div className="p-2 sm:p-2.5 rounded-xl bg-[#141519] border border-[#24262e] flex items-center gap-2">
-          <div className="w-6 h-6 rounded-lg bg-[#2f80ed]/10 text-[#2f80ed] flex items-center justify-center font-bold flex-shrink-0">
+        <div className="p-2 sm:p-2.5 rounded-xl bg-[var(--card-subtle-bg)] border border-[var(--card-border)] flex items-center gap-2">
+          <div className="w-6 h-6 rounded-lg bg-[var(--main-color)]/10 text-[var(--main-color)] flex items-center justify-center font-bold flex-shrink-0">
             <TrendingUp className="w-3 h-3" />
           </div>
           <div className="min-w-0 flex-1">
@@ -252,7 +252,7 @@ export const QuitHabitCard: React.FC<QuitHabitCardProps> = ({
       </div>
 
       {/* 4. Health & Recovery Insight (Zero Icon - Clean Typography) */}
-      <div className="p-2.5 sm:p-3 rounded-xl bg-[#141519] border border-[#24262e] relative z-10 space-y-1">
+      <div className="p-2.5 sm:p-3 rounded-xl bg-[var(--card-subtle-bg)] border border-[var(--card-border)] relative z-10 space-y-1">
         <p className="text-xs text-zinc-300 font-medium leading-relaxed">
           {stats.healthBenefitCue}
         </p>
@@ -264,7 +264,7 @@ export const QuitHabitCard: React.FC<QuitHabitCardProps> = ({
       </div>
 
       {/* 5. Milestone Badges Collapsible (Default Closed) */}
-      <div className="relative z-10 rounded-xl bg-[#141519] border border-[#24262e] overflow-hidden">
+      <div className="relative z-10 rounded-xl bg-[var(--card-subtle-bg)] border border-[var(--card-border)] overflow-hidden">
         <button
           type="button"
           onClick={() => setIsMilestonesOpen(!isMilestonesOpen)}
@@ -282,7 +282,7 @@ export const QuitHabitCard: React.FC<QuitHabitCardProps> = ({
         </button>
 
         {isMilestonesOpen && (
-          <div className="p-2.5 sm:p-3 pt-0 border-t border-[#24262e] grid grid-cols-2 sm:grid-cols-3 gap-1.5 animate-in fade-in duration-150">
+          <div className="p-2.5 sm:p-3 pt-0 border-t border-[var(--card-border)] grid grid-cols-2 sm:grid-cols-3 gap-1.5 animate-in fade-in duration-150">
             {stats.milestones.map((m) => (
               <button
                 key={m.days}
@@ -294,7 +294,7 @@ export const QuitHabitCard: React.FC<QuitHabitCardProps> = ({
                         particleCount: 40,
                         spread: 50,
                         origin: { y: 0.65 },
-                        colors: ['#2f80ed', '#00f0ff', '#ffffff']
+                        colors: ['#2f80ed', '#60a5fa', '#ffffff']
                       });
                     } catch {}
                     showToast(`Milestone Achieved: ${m.label} Clean!`, 'success');
@@ -304,12 +304,12 @@ export const QuitHabitCard: React.FC<QuitHabitCardProps> = ({
                 }}
                 className={`p-2 rounded-xl text-xs font-mono font-bold flex items-center gap-2 border transition-all cursor-pointer text-left active:scale-95 ${
                   m.achieved
-                    ? 'bg-[#18191e] text-[#2f80ed] border-[#2f80ed]/40'
-                    : 'bg-[#141519] text-zinc-600 border-[#24262e]'
+                    ? 'bg-[var(--card-bg)] text-[var(--main-color)] border-[var(--main-color)]/40'
+                    : 'bg-[var(--card-subtle-bg)] text-zinc-600 border-[var(--card-border)]'
                 }`}
               >
                 <div className={`w-5 h-5 rounded-md flex items-center justify-center flex-shrink-0 text-[10px] ${
-                  m.achieved ? 'bg-[#2f80ed]/20 text-[#2f80ed]' : 'bg-[#18191e] text-zinc-600'
+                  m.achieved ? 'bg-[var(--main-color)]/20 text-[var(--main-color)]' : 'bg-[var(--card-bg)] text-zinc-600'
                 }`}>
                   {m.achieved ? '✓' : '•'}
                 </div>

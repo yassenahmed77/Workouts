@@ -155,14 +155,19 @@ Never dump all data on a single screen at once:
 
 | Component / View | File Path | Status | Key Focus |
 |---|---|---|---|
-| **Coach Sidebar** | `src/components/coach/CoachSidebar.tsx` | ⏳ Pending | Remove all decorative icons, pure typography, compact vertical fit |
-| **Executive Dashboard** | `src/components/coach/CoachDashboardView.tsx` | ⏳ Pending | Viewport-fit (zero page scroll), kill subtitle fluff, zero icons, calm monochrome |
-| **Clients Directory** | `src/components/coach/ClientsList.tsx` | ⏳ Pending | High-density Swiss table, tabular numerics, clean text-only filters |
-| **Client Details** | `src/components/coach/client-detail/ClientDetailView.tsx` | ⏳ Pending | Replace "Client 360", clean compact header, text-only tabs, locked height |
-| **Client Overview** | `src/components/coach/client-detail/ClientOverviewTab.tsx` | ⏳ Pending | Kill box-in-a-box nesting, kill essay subtitles, compact metric strips |
-| **Workout Plans** | `src/components/coach/SplitsStudioView.tsx` | ⏳ Pending | Pure panel layout, internal list scroll, clean terminology |
-| **Diet Plans** | `src/components/coach/DietPlansView.tsx` | ⏳ Pending | Calm macros strip, connected rows, zero rainbow tags |
-| **Competitors Hub** | `src/components/coach/CompetitorsView.tsx` | ⏳ Pending | High-density contest prep tracking, timeline telemetry |
+| **Coach Sidebar** | `src/components/coach/CoachSidebar.tsx` | ✅ Completed | Removed decorative icons, pure typography, compact vertical fit |
+| **Executive Dashboard** | `src/components/coach/CoachDashboardView.tsx` | ✅ Completed | Viewport-fit, zero subtitle fluff, zero icons, calm sapphire/monochrome |
+| **Clients Directory** | `src/components/coach/ClientsList.tsx` | ✅ Completed | High-density Swiss table, tabular numerics, clean text-only filters |
+| **Client Details** | `src/components/coach/client-detail/ClientDetailView.tsx` | ✅ Completed | Clean compact header, text-only tabs, locked height |
+| **Client Overview** | `src/components/coach/client-detail/ClientOverviewTab.tsx` | ✅ Completed | Zero box-in-a-box nesting, compact metric strips, standardized cards |
+| **Workout Plans** | `src/components/coach/SplitsStudioView.tsx` | ✅ Completed | Pure panel layout, internal list scroll, clean terminology |
+| **Diet Plans** | `src/components/coach/DietPlansView.tsx` | ✅ Completed | Calm macros strip, connected rows, zero rainbow tags |
+| **Competitors Hub** | `src/components/coach/CompetitorsView.tsx` | ✅ Completed | High-density contest prep tracking, timeline telemetry |
+| **Weekly Splits (Athlete)** | `src/components/trainee/WeeklySplitView.tsx` | ✅ Completed | Fixed .gym-* sizes, responsive 2-col desktop layout |
+| **Habits Tracker (Athlete)** | `src/components/trainee/TraineeHabitsView.tsx` | ✅ Completed | Fixed .gym-* hierarchy, clean segmented filter tabs |
+| **Athlete Profile & Vitals** | `src/components/trainee/TraineeProfileView.tsx` | ✅ Completed | Standardized .gym-card, .gym-input, .gym-heading-page |
+| **Exercise History & PRs** | `src/components/trainee/WorkoutHistoryView.tsx` | ✅ Completed | Standardized .gym-card, .gym-num-lg, .gym-label-mono |
+| **Athlete Modals** | `src/components/modals/*` | ✅ Completed | EditTraineeModal & NewTraineeModal 100% blue / zero cyan |
 
 ---
 

@@ -56,21 +56,21 @@ export function Modal({
 
       {/* Modal Dialog Card */}
       <div
-        className={`relative w-full ${maxWidth} rounded-2xl bg-[#090d14] border border-[#16202e] shadow-2xl z-10 flex flex-col max-h-[90vh] overflow-hidden text-white ${className}`}
+        className={`relative w-full ${maxWidth} rounded-2xl bg-[var(--card-bg)] border border-[var(--card-border)] shadow-2xl z-10 flex flex-col max-h-[90dvh] overflow-hidden text-white ${className}`}
       >
         {/* Header */}
         {(title || showCloseButton) && (
-          <div className="flex items-center justify-between px-4 sm:px-5 py-3.5 border-b border-[#141b26] flex-shrink-0">
+          <div className="flex items-center justify-between px-4 sm:px-5 py-3.5 border-b border-[var(--card-border)] flex-shrink-0">
             <div>
               {typeof title === 'string' ? (
-                <h3 className="text-sm sm:text-base font-bold text-white tracking-tight">
+                <h3 className="gym-heading-section text-white tracking-tight">
                   {title}
                 </h3>
               ) : (
                 title
               )}
               {description && (
-                <p className="text-xs text-slate-400 mt-0.5 font-medium">
+                <p className="gym-subtext mt-0.5">
                   {description}
                 </p>
               )}

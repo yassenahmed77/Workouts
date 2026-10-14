@@ -8,19 +8,19 @@ export interface KpiCardProps {
   unit?: string;
   subtitle?: string;
   badgeText?: string;
-  badgeVariant?: 'emerald' | 'cyan' | 'slate' | 'amber' | 'rose';
+  badgeVariant?: 'emerald' | 'blue' | 'slate' | 'amber' | 'rose';
   onClick?: () => void;
   titleTooltip?: string;
   className?: string;
   valueClassName?: string;
 }
 
-const BADGE_STYLES = {
-  emerald: 'text-emerald-400 bg-[#0a1f18] border-emerald-500/20',
-  cyan: 'text-[#00c5ff] bg-[#0a1b28] border-[#00c5ff]/20',
-  slate: 'text-slate-300 bg-[#121722] border-[#1d2636]',
-  amber: 'text-amber-400 bg-[#1f170a] border-amber-500/20',
-  rose: 'text-rose-400 bg-[#1f0a0f] border-rose-500/20'
+const BADGE_STYLES: Record<string, string> = {
+  emerald: 'gym-badge-emerald',
+  blue: 'gym-badge-blue',
+  slate: 'gym-badge-slate',
+  amber: 'gym-badge-amber',
+  rose: 'gym-badge-rose'
 };
 
 export function KpiCard({
@@ -41,44 +41,42 @@ export function KpiCard({
     <div
       onClick={onClick}
       title={titleTooltip}
-      className={`p-3 rounded-xl bg-[#080c14] border border-[#141b26] transition-all shadow-sm flex flex-col justify-between ${
-        isInteractive
-          ? 'hover:border-[#233146] cursor-pointer group active:scale-[0.99]'
-          : ''
-      } ${className}`}
+      className={`${
+        isInteractive ? 'gym-card-interactive group' : 'gym-card'
+      } flex flex-col justify-between ${className}`}
     >
       <div className="flex items-center justify-between">
         <span
-          className={`text-xs font-bold text-slate-300 transition-colors ${
-            isInteractive ? 'group-hover:text-cyan-300' : ''
+          className={`gym-heading-card transition-colors ${
+            isInteractive ? 'group-hover:text-[var(--main-color)]' : ''
           }`}
         >
           {title}
         </span>
         {badgeText && (
           <span
-            className={`text-[10px] font-mono font-bold px-2 py-0.5 rounded-full border ${BADGE_STYLES[badgeVariant]}`}
+            className={`${BADGE_STYLES[badgeVariant] || BADGE_STYLES.slate}`}
           >
             {badgeText}
           </span>
         )}
       </div>
 
-      <div className="mt-1.5 flex items-baseline justify-between">
+      <div className="mt-2 flex items-baseline justify-between gap-2">
         <div className="flex items-baseline gap-1">
           <span
-            className={`text-2xl sm:text-3xl font-extrabold text-white font-numeric tracking-tight block leading-none ${valueClassName}`}
+            className={`gym-num-lg text-xl sm:text-2xl text-white block leading-none ${valueClassName}`}
           >
             {value}
           </span>
           {unit && (
-            <span className="text-slate-300 text-sm font-semibold ml-1">
+            <span className="text-slate-400 text-xs sm:text-sm font-semibold ml-1">
               {unit}
             </span>
           )}
         </div>
         {subtitle && (
-          <span className="text-xs text-slate-300 font-medium truncate max-w-[200px]">
+          <span className="gym-subtext truncate max-w-[180px]">
             {subtitle}
           </span>
         )}

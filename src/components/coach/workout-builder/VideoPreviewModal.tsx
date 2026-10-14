@@ -21,10 +21,10 @@ export const VideoPreviewModal: React.FC<VideoPreviewModalProps> = ({
       onClick={onClose}
     >
       <div 
-        className="w-full max-w-lg bg-[#090d14] border border-[#16202e] rounded-2xl p-5 shadow-2xl relative"
+        className="w-full max-w-lg bg-[var(--card-bg)] border border-[var(--card-border)] rounded-2xl p-5 shadow-2xl relative"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex items-center justify-between pb-2 mb-3 border-b border-[#141a24]">
+        <div className="flex items-center justify-between pb-2 mb-3 border-b border-[var(--card-border)]">
           <h3 className="text-xs font-bold text-white">Video Demonstration</h3>
           <button
             type="button"
@@ -36,7 +36,7 @@ export const VideoPreviewModal: React.FC<VideoPreviewModalProps> = ({
         </div>
 
         <div className="space-y-3">
-          <p className="text-xs text-slate-300 font-mono break-all bg-[#05080e] p-2.5 rounded-lg border border-[#16202e]">
+          <p className="text-xs text-slate-300 font-mono break-all bg-[var(--input-bg)] p-2.5 rounded-lg border border-[var(--input-border)]">
             {videoUrl}
           </p>
           <div className="flex justify-end gap-2">
@@ -45,7 +45,7 @@ export const VideoPreviewModal: React.FC<VideoPreviewModalProps> = ({
                 href={sanitizeUrl(videoUrl)}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="px-4 py-1.5 rounded-lg text-xs font-bold text-[#080c14] bg-white hover:bg-slate-100 inline-flex items-center gap-1.5 cursor-pointer"
+                className="gym-btn-primary text-xs inline-flex items-center gap-1.5"
               >
                 <ExternalLink className="w-3.5 h-3.5" />
                 <span>Open Link ↗</span>

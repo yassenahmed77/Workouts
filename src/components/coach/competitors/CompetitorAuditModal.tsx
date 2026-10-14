@@ -67,26 +67,26 @@ export const CompetitorAuditModal: React.FC<CompetitorAuditModalProps> = ({
       }}
     >
       <div
-        className="w-full max-w-3xl bg-[#0b0f17] border border-[#1e2638] rounded-3xl p-5 sm:p-6 shadow-2xl relative max-h-[92vh] flex flex-col animate-in zoom-in-95 duration-150 font-sans"
+        className="w-full max-w-3xl bg-[var(--card-bg)] border border-[var(--card-border)] rounded-3xl p-5 sm:p-6 shadow-2xl relative max-h-[92vh] flex flex-col animate-in zoom-in-95 duration-150 font-sans"
         onClick={(e) => e.stopPropagation()}
       >
         <button
           onClick={onClose}
-          className="absolute top-5 right-5 text-[#64748b] hover:text-white p-2 rounded-xl hover:bg-[#151c27] transition-colors cursor-pointer"
+          className="absolute top-5 right-5 text-slate-400 hover:text-white p-2 rounded-xl hover:bg-[var(--card-subtle-bg)] transition-colors cursor-pointer"
         >
           <X className="w-5 h-5" />
         </button>
 
         {/* Header */}
-        <div className="flex items-center gap-3.5 pb-4 border-b border-[#18202d]">
+        <div className="flex items-center gap-3.5 pb-4 border-b border-[var(--card-border)]">
           {competitor.avatarUrl ? (
             <img
               src={competitor.avatarUrl}
               alt={competitor.name}
-              className="w-12 h-12 rounded-full object-cover border border-[#1b2535] flex-shrink-0"
+              className="w-12 h-12 rounded-full object-cover border border-[var(--card-border)] flex-shrink-0"
             />
           ) : (
-            <div className="w-12 h-12 rounded-full bg-[#111622] text-[#94a3b8] border border-[#1b2535] font-mono text-sm font-semibold flex items-center justify-center flex-shrink-0">
+            <div className="w-12 h-12 rounded-full bg-[var(--card-subtle-bg)] text-slate-400 border border-[var(--card-border)] font-mono text-sm font-semibold flex items-center justify-center flex-shrink-0">
               {competitor.avatarText || competitor.name.slice(0, 2).toUpperCase()}
             </div>
           )}
@@ -95,11 +95,11 @@ export const CompetitorAuditModal: React.FC<CompetitorAuditModalProps> = ({
               <h2 className="text-lg font-bold text-white tracking-tight">
                 {competitor.name}
               </h2>
-              <span className="text-[10px] font-mono font-medium px-2 py-0.5 rounded-full bg-[#111724] text-[#cbd5e1] border border-[#1e293b]">
+              <span className="text-[10px] font-mono font-medium px-2 py-0.5 rounded-full bg-[var(--card-subtle-bg)] text-slate-300 border border-[var(--card-border)]">
                 {competitor.competitionProfile?.division || 'Competitor'}
               </span>
             </div>
-            <p className="text-xs text-[#64748b] mt-0.5 font-mono">
+            <p className="text-xs text-slate-400 mt-0.5 font-mono">
               {competitor.competitionProfile?.targetShow || 'Championship Prep'} &bull;{' '}
               <span className="text-white font-medium">
                 {competitor.competitionProfile?.daysOut ?? 30} Days Out
@@ -111,27 +111,27 @@ export const CompetitorAuditModal: React.FC<CompetitorAuditModalProps> = ({
         {/* Scrollable Content */}
         <div className="space-y-4 overflow-y-auto pr-1 flex-1 py-4 custom-scrollbar">
           {/* Stage Biometrics Grid */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 p-3 rounded-xl bg-[#090d14] border border-[#161f2e] text-center font-mono">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 p-3 rounded-xl bg-[var(--card-subtle-bg)] border border-[var(--card-border)] text-center font-mono">
             <div>
-              <span className="text-[10px] text-[#64748b] block">Current / Limit</span>
+              <span className="text-[10px] text-slate-400 block">Current / Limit</span>
               <span className="text-xs font-bold text-white mt-0.5 block">
                 {competitor.weightKg} kg / {competitor.competitionProfile?.targetWeightClassKg || 80} kg
               </span>
             </div>
             <div>
-              <span className="text-[10px] text-[#64748b] block">Conditioning Score</span>
+              <span className="text-[10px] text-slate-400 block">Conditioning Score</span>
               <span className="text-xs font-bold text-white mt-0.5 block">
                 {competitor.competitionProfile?.stageReadinessScore ?? 88}%
               </span>
             </div>
             <div>
-              <span className="text-[10px] text-[#64748b] block">Water Loading</span>
+              <span className="text-[10px] text-slate-400 block">Water Loading</span>
               <span className="text-xs font-bold text-white mt-0.5 block">
                 {competitor.competitionProfile?.waterIntakeLiters ?? 6.0} L / day
               </span>
             </div>
             <div>
-              <span className="text-[10px] text-[#64748b] block">Carb Load</span>
+              <span className="text-[10px] text-slate-400 block">Carb Load</span>
               <span className="text-xs font-bold text-white mt-0.5 block">
                 {competitor.competitionProfile?.carbLoadGrams ?? 350}g / day
               </span>
@@ -141,10 +141,10 @@ export const CompetitorAuditModal: React.FC<CompetitorAuditModalProps> = ({
           {/* 4 Mandatory Stage Posing Angles */}
           <div>
             <div className="flex items-center justify-between mb-2">
-              <span className="text-[10px] font-mono uppercase text-[#64748b] font-bold block">
+              <span className="text-[10px] font-mono uppercase text-slate-400 font-bold block">
                 Mandatory Stage Posing (4 Angles)
               </span>
-              <span className="text-[10px] font-mono text-[#cbd5e1]">
+              <span className="text-[10px] font-mono text-slate-300">
                 Status: {competitor.competitionProfile?.posingApproval || 'Approved'}
               </span>
             </div>
@@ -158,7 +158,7 @@ export const CompetitorAuditModal: React.FC<CompetitorAuditModalProps> = ({
               ].map((pose) => (
                 <div
                   key={pose.key}
-                  className="aspect-[3/4] rounded-xl bg-[#090d14] border border-[#161f2e] overflow-hidden relative group shadow-sm"
+                  className="aspect-[3/4] rounded-xl bg-[var(--card-subtle-bg)] border border-[var(--card-border)] overflow-hidden relative group shadow-sm"
                 >
                   {pose.url ? (
                     <img
@@ -167,7 +167,7 @@ export const CompetitorAuditModal: React.FC<CompetitorAuditModalProps> = ({
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                     />
                   ) : (
-                    <div className="w-full h-full flex flex-col items-center justify-center text-[#526075] p-2">
+                    <div className="w-full h-full flex flex-col items-center justify-center text-slate-500 p-2">
                       <Camera className="w-5 h-5 mb-1" />
                       <span className="text-[9px] font-mono text-center">{pose.label}</span>
                     </div>
@@ -184,28 +184,28 @@ export const CompetitorAuditModal: React.FC<CompetitorAuditModalProps> = ({
 
           {/* Coach Stage Cues */}
           {competitor.competitionProfile?.stageNotes && (
-            <div className="p-3 rounded-xl bg-[#090d14] border border-[#161f2e]">
-              <span className="text-[10px] font-mono uppercase text-[#64748b] block font-bold mb-1">
+            <div className="p-3 rounded-xl bg-[var(--card-subtle-bg)] border border-[var(--card-border)]">
+              <span className="text-[10px] font-mono uppercase text-slate-400 block font-bold mb-1">
                 Coach Stage Cues (Posing Feedback)
               </span>
-              <p className="text-xs text-[#cbd5e1] leading-relaxed">
+              <p className="text-xs text-slate-300 leading-relaxed">
                 {competitor.competitionProfile.stageNotes}
               </p>
             </div>
           )}
 
           {/* Private Coach Notes Section */}
-          <div className="p-4 rounded-xl bg-[#090d14] border border-[#161f2e] space-y-3">
-            <div className="flex items-center justify-between pb-2 border-b border-[#141a24]">
+          <div className="p-4 rounded-xl bg-[var(--card-subtle-bg)] border border-[var(--card-border)] space-y-3">
+            <div className="flex items-center justify-between pb-2 border-b border-[var(--card-border)]">
               <div className="flex items-center gap-2">
-                <div className="w-6 h-6 rounded-md bg-[#111622] border border-[#1a2436] flex items-center justify-center text-[#94a3b8]">
+                <div className="w-6 h-6 rounded-md bg-[var(--card-bg)] border border-[var(--card-border)] flex items-center justify-center text-slate-400">
                   <Lock className="w-3.5 h-3.5" />
                 </div>
                 <div>
                   <h4 className="text-xs font-bold uppercase tracking-wider text-white font-mono">
                     Private Coach Notes
                   </h4>
-                  <span className="text-[10px] text-[#64748b] block leading-none">
+                  <span className="text-[10px] text-slate-400 block leading-none">
                     Confidential &bull; Only visible to you
                   </span>
                 </div>
@@ -216,7 +216,7 @@ export const CompetitorAuditModal: React.FC<CompetitorAuditModalProps> = ({
                   <CheckCircle2 className="w-3.5 h-3.5" /> Saved
                 </span>
               ) : (
-                <span className="text-[10px] font-mono text-[#526075] px-1.5 py-0.5 rounded bg-[#0b0f17] border border-[#161f2e]">
+                <span className="text-[10px] font-mono text-slate-400 px-1.5 py-0.5 rounded bg-[var(--card-bg)] border border-[var(--card-border)]">
                   Auto-sync
                 </span>
               )}
@@ -224,7 +224,7 @@ export const CompetitorAuditModal: React.FC<CompetitorAuditModalProps> = ({
 
             {/* Quick Tags */}
             <div className="flex flex-wrap items-center gap-1.5 text-[10px] font-mono">
-              <span className="text-[#64748b] mr-1">Insert Cue:</span>
+              <span className="text-slate-400 mr-1">Insert Cue:</span>
               {[
                 'Water Cut',
                 'Conditioning Peak',
@@ -237,7 +237,7 @@ export const CompetitorAuditModal: React.FC<CompetitorAuditModalProps> = ({
                   key={tag}
                   type="button"
                   onClick={() => setModalPrivateNote((prev) => (prev ? `${prev} [${tag}]` : `[${tag}]`))}
-                  className="px-2 py-0.5 rounded bg-[#0b0f17] hover:bg-[#141c2a] text-[#8896aa] hover:text-white border border-[#161f2e] transition-colors cursor-pointer"
+                  className="px-2 py-0.5 rounded bg-[var(--card-bg)] hover:bg-[var(--card-subtle-bg)] text-slate-400 hover:text-white border border-[var(--card-border)] transition-colors cursor-pointer"
                 >
                   +{tag}
                 </button>
@@ -250,18 +250,18 @@ export const CompetitorAuditModal: React.FC<CompetitorAuditModalProps> = ({
               value={modalPrivateNote}
               onChange={(e) => setModalPrivateNote(e.target.value)}
               placeholder="Record confidential notes on conditioning rate, water protocols, vascularity, gut distension, or judge feedback..."
-              className="w-full p-3 rounded-xl bg-[#0b0f17] border border-[#1a2436] text-xs text-white placeholder-[#526075] focus:outline-none focus:border-[#334155] font-sans leading-relaxed resize-none transition-colors"
+              className="w-full p-3 rounded-xl bg-[var(--input-bg)] border border-[var(--input-border)] text-xs text-white placeholder-slate-500 focus:outline-none focus:border-[var(--main-color)] font-sans leading-relaxed resize-none transition-colors"
             />
 
             <div className="flex items-center justify-between pt-1">
-              <span className="text-[10px] font-mono text-[#526075]">
+              <span className="text-[10px] font-mono text-slate-500">
                 Encrypted in coach profile
               </span>
               <button
                 type="button"
                 onClick={handleSaveNotes}
                 disabled={isModalNoteSaving}
-                className="py-1.5 px-4 rounded-lg bg-white hover:bg-slate-100 text-[#080c14] text-xs font-semibold transition-all cursor-pointer flex items-center gap-1.5 shadow-sm active:scale-95 disabled:opacity-50"
+                className="gym-btn-primary text-xs flex items-center gap-1.5"
               >
                 <Save className="w-3.5 h-3.5" />
                 {isModalNoteSaving ? 'Saving...' : 'Save Notes'}
@@ -271,11 +271,11 @@ export const CompetitorAuditModal: React.FC<CompetitorAuditModalProps> = ({
         </div>
 
         {/* Footer */}
-        <div className="pt-3 mt-2 border-t border-[#18202d] flex items-center justify-between gap-3">
+        <div className="pt-3 mt-2 border-t border-[var(--card-border)] flex items-center justify-between gap-3">
           <button
             type="button"
             onClick={onClose}
-            className="py-2 px-4 rounded-xl border border-[#202a38] text-xs font-medium text-[#94a3b8] hover:text-white hover:bg-[#151c27] transition-all cursor-pointer"
+            className="gym-btn-ghost text-xs"
           >
             Close Audit
           </button>
@@ -288,10 +288,10 @@ export const CompetitorAuditModal: React.FC<CompetitorAuditModalProps> = ({
                 onClose();
                 onSelectClientFor360(c);
               }}
-              className="py-2 px-4 rounded-xl bg-[#111724] hover:bg-[#162030] border border-[#1e293b] text-white text-xs font-semibold inline-flex items-center gap-2 cursor-pointer shadow-sm active:scale-95 transition-all"
+              className="py-2 px-4 rounded-xl bg-[var(--card-subtle-bg)] hover:bg-[var(--card-border)] border border-[var(--card-border)] text-white text-xs font-semibold inline-flex items-center gap-2 cursor-pointer shadow-sm active:scale-95 transition-all"
             >
               <span>Open Full Client 360</span>
-              <ExternalLink className="w-3.5 h-3.5 text-[#94a3b8]" />
+              <ExternalLink className="w-3.5 h-3.5 text-slate-400" />
             </button>
           )}
         </div>

@@ -5,7 +5,7 @@ import { useGym } from '@/context/GymContext';
 import { useToast } from '@/context/ToastContext';
 import { DietPlan } from '@/types';
 import { NutritionPlanBuilderModal } from './nutrition/NutritionPlanBuilderModal';
-import { Search, Copy, Trash2 } from 'lucide-react';
+import { Search, Copy, Trash2, X, Plus, Eye, PanelLeft } from 'lucide-react';
 
 import { dietService } from '@/services/dietService';
 import { clientService } from '@/services/clientService';
@@ -13,11 +13,15 @@ import { clientService } from '@/services/clientService';
 interface DietPlansViewProps {
   onOpenDietBuilder?: (plan?: DietPlan, targetUserId?: string) => void;
   onNavigateToClient?: (clientId: string) => void;
+  isSidebarOpen?: boolean;
+  onToggleSidebar?: () => void;
 }
 
 export const DietPlansView: React.FC<DietPlansViewProps> = ({ 
   onOpenDietBuilder,
-  onNavigateToClient 
+  onNavigateToClient,
+  isSidebarOpen,
+  onToggleSidebar
 }) => {
   const { dietPlans, users, currentUser, deleteDietPlan, createDietPlan } = useGym();
   const { showToast, confirmDialog } = useToast();
@@ -124,63 +128,80 @@ export const DietPlansView: React.FC<DietPlansViewProps> = ({
 
   return (
     <>
-      <div className="flex flex-col flex-1 h-full min-h-0 w-full space-y-2 pb-2.5 sm:pb-3 font-sans text-slate-100 select-none overflow-hidden">
+      <div className="flex flex-col flex-1 h-full min-h-0 w-full space-y-2 pb-24 md:pb-3 font-sans text-slate-100 select-none overflow-y-auto lg:overflow-hidden">
         
         {/* 1. Header, Telemetry Pills, & Search Bar */}
-        <div className="flex-shrink-0 flex flex-col md:flex-row md:items-center justify-between gap-2.5 pb-2 border-b border-[#24262e]">
-          <div className="min-w-0">
-            <div className="flex items-center gap-2">
-              <h1 className="text-base sm:text-lg font-bold text-white tracking-tight leading-tight">
+        <div className="flex-shrink-0 flex flex-col md:flex-row md:items-center justify-between gap-2 pb-2 border-b border-white/[0.07]">
+          {/* Title (Centered on mobile or aligned with sidebar button) */}
+          <div className="min-w-0 w-full md:w-auto flex items-center gap-2 justify-center md:justify-start">
+            {onToggleSidebar && (
+              <button
+                type="button"
+                onClick={onToggleSidebar}
+                className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-white/[0.06] border border-white/[0.08] transition-colors flex items-center justify-center cursor-pointer shrink-0 min-[1025px]:hidden"
+                title={isSidebarOpen ? "Collapse sidebar (Ctrl+B)" : "Expand sidebar (Ctrl+B)"}
+                aria-label="Toggle Navigation Sidebar"
+              >
+                <PanelLeft className="w-4 h-4 text-slate-300" />
+              </button>
+            )}
+            <div className="min-w-0">
+              <h1 className="gym-heading-page text-sm sm:text-base md:text-lg truncate">
                 Diet Plans & Nutrition Studio
               </h1>
-              <span className="px-1.5 py-0.2 rounded bg-[#2f80ed]/10 border border-[#2f80ed]/20 text-[9.5px] font-mono text-[#2f80ed] font-bold hidden sm:inline">
-                Nutrition OS
-              </span>
+              <p className="gym-subtext mt-0.5 truncate hidden sm:block">
+                Client-centric macronutrient targets, verified meal breakdowns, and athlete diet plans.
+              </p>
             </div>
-            <p className="text-xs text-zinc-400 mt-0.5 truncate">
-              Client-centric macronutrient targets, verified meal breakdowns, and athlete diet plans.
-            </p>
           </div>
 
           {/* Action Controls & Search Input */}
-          <div className="flex items-center gap-2 flex-wrap sm:flex-nowrap flex-shrink-0">
-            <div className="relative w-full sm:w-60">
-              <Search className="w-3.5 h-3.5 text-zinc-500 absolute left-3 top-1/2 -translate-y-1/2" />
+          <div className="flex items-center gap-1.5 sm:gap-2 flex-shrink-0 w-full md:w-auto">
+            <div className="relative flex-1 md:w-60">
+              <Search className="w-3.5 h-3.5 text-slate-500 absolute left-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
               <input
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search athlete or diet plan..."
-                className="w-full pl-8 pr-3 py-1.5 rounded-lg bg-[#141519] border border-[#24262e] text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-[#2f80ed] transition-colors"
+                className="w-full gym-input !pl-8 pr-7 text-xs"
               />
+              {searchQuery && (
+                <button
+                  type="button"
+                  onClick={() => setSearchQuery('')}
+                  className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-500 hover:text-white p-0.5 cursor-pointer transition-colors"
+                  title="Clear search"
+                >
+                  <X className="w-3.5 h-3.5" />
+                </button>
+              )}
             </div>
 
             <button
               type="button"
               onClick={() => handleOpenBuilderInternal()}
-              className="btn-cyan py-1.5 px-3.5 rounded-lg text-xs font-bold cursor-pointer shadow-xs transition-all whitespace-nowrap"
+              className="gym-btn-primary text-xs px-2.5 sm:px-3 py-1.5 h-[34px] font-semibold shrink-0 cursor-pointer"
             >
               + Build Diet Plan
             </button>
           </div>
         </div>
 
-        {/* 2. Micro Telemetry Capsule Strip */}
-        <div className="flex-shrink-0 flex items-center gap-2 overflow-x-auto text-[10.5px] font-mono">
-          <div className="px-2.5 py-1 rounded-lg bg-[#18191e] border border-[#24262e] flex items-center gap-1.5 flex-shrink-0">
-            <span className="text-zinc-500 uppercase tracking-wider font-semibold">Total Plans:</span>
-            <span className="font-bold text-white font-numeric">{dietPlans.length}</span>
+        {/* 2. Micro Telemetry Capsule Strip (optimized for 320px screens while preserving desktop layout) */}
+        <div className="flex-shrink-0 flex items-center justify-between sm:justify-center lg:justify-start gap-1 sm:gap-2 overflow-x-auto no-scrollbar font-mono py-0.5 w-full">
+          <div className="gym-card-subtle px-1.5 sm:px-2.5 py-0.5 sm:py-1 flex items-center justify-center gap-1 sm:gap-1.5 flex-1 sm:flex-initial text-[8.5px] sm:text-[10px] md:text-[10.5px]">
+            <span className="gym-label-mono text-slate-400 text-[8px] sm:text-[9.5px]">Diets:</span>
+            <span className="gym-num text-white font-bold">{dietPlans.length}</span>
           </div>
-          <div className="px-2.5 py-1 rounded-lg bg-[#18191e] border border-[#24262e] flex items-center gap-1.5 flex-shrink-0">
-            <span className="text-zinc-500 uppercase tracking-wider font-semibold">Diet Coverage:</span>
-            <span className="font-bold text-white font-numeric">{dietCoveragePct}%</span>
-            <span className="text-zinc-500">({traineesWithDiet.length}/{trainees.length})</span>
+          <div className="gym-card-subtle px-1.5 sm:px-2.5 py-0.5 sm:py-1 flex items-center justify-center gap-1 sm:gap-1.5 flex-1 sm:flex-initial text-[8.5px] sm:text-[10px] md:text-[10.5px]">
+            <span className="gym-label-mono text-slate-400 text-[8px] sm:text-[9.5px]">Coverage:</span>
+            <span className="gym-num text-white font-bold">{dietCoveragePct}%</span>
+            <span className="text-slate-500 text-[7.5px] sm:text-[9px] whitespace-nowrap">({traineesWithDiet.length}/{trainees.length})</span>
           </div>
-          <div className="px-2.5 py-1 rounded-lg bg-[#18191e] border border-[#24262e] flex items-center gap-1.5 flex-shrink-0">
-            <span className="text-zinc-500 uppercase tracking-wider font-semibold">Awaiting Diet:</span>
-            <span className="font-bold text-zinc-300 font-numeric">
-              {pendingDietAthletes.length}
-            </span>
+          <div className="gym-card-subtle px-1.5 sm:px-2.5 py-0.5 sm:py-1 flex items-center justify-center gap-1 sm:gap-1.5 flex-1 sm:flex-initial text-[8.5px] sm:text-[10px] md:text-[10.5px]">
+            <span className="gym-label-mono text-slate-400 text-[8px] sm:text-[9.5px]">Awaiting:</span>
+            <span className="gym-num text-slate-300 font-bold">{pendingDietAthletes.length}</span>
           </div>
         </div>
 
@@ -188,19 +209,19 @@ export const DietPlansView: React.FC<DietPlansViewProps> = ({
         <div className="flex-1 min-h-0 grid grid-cols-1 lg:grid-cols-12 gap-2.5 items-stretch">
           
           {/* Left Column (col-span-7): Active Athlete Diets & Templates */}
-          <div className="lg:col-span-7 rounded-xl bg-[#18191e] border border-[#24262e] flex flex-col min-h-0 overflow-hidden shadow-xs">
+          <div className="lg:col-span-7 gym-card !p-0 flex flex-col min-h-0 overflow-hidden shadow-xs">
             {/* Panel Header */}
-            <div className="px-3.5 py-2 bg-[#141519] border-b border-[#24262e] flex items-center justify-between flex-shrink-0">
-              <h2 className="text-[11px] font-mono font-bold uppercase tracking-wider text-zinc-300">
+            <div className="px-2.5 sm:px-3.5 py-2 bg-[var(--card-subtle-bg)] border-b border-[var(--card-border)] flex items-center justify-between flex-shrink-0">
+              <h2 className="gym-heading-card">
                 Active Athlete Diets & Templates
               </h2>
-              <span className="text-[10px] font-mono px-2 py-0.2 rounded bg-[#2f80ed]/10 text-[#2f80ed] border border-[#2f80ed]/20 font-bold">
+              <span className="gym-delta-blue text-[10px]">
                 {activeAthleteDiets.length} active
               </span>
             </div>
 
             {/* Connected Scrollable List */}
-            <div className="flex-1 min-h-0 overflow-y-auto custom-scrollbar divide-y divide-[#24262e]">
+            <div className="flex-1 min-h-0 overflow-y-auto custom-scrollbar divide-y divide-[var(--card-border)]">
               {activeAthleteDiets.length === 0 ? (
                 <div className="p-8 text-center space-y-1.5">
                   <h3 className="text-xs font-bold text-white">No Active Diet Plans Found</h3>
@@ -214,31 +235,31 @@ export const DietPlansView: React.FC<DietPlansViewProps> = ({
                     <div
                       key={plan.id}
                       onClick={() => handleOpenBuilderInternal(plan, plan.assignedUserId)}
-                      className="px-3.5 py-2.5 hover:bg-white/[0.02] transition-colors flex items-center justify-between gap-3 group cursor-pointer"
+                      className="px-2 sm:px-3 py-2 sm:py-2.5 hover:bg-white/[0.02] transition-colors flex items-center justify-between gap-2 sm:gap-3 group cursor-pointer"
                     >
                       {/* Athlete / Template Info & Diet Details */}
-                      <div className="flex items-center gap-2.5 min-w-0">
+                      <div className="flex items-center gap-1.5 sm:gap-2.5 min-w-0 flex-1">
                         {isTemplate ? (
-                          <span className="w-8 h-8 rounded-lg bg-white/[0.04] border border-white/10 text-slate-400 text-xs font-mono font-bold flex items-center justify-center flex-shrink-0">
+                          <span className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-white/[0.04] border border-white/10 text-slate-400 text-xs font-mono font-bold flex items-center justify-center shrink-0">
                             T
                           </span>
                         ) : athlete?.avatarUrl ? (
                           <img
                             src={athlete.avatarUrl}
                             alt={athlete.name}
-                            className="w-8 h-8 rounded-lg object-cover border border-white/10 flex-shrink-0"
+                            className="w-7 h-7 sm:w-8 sm:h-8 rounded-full object-cover border border-white/10 shrink-0"
                           />
                         ) : (
-                          <span className="w-8 h-8 rounded-lg bg-white/[0.04] border border-white/10 text-slate-300 text-xs font-mono font-bold flex items-center justify-center flex-shrink-0 group-hover:border-white/20 transition-colors">
+                          <span className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-white/[0.04] border border-white/10 text-slate-300 text-xs font-mono font-bold flex items-center justify-center shrink-0 transition-colors">
                             {athlete ? athlete.name.charAt(0) : 'A'}
                           </span>
                         )}
 
-                        <div className="min-w-0">
-                          <div className="flex items-center gap-2">
+                        <div className="min-w-0 flex-1">
+                          <div className="flex items-center gap-1.5 sm:gap-2">
                             {isTemplate ? (
                               <>
-                                <span className="text-xs font-bold text-white block truncate group-hover:text-slate-200 transition-colors">
+                                <span className="text-xs font-bold text-white block truncate transition-colors">
                                   {plan.title}
                                 </span>
                                 <span className="px-1.5 py-0.2 rounded bg-white/[0.04] border border-white/10 text-[9.5px] font-mono text-slate-400">
@@ -259,25 +280,20 @@ export const DietPlansView: React.FC<DietPlansViewProps> = ({
                                 >
                                   {athlete?.name}
                                 </button>
-                                {totalAssignedCount > 1 && (
-                                  <span className="px-1.5 py-0.2 rounded bg-white/[0.04] border border-white/10 text-[9.5px] font-mono text-slate-300">
-                                    +{totalAssignedCount - 1} more
-                                  </span>
-                                )}
                               </>
                             )}
                           </div>
 
-                          <div className="flex items-center gap-1.5 text-[10.5px] text-slate-400 font-mono truncate mt-0.5">
+                          <div className="flex items-center gap-1 sm:gap-1.5 text-[9px] sm:text-[10.5px] text-slate-400 font-mono truncate mt-0.5">
                             {!isTemplate && (
                               <>
-                                <span className="text-slate-300 font-medium truncate">{plan.title}</span>
+                                <span className="text-slate-300 font-medium truncate max-w-[80px] sm:max-w-none">{plan.title}</span>
                                 <span className="text-slate-600">&bull;</span>
                               </>
                             )}
                             <span className="text-white font-numeric font-bold">{plan.targetCalories} kcal</span>
                             <span className="text-slate-600">&bull;</span>
-                            <span>P:{plan.targetProteinG}g C:{plan.targetCarbsG}g F:{plan.targetFatsG}g</span>
+                            <span className="text-slate-300">P:{plan.targetProteinG}g C:{plan.targetCarbsG}g F:{plan.targetFatsG}g</span>
                             {plan.waterTargetLiters && (
                               <>
                                 <span className="text-slate-600 hidden sm:inline">&bull;</span>
@@ -289,11 +305,11 @@ export const DietPlansView: React.FC<DietPlansViewProps> = ({
                       </div>
 
                       {/* Actions */}
-                      <div className="flex items-center gap-1.5 flex-shrink-0" onClick={(e) => e.stopPropagation()}>
+                      <div className="flex items-center gap-1 sm:gap-1.5 shrink-0" onClick={(e) => e.stopPropagation()}>
                         <button
                           type="button"
                           onClick={() => handleDuplicatePlan(plan)}
-                          className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-white/[0.06] active:scale-95 transition-all cursor-pointer"
+                          className="p-1 sm:p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-white/[0.06] active:scale-95 transition-all cursor-pointer"
                           title="Duplicate Diet Plan"
                         >
                           <Copy className="w-3.5 h-3.5" />
@@ -301,7 +317,7 @@ export const DietPlansView: React.FC<DietPlansViewProps> = ({
                         <button
                           type="button"
                           onClick={() => handleDeletePlan(plan.id, plan.title)}
-                          className="p-1.5 rounded-lg text-slate-400 hover:text-rose-400 hover:bg-rose-500/10 active:scale-95 transition-all cursor-pointer"
+                          className="p-1 sm:p-1.5 rounded-lg text-slate-400 hover:text-rose-400 hover:bg-rose-500/10 active:scale-95 transition-all cursor-pointer"
                           title="Delete Diet Plan"
                         >
                           <Trash2 className="w-3.5 h-3.5" />
@@ -310,9 +326,12 @@ export const DietPlansView: React.FC<DietPlansViewProps> = ({
                         <button
                           type="button"
                           onClick={() => handleOpenBuilderInternal(plan, plan.assignedUserId)}
-                          className="py-1 px-2.5 rounded-lg bg-[#141519] hover:bg-[#1c1d22] text-zinc-200 hover:text-white border border-[#24262e] hover:border-[#2f80ed]/40 text-xs font-medium transition-all cursor-pointer whitespace-nowrap active:scale-95"
+                          className="w-7 h-7 sm:w-auto sm:px-2.5 sm:py-1 sm:h-7.5 rounded-lg bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 text-slate-300 hover:text-white flex items-center justify-center shrink-0 cursor-pointer transition-all active:scale-95 text-xs font-medium"
+                          title="Open in Studio"
+                          aria-label="Open in Studio"
                         >
-                          Open in Studio
+                          <Eye className="w-3.5 h-3.5 text-slate-300 sm:!hidden" />
+                          <span className="!hidden sm:!inline whitespace-nowrap">Open in Studio</span>
                         </button>
                       </div>
                     </div>
@@ -323,23 +342,23 @@ export const DietPlansView: React.FC<DietPlansViewProps> = ({
           </div>
 
           {/* Right Column (col-span-5): Pending Athletes Requiring Diets */}
-          <div className="lg:col-span-5 rounded-xl bg-[#18191e] border border-[#24262e] flex flex-col min-h-0 overflow-hidden shadow-xs">
+          <div className="lg:col-span-5 gym-card !p-0 flex flex-col min-h-0 overflow-hidden shadow-xs">
             {/* Panel Header */}
-            <div className="px-3.5 py-2 bg-[#141519] border-b border-[#24262e] flex items-center justify-between flex-shrink-0">
-              <h2 className="text-[11px] font-mono font-bold uppercase tracking-wider text-zinc-300">
+            <div className="px-2.5 sm:px-3.5 py-2 bg-[var(--card-subtle-bg)] border-b border-[var(--card-border)] flex items-center justify-between flex-shrink-0">
+              <h2 className="gym-heading-card">
                 Awaiting Diet Plan
               </h2>
-              <span className="text-[10px] font-mono px-2 py-0.2 rounded bg-[#2f80ed]/10 text-[#2f80ed] border border-[#2f80ed]/20 font-bold">
+              <span className="gym-delta-neutral text-[10px]">
                 {pendingDietAthletes.length} athletes
               </span>
             </div>
 
             {/* Connected Scrollable List */}
-            <div className="flex-1 min-h-0 overflow-y-auto custom-scrollbar divide-y divide-[#24262e]">
+            <div className="flex-1 min-h-0 overflow-y-auto custom-scrollbar divide-y divide-[var(--card-border)]">
               {pendingDietAthletes.length === 0 ? (
                 <div className="p-8 text-center space-y-1.5">
-                  <h3 className="text-xs font-bold text-white">Full Nutrition Coverage</h3>
-                  <p className="text-[11px] text-zinc-400 max-w-xs mx-auto">
+                  <h3 className="gym-heading-card text-white">Full Nutrition Coverage</h3>
+                  <p className="gym-subtext max-w-xs mx-auto">
                     Every active athlete on your roster currently has a tailored diet plan deployed.
                   </p>
                 </div>
@@ -348,21 +367,21 @@ export const DietPlansView: React.FC<DietPlansViewProps> = ({
                   <div
                     key={athlete.id}
                     onClick={() => handleOpenBuilderInternal(undefined, athlete.id)}
-                    className="px-3.5 py-2.5 hover:bg-white/[0.02] transition-colors flex items-center justify-between gap-3 group cursor-pointer"
+                    className="px-2 sm:px-3 py-2 sm:py-2.5 hover:bg-white/[0.02] transition-colors flex items-center justify-between gap-2 sm:gap-3 group cursor-pointer"
                   >
-                    <div className="flex items-center gap-2.5 min-w-0">
+                    <div className="flex items-center gap-1.5 sm:gap-2.5 min-w-0 flex-1">
                       {athlete.avatarUrl ? (
                         <img
                           src={athlete.avatarUrl}
                           alt={athlete.name}
-                          className="w-8 h-8 rounded-lg object-cover border border-[#24262e] flex-shrink-0"
+                          className="w-7 h-7 sm:w-8 sm:h-8 rounded-full object-cover border border-white/10 shrink-0"
                         />
                       ) : (
-                        <span className="w-8 h-8 rounded-lg bg-[#141519] border border-[#24262e] text-[#2f80ed] text-xs font-mono font-bold flex items-center justify-center flex-shrink-0 group-hover:border-[#2f80ed]/40 transition-colors">
+                        <span className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-[var(--card-subtle-bg)] border border-[var(--card-border)] text-[var(--main-color)] text-xs font-mono font-bold flex items-center justify-center shrink-0 transition-colors">
                           {athlete.name.charAt(0)}
                         </span>
                       )}
-                      <div className="min-w-0">
+                      <div className="min-w-0 flex-1">
                         <button
                           type="button"
                           onClick={(e) => {
@@ -371,11 +390,11 @@ export const DietPlansView: React.FC<DietPlansViewProps> = ({
                               onNavigateToClient(athlete.id);
                             }
                           }}
-                          className="text-xs font-bold text-white hover:text-[#2f80ed] transition-colors truncate text-left cursor-pointer block"
+                          className="text-xs font-bold text-white hover:text-[var(--main-color)] transition-colors truncate text-left cursor-pointer block"
                         >
                           {athlete.name}
                         </button>
-                        <span className="text-[10.5px] text-zinc-400 font-mono block truncate mt-0.5">
+                        <span className="gym-subtext font-mono block truncate mt-0.5">
                           {athlete.goal || 'Weight Management'} &bull; {athlete.weightKg ? `${athlete.weightKg} kg` : 'Athlete'}
                         </span>
                       </div>
@@ -387,9 +406,12 @@ export const DietPlansView: React.FC<DietPlansViewProps> = ({
                         e.stopPropagation();
                         handleOpenBuilderInternal(undefined, athlete.id);
                       }}
-                      className="btn-cyan py-1 px-3 rounded-lg text-xs font-bold transition-all shadow-xs cursor-pointer whitespace-nowrap flex-shrink-0"
+                      className="gym-btn-primary w-7 h-7 sm:w-auto sm:px-3 sm:py-1.5 sm:h-8 flex items-center justify-center shrink-0 cursor-pointer shadow-xs text-xs font-semibold"
+                      title="Build Diet Plan"
+                      aria-label="Build Diet Plan"
                     >
-                      + Build Diet Plan
+                      <Plus className="w-4 h-4 stroke-[2.5] text-white shrink-0 sm:!hidden" />
+                      <span className="!hidden sm:!inline whitespace-nowrap">+ Build Diet Plan</span>
                     </button>
                   </div>
                 ))
@@ -398,6 +420,9 @@ export const DietPlansView: React.FC<DietPlansViewProps> = ({
           </div>
 
         </div>
+
+        {/* Mobile Bottom Safe Spacing for Fixed Navbar */}
+        <div className="h-16 md:hidden shrink-0 pointer-events-none" aria-hidden="true" />
 
       </div>
 

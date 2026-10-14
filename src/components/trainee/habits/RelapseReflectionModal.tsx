@@ -39,15 +39,15 @@ export const RelapseReflectionModal: React.FC<RelapseReflectionModalProps> = ({
       }}
     >
       <div 
-        className="w-full max-w-md bg-[#18191e] border border-[#24262e] rounded-3xl p-6 shadow-2xl relative animate-in zoom-in-95 duration-150 space-y-4 text-center"
+        className="w-full max-w-md bg-[var(--card-bg)] border border-[var(--card-border)] rounded-3xl p-6 shadow-2xl relative animate-in zoom-in-95 duration-150 space-y-4 text-center"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="w-12 h-12 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-amber-400 flex items-center justify-center mx-auto">
+        <div className="w-12 h-12 rounded-2xl bg-[var(--main-color)]/10 border border-[var(--main-color)]/25 text-[var(--main-color)] flex items-center justify-center mx-auto">
           <RotateCcw className="w-6 h-6 stroke-[2.5]" />
         </div>
 
         <div>
-          <span className="text-[10px] font-mono uppercase tracking-wider text-amber-400 font-bold px-2.5 py-0.5 rounded-full bg-amber-500/10 border border-amber-500/20">
+          <span className="text-[10px] font-mono uppercase tracking-wider text-[var(--main-color)] font-bold px-2.5 py-0.5 rounded-full bg-[var(--main-color)]/10 border border-[var(--main-color)]/25">
             Relapse Reflection
           </span>
           <h2 className="text-lg font-extrabold text-white tracking-tight mt-2">
@@ -67,7 +67,7 @@ export const RelapseReflectionModal: React.FC<RelapseReflectionModalProps> = ({
             value={relapseNote}
             onChange={(e) => setRelapseNote(e.target.value)}
             placeholder="e.g. High work stress, peer pressure at outing..."
-            className="w-full p-3 rounded-2xl bg-[#141519] border border-[#24262e] text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-amber-400 resize-none"
+            className="w-full p-3 rounded-2xl bg-[var(--card-subtle-bg)] border border-[var(--card-border)] text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-[var(--main-color)] resize-none"
           />
         </div>
 
@@ -75,14 +75,14 @@ export const RelapseReflectionModal: React.FC<RelapseReflectionModalProps> = ({
           <button
             type="button"
             onClick={onClose}
-            className="py-3 px-4 rounded-2xl bg-[#141519] hover:bg-[#1c1d22] border border-[#24262e] text-xs font-bold text-zinc-300 hover:text-white transition-colors cursor-pointer"
+            className="py-3 px-4 rounded-2xl bg-[var(--card-subtle-bg)] hover:bg-white/[0.04] border border-[var(--card-border)] text-xs font-bold text-zinc-300 hover:text-white transition-colors cursor-pointer"
           >
             Keep Current Streak
           </button>
           <button
             type="button"
             onClick={onConfirmRelapse}
-            className="py-3 px-4 rounded-2xl bg-amber-500 hover:bg-amber-400 text-black text-xs font-black tracking-wide cursor-pointer shadow-lg shadow-amber-500/20 active:scale-95 transition-all"
+            className="gym-btn-primary py-3 px-4 rounded-2xl text-xs font-black tracking-wide"
           >
             Reset Clock & Restart
           </button>

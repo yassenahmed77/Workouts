@@ -43,11 +43,11 @@ export const ExercisePickerDrawer: React.FC<ExercisePickerDrawerProps> = ({
         onClick={onClose}
         className="absolute inset-0 bg-black/50 backdrop-blur-[1px] z-45 animate-in fade-in duration-150"
       />
-      <aside className="absolute right-0 top-0 bottom-0 w-full sm:w-[460px] bg-[#080c14] border-l border-[#141b26] p-4 sm:p-5 shadow-2xl z-50 flex flex-col justify-between animate-in slide-in-from-right duration-200">
+      <aside className="absolute right-0 top-0 bottom-0 w-full sm:w-[460px] bg-[var(--card-bg)] border-l border-[var(--card-border)] p-4 sm:p-5 shadow-2xl z-50 flex flex-col justify-between animate-in slide-in-from-right duration-200">
         <div className="flex flex-col h-full min-h-0">
           
           {/* Header */}
-          <div className="flex items-center justify-between pb-3 border-b border-[#141a24] flex-shrink-0">
+          <div className="flex items-center justify-between pb-3 border-b border-[var(--card-border)] flex-shrink-0">
             <h3 className="text-xs sm:text-sm font-bold text-white">
               Exercise Library ({totalExercisesCount})
             </h3>
@@ -68,12 +68,12 @@ export const ExercisePickerDrawer: React.FC<ExercisePickerDrawerProps> = ({
                 value={pickerSearch}
                 onChange={(e) => onSearchChange(e.target.value)}
                 placeholder="Search movement, cue, or alternative..."
-                className="flex-1 px-3 py-1.5 rounded-lg bg-[#05080e] border border-[#16202e] text-xs text-white placeholder-slate-600 focus:outline-none focus:border-slate-500"
+                className="flex-1 px-3 py-1.5 rounded-lg bg-[var(--input-bg)] border border-[var(--input-border)] text-xs text-white placeholder-slate-600 focus:outline-none focus:border-[var(--main-color)]"
               />
               <button
                 type="button"
                 onClick={onOpenNewMovementModal}
-                className="px-3 py-1.5 rounded-lg text-xs font-semibold text-[#080c14] bg-white hover:bg-slate-100 transition-all whitespace-nowrap cursor-pointer active:scale-95 shadow-sm"
+                className="gym-btn-primary text-xs whitespace-nowrap"
               >
                 New Movement
               </button>
@@ -87,7 +87,7 @@ export const ExercisePickerDrawer: React.FC<ExercisePickerDrawerProps> = ({
                     e.currentTarget.scrollLeft += e.deltaY;
                   }
                 }}
-                className="flex items-center gap-1 p-1 pb-1 rounded-xl bg-[#05080e] border border-[#16202e] overflow-x-auto no-scrollbar scroll-smooth max-w-[398px]"
+                className="flex items-center gap-1 p-1 pb-1 rounded-xl bg-[var(--card-subtle-bg)] border border-[var(--card-border)] overflow-x-auto no-scrollbar scroll-smooth max-w-[398px]"
               >
                 <button
                   type="button"
@@ -124,14 +124,14 @@ export const ExercisePickerDrawer: React.FC<ExercisePickerDrawerProps> = ({
               <div
                 key={ex.id}
                 onClick={() => onSelectExercise(ex)}
-                className="p-2.5 rounded-xl bg-[#090e17] hover:bg-[#0f1726] border border-[#141b26] hover:border-slate-600 cursor-pointer transition-all flex items-center justify-between group"
+                className="p-2.5 rounded-xl bg-[var(--card-subtle-bg)] hover:bg-white/[0.04] border border-[var(--card-border)] hover:border-white/20 cursor-pointer transition-all flex items-center justify-between group"
               >
                 <div className="min-w-0 pr-2">
                   <div className="flex items-center gap-1.5">
                     <h4 className="text-xs font-bold text-white group-hover:text-slate-200 transition-colors truncate">
                       {ex.name}
                     </h4>
-                    <span className="text-[9px] font-mono px-1 py-0.2 rounded bg-[#05080e] text-slate-300 border border-[#16202e] flex-shrink-0">
+                    <span className="text-[9px] font-mono px-1 py-0.2 rounded bg-[var(--card-bg)] text-slate-300 border border-[var(--card-border)] flex-shrink-0">
                       {ex.targetMuscle}
                     </span>
                   </div>
@@ -140,7 +140,7 @@ export const ExercisePickerDrawer: React.FC<ExercisePickerDrawerProps> = ({
                   </span>
                 </div>
 
-                <span className="px-2.5 py-1 rounded-lg bg-[#05080e] group-hover:bg-white group-hover:text-[#080c14] border border-[#16202e] text-[10px] font-bold text-slate-300 transition-all flex-shrink-0">
+                <span className="px-2.5 py-1 rounded-lg bg-[var(--card-bg)] group-hover:bg-white group-hover:text-[var(--card-bg)] border border-[var(--card-border)] text-[10px] font-bold text-slate-300 transition-all flex-shrink-0">
                   Add
                 </span>
               </div>

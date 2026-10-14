@@ -105,7 +105,7 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
           {/* Dialog Card */}
           <div 
-            className="relative w-full max-w-sm rounded-2xl bg-[#090d14] border border-[#1e2a3c] shadow-2xl p-5 z-10 flex flex-col space-y-4 animate-in zoom-in-95 duration-150 text-white"
+            className="relative w-full max-w-sm rounded-2xl bg-[var(--card-bg)] border border-[var(--card-border)] shadow-2xl p-5 z-10 flex flex-col space-y-4 animate-in zoom-in-95 duration-150 text-white"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-start gap-3">
@@ -131,7 +131,7 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({ childre
               </div>
             </div>
 
-            <div className="flex items-center justify-end gap-2 pt-2 border-t border-[#141b26]">
+            <div className="flex items-center justify-end gap-2 pt-2 border-t border-[var(--card-border)]">
               <button
                 type="button"
                 onClick={() => setConfirmState(null)}
@@ -149,7 +149,7 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({ childre
                 }}
                 className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-all shadow-md cursor-pointer active:scale-95 ${
                   confirmState.variant === 'warning'
-                    ? 'bg-amber-500 hover:bg-amber-400 text-[#080c14]'
+                    ? 'bg-amber-500 hover:bg-amber-400 text-black'
                     : 'bg-rose-600 hover:bg-rose-500 text-white shadow-rose-950/40'
                 }`}
               >
@@ -169,11 +169,11 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({ childre
           return (
             <div
               key={toast.id}
-              className="pointer-events-auto px-4 py-2.5 rounded-xl bg-[#090d14]/95 border border-[#1e2a3c] shadow-2xl backdrop-blur-xl flex items-center gap-3 transition-all duration-200 animate-in fade-in slide-in-from-top-2 hover:border-cyan-500/40"
+              className="pointer-events-auto px-3.5 py-2 rounded-xl bg-[var(--card-bg)]/95 border border-[var(--card-border)] shadow-2xl backdrop-blur-xl flex items-center gap-2.5 transition-all duration-200 animate-in fade-in slide-in-from-top-2 hover:border-[var(--main-color)]/40"
             >
               {isSuccess && <CheckCircle2 className="w-4 h-4 text-emerald-400 flex-shrink-0" />}
               {isError && <AlertTriangle className="w-4 h-4 text-rose-400 flex-shrink-0" />}
-              {!isSuccess && !isError && <Info className="w-4 h-4 text-cyan-400 flex-shrink-0" />}
+              {!isSuccess && !isError && <Info className="w-4 h-4 text-[var(--main-color)] flex-shrink-0" />}
               
               <p className="text-xs font-semibold text-slate-100 whitespace-normal leading-relaxed">
                 {toast.message}
@@ -188,7 +188,7 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({ childre
                     removeToast(toast.id);
                     await toast.action?.onClick();
                   }}
-                  className="ml-1 px-2.5 py-1 rounded-lg bg-cyan-500/15 hover:bg-cyan-500/25 border border-cyan-500/35 text-cyan-300 text-xs font-bold transition-all cursor-pointer active:scale-95 shadow-xs"
+                  className="ml-1 px-2.5 py-1 rounded-lg bg-[var(--main-color)]/15 hover:bg-[var(--main-color)]/25 border border-[var(--main-color)]/35 text-[var(--main-color)] text-xs font-bold transition-all cursor-pointer active:scale-95 shadow-xs"
                 >
                   {toast.action.label}
                 </button>

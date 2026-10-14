@@ -101,12 +101,12 @@ export const FormCheckVideoCard: React.FC<FormCheckVideoCardProps> = ({
 
   return (
     <>
-      <div className="p-2.5 sm:p-3 rounded-xl bg-[#090d14] border border-white/[0.07] space-y-2 select-none shadow-sm">
+      <div className="gym-card space-y-2 select-none shadow-sm">
         {/* Card Header */}
         <div className="flex items-center justify-between gap-2">
           <div className="min-w-0">
             <div className="flex items-center gap-2">
-              <span className="text-[10px] font-mono uppercase tracking-wider text-cyan-400 font-bold">
+              <span className="gym-label-mono text-[var(--main-color)]">
                 Technique Review &bull; Form Checks
               </span>
               {pendingCount > 0 && (
@@ -115,7 +115,7 @@ export const FormCheckVideoCard: React.FC<FormCheckVideoCardProps> = ({
                 </span>
               )}
             </div>
-            <h3 className="text-xs sm:text-sm font-bold text-white tracking-tight leading-none mt-0.5 truncate">
+            <h3 className="gym-heading-card mt-0.5 truncate">
               Exercise Performance &amp; Lift Videos
             </h3>
           </div>
@@ -125,7 +125,7 @@ export const FormCheckVideoCard: React.FC<FormCheckVideoCardProps> = ({
               <button
                 type="button"
                 onClick={onViewAll}
-                className="px-2 py-0.5 rounded-md bg-white/[0.04] hover:bg-white/[0.08] active:scale-95 border border-white/[0.08] text-[11px] font-semibold text-slate-300 hover:text-white transition-all cursor-pointer"
+                className="gym-btn-secondary gym-btn-sm"
               >
                 All ({athleteVideos.length})
               </button>
@@ -134,7 +134,7 @@ export const FormCheckVideoCard: React.FC<FormCheckVideoCardProps> = ({
             <button
               type="button"
               onClick={() => setIsRecordModalOpen(true)}
-              className="py-1 px-2 rounded-md bg-white hover:bg-slate-100 active:scale-95 text-[#080c14] text-[11px] font-bold flex items-center gap-1 transition-all cursor-pointer shadow-sm"
+              className="gym-btn-primary gym-btn-sm flex items-center gap-1"
               title="Record or upload exercise execution video"
             >
               <Plus className="w-3 h-3 stroke-[3]" />
@@ -145,22 +145,22 @@ export const FormCheckVideoCard: React.FC<FormCheckVideoCardProps> = ({
 
         {/* Videos List / Empty State */}
         {athleteVideos.length === 0 ? (
-          <div className="py-4 px-3 text-center rounded-lg bg-[#05080e] border border-white/[0.06] space-y-2">
+          <div className="py-4 px-3 text-center rounded-lg gym-card-subtle space-y-2">
             <div className="w-8 h-8 rounded-full bg-white/[0.04] border border-white/10 flex items-center justify-center mx-auto text-slate-400">
-              <Video className="w-4 h-4 text-cyan-400/80" />
+              <Video className="w-4 h-4 text-[var(--main-color)]" />
             </div>
             <div>
-              <p className="text-xs font-semibold text-slate-200">
+              <p className="gym-heading-card">
                 No form check videos uploaded yet
               </p>
-              <p className="text-[10px] text-slate-400 font-mono mt-0.5 max-w-xs mx-auto">
+              <p className="gym-subtext font-mono mt-0.5 max-w-xs mx-auto">
                 Trainees can record their lifts during training to check execution, squat depth, and spinal alignment.
               </p>
             </div>
             <button
               type="button"
               onClick={() => setIsRecordModalOpen(true)}
-              className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-white/[0.06] hover:bg-white/[0.12] text-xs font-semibold text-slate-200 hover:text-white border border-white/10 transition-colors cursor-pointer"
+              className="gym-btn-secondary gym-btn-sm"
             >
               <Plus className="w-3 h-3" />
               <span>Upload First Lift Video</span>
@@ -176,7 +176,7 @@ export const FormCheckVideoCard: React.FC<FormCheckVideoCardProps> = ({
                 <div
                   key={video.id}
                   onClick={() => setSelectedVideo(video)}
-                  className="p-2 rounded-lg bg-[#05080e] hover:bg-white/[0.04] border border-white/[0.06] hover:border-white/15 transition-all cursor-pointer group flex flex-col sm:flex-row sm:items-center justify-between gap-2.5"
+                  className="gym-card-subtle hover:border-white/15 transition-all cursor-pointer group flex flex-col sm:flex-row sm:items-center justify-between gap-2.5"
                 >
                   {/* Left: Thumbnail & Details */}
                   <div className="flex items-center gap-2.5 min-w-0">
@@ -195,7 +195,7 @@ export const FormCheckVideoCard: React.FC<FormCheckVideoCardProps> = ({
                       )}
                       <div className="absolute inset-0 bg-black/40 group-hover:bg-black/20 flex items-center justify-center transition-colors">
                         <div className="w-6 h-6 rounded-full bg-white/90 text-black flex items-center justify-center shadow">
-                          <Play className="w-3 h-3 fill-black ml-0.5" />
+                          <Play className="w-3.5 h-3.5 fill-black ml-0.5" />
                         </div>
                       </div>
                     </div>
@@ -203,7 +203,7 @@ export const FormCheckVideoCard: React.FC<FormCheckVideoCardProps> = ({
                     {/* Metadata: Exercise Name, Date, Set info */}
                     <div className="min-w-0">
                       <div className="flex items-center gap-1.5 flex-wrap">
-                        <span className="text-xs font-bold text-white group-hover:text-cyan-300 transition-colors truncate">
+                        <span className="gym-heading-card group-hover:text-[var(--main-color)] transition-colors truncate">
                           {video.exerciseName}
                         </span>
                         {video.targetMuscle && (
@@ -282,7 +282,7 @@ export const FormCheckVideoCard: React.FC<FormCheckVideoCardProps> = ({
       {/* Phone Number Prompt Dialog (if client.phone is empty) */}
       {phonePromptOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in">
-          <div className="p-4 rounded-xl bg-[#090d14] border border-white/20 w-full max-w-sm space-y-3 text-white shadow-2xl">
+          <div className="p-4 rounded-xl bg-[var(--card-bg)] border border-white/20 w-full max-w-sm space-y-3 text-white shadow-2xl">
             <div className="flex items-center gap-2 text-emerald-400">
               <MessageCircle className="w-5 h-5" />
               <h4 className="text-sm font-bold text-white">Enter Client WhatsApp Number</h4>

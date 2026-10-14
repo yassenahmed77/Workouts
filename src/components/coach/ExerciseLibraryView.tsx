@@ -7,7 +7,9 @@ import { Exercise, MuscleGroup, EquipmentType } from '@/types';
 import { Modal } from '@/components/ui/Modal';
 import { SelectDropdown } from '@/components/ui/SelectDropdown';
 import { ExerciseVideoModal } from './exercises/ExerciseVideoModal';
+import { ExerciseFormModal, ExerciseFormData } from './exercises/ExerciseFormModal';
 import { sanitizeString } from '@/lib/sanitizer';
+import { Search, X, PanelLeft, Play, ArrowRightLeft, ChevronDown } from 'lucide-react';
 
 const MUSCLE_GROUPS: MuscleGroup[] = [
   'Chest', 'Back', 'Shoulders', 'Quads', 'Hamstrings', 'Glutes', 'Arms', 'Biceps', 'Triceps', 'Calves', 'Core', 'Forearms', 'Traps', 'Full Body'
@@ -17,7 +19,15 @@ const EQUIPMENT_TYPES: EquipmentType[] = [
   'Barbell', 'Dumbbell', 'Cable', 'Machine', 'Bodyweight', 'Smith Machine', 'EZ Bar', 'Kettlebell', 'Resistance Band', 'Other'
 ];
 
-export const ExerciseLibraryView: React.FC = () => {
+interface ExerciseLibraryViewProps {
+  isSidebarOpen?: boolean;
+  onToggleSidebar?: () => void;
+}
+
+export const ExerciseLibraryView: React.FC<ExerciseLibraryViewProps> = ({
+  isSidebarOpen,
+  onToggleSidebar
+}) => {
   const { exercises, addExercise, updateExercise, deleteExercise } = useGym();
   const { showToast } = useToast();
 
@@ -26,6 +36,7 @@ export const ExerciseLibraryView: React.FC = () => {
   const [selectedCategory, setSelectedCategory] = useState<'All' | 'Compound' | 'Isolation'>('All');
   const [searchQuery, setSearchQuery] = useState('');
   const [viewMode, setViewMode] = useState<'grid' | 'table'>('grid');
+  const [isMobileSearchOpen, setIsMobileSearchOpen] = useState(false);
 
   // Video modal state
   const [videoModalExercise, setVideoModalExercise] = useState<Exercise | null>(null);
@@ -76,63 +87,44 @@ export const ExerciseLibraryView: React.FC = () => {
   const compoundCount = useMemo(() => exercises.filter((e) => e.category === 'Compound').length, [exercises]);
   const isolationCount = useMemo(() => exercises.filter((e) => e.category === 'Isolation').length, [exercises]);
 
-  const handleCreateExercise = async (e: React.FormEvent) => {
-    e.preventDefault();
-    const cleanName = sanitizeString(name.trim());
-    if (!cleanName) return;
-
+  const handleCreateExerciseSubmit = async (data: ExerciseFormData) => {
     await addExercise({
-      name: cleanName,
-      targetMuscle,
-      equipment,
-      category,
-      videoUrl: videoUrl.trim() || undefined,
-      alternativeExercise: alternativeExercise.trim() ? sanitizeString(alternativeExercise.trim()) : undefined,
-      executionCue: executionCue.trim() ? sanitizeString(executionCue.trim()) : 'Execute with controlled tempo and strict form.',
-      tips: tipInput ? tipInput.split(',').map((t) => sanitizeString(t.trim())).filter(Boolean) : ['Maintain neutral spine', 'Control eccentric descent']
+      name: data.name,
+      targetMuscle: data.targetMuscle,
+      equipment: data.equipment,
+      category: data.category,
+      videoUrl: data.videoUrl,
+      alternativeExercise: data.alternativeExercise,
+      alternativeVideoUrl: data.alternativeVideoUrl,
+      executionCue: data.executionCue,
+      tips: data.tips
     });
-
-    setName('');
-    setVideoUrl('');
-    setAlternativeExercise('');
-    setExecutionCue('');
-    setTipInput('');
     setIsAddModalOpen(false);
-    showToast(`Added ${cleanName} to library`, 'success');
+    showToast(`Added ${data.name} to library`, 'success');
   };
 
   const handleOpenEdit = (ex: Exercise) => {
     setEditingExercise(ex);
-    setEditName(ex.name);
-    setEditTargetMuscle(ex.targetMuscle);
-    setEditEquipment(ex.equipment);
-    setEditCategory(ex.category || 'Compound');
-    setEditVideoUrl(ex.videoUrl || '');
-    setEditAlternativeExercise(ex.alternativeExercise || '');
-    setEditExecutionCue(ex.executionCue || '');
-    setEditTipInput(ex.tips && ex.tips.length > 0 ? ex.tips.join(', ') : '');
   };
 
-  const handleSaveEdit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    const cleanEditName = sanitizeString(editName.trim());
-    if (!editingExercise || !cleanEditName) return;
-
+  const handleSaveEditSubmit = async (data: ExerciseFormData) => {
+    if (!editingExercise) return;
     const updated: Exercise = {
       ...editingExercise,
-      name: cleanEditName,
-      targetMuscle: editTargetMuscle,
-      equipment: editEquipment,
-      category: editCategory,
-      videoUrl: editVideoUrl.trim() || undefined,
-      alternativeExercise: editAlternativeExercise.trim() ? sanitizeString(editAlternativeExercise.trim()) : undefined,
-      executionCue: editExecutionCue.trim() ? sanitizeString(editExecutionCue.trim()) : 'Execute with controlled tempo and strict form.',
-      tips: editTipInput ? editTipInput.split(',').map((t) => sanitizeString(t.trim())).filter(Boolean) : ['Maintain neutral spine', 'Control eccentric descent']
+      name: data.name,
+      targetMuscle: data.targetMuscle,
+      equipment: data.equipment,
+      category: data.category,
+      videoUrl: data.videoUrl,
+      alternativeExercise: data.alternativeExercise,
+      alternativeVideoUrl: data.alternativeVideoUrl,
+      executionCue: data.executionCue,
+      tips: data.tips
     };
 
     await updateExercise(updated);
     setEditingExercise(null);
-    showToast(`Updated "${cleanEditName}"`, 'success');
+    showToast(`Updated "${data.name}"`, 'success');
   };
 
   const handleConfirmDelete = async () => {
@@ -143,40 +135,271 @@ export const ExerciseLibraryView: React.FC = () => {
     showToast(`Deleted "${nameToDelete}"`, 'info');
   };
 
-  return (
-    <div className="space-y-3 w-full max-w-none select-none">
-      {/* 1. Ultra-Clean Executive Header (Text-Only, No Icons, Obsidian) */}
-      <div className="p-3 sm:p-3.5 rounded-xl bg-[#090e17] border border-[#141b26] flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-xs">
-        <div className="space-y-1">
-          <div className="flex items-center gap-2 flex-wrap">
-            <h1 className="text-base sm:text-lg font-bold text-white tracking-tight leading-none">
-              Exercise Library
-            </h1>
-            <span className="text-[11px] font-mono px-2 py-0.5 rounded-md bg-white/[0.04] text-slate-300 border border-white/10">
-              {exercises.length} Movements
-            </span>
-            <span className="text-[11px] font-mono px-2 py-0.5 rounded-md bg-white/[0.04] text-slate-200 border border-white/10">
-              {compoundCount} Compound
-            </span>
-            <span className="text-[11px] font-mono px-2 py-0.5 rounded-md bg-white/[0.04] text-slate-400 border border-white/10">
-              {isolationCount} Isolation
-            </span>
+  // Active muscle groups with count for dropdown options
+  const activeMuscleGroups = useMemo(() => {
+    const counts: Record<string, number> = {};
+    exercises.forEach((ex) => {
+      counts[ex.targetMuscle] = (counts[ex.targetMuscle] || 0) + 1;
+    });
+    return Object.entries(counts)
+      .map(([name, count]) => ({ name, count }))
+      .sort((a, b) => b.count - a.count);
+  }, [exercises]);
+
+  const hasActiveFilters = selectedMuscle !== 'All' || selectedEquipment !== 'All' || selectedCategory !== 'All' || Boolean(searchQuery);
+
+  const handleResetFilters = () => {
+    setSelectedMuscle('All');
+    setSelectedEquipment('All');
+    setSelectedCategory('All');
+    setSearchQuery('');
+  };
+
+  const renderCardGrid = () => (
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2.5">
+      {filteredExercises.map((ex) => (
+        <div
+          key={ex.id}
+          className="gym-card hover:border-[var(--main-color)]/30 transition-all flex flex-col justify-between p-3.5 space-y-3 bg-[var(--card-bg)] border border-[var(--card-border)] rounded-xl shadow-xs"
+        >
+          <div className="space-y-2.5">
+            <div>
+              <div className="flex items-start justify-between gap-2">
+                <h3 className="text-sm font-bold text-white tracking-tight truncate">
+                  {ex.name}
+                </h3>
+                <span className={`text-[9.5px] font-mono px-2 py-0.5 rounded-full border shrink-0 ${
+                  ex.category === 'Compound'
+                    ? 'text-[var(--main-color)] bg-[var(--main-color)]/15 border-[var(--main-color)]/30'
+                    : 'text-slate-300 bg-white/[0.04] border-white/10'
+                }`}>
+                  {ex.category}
+                </span>
+              </div>
+
+              <div className="flex items-center gap-1.5 mt-1.5 flex-wrap">
+                <span className="inline-flex items-center gap-1 text-[10px] font-mono font-medium text-[var(--main-color)] bg-[var(--main-color)]/15 border border-[var(--main-color)]/30 px-2 py-0.5 rounded-md">
+                  <span className="w-1.5 h-1.5 rounded-full bg-[var(--main-color)]" />
+                  {ex.targetMuscle}
+                </span>
+                <span className="text-[10px] font-mono text-slate-400 bg-white/[0.03] border border-white/[0.06] px-2 py-0.5 rounded-md">
+                  {ex.equipment}
+                </span>
+              </div>
+            </div>
+
+            {ex.alternativeExercise && (
+              <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-amber-950/20 border border-amber-500/20 text-xs">
+                <ArrowRightLeft className="w-3 h-3 text-amber-400 shrink-0" />
+                <span className="text-[10.5px] font-mono text-amber-400/90 font-semibold shrink-0">Badeel:</span>
+                <span className="text-[11px] text-amber-200 truncate">{ex.alternativeExercise}</span>
+              </div>
+            )}
+
+            {ex.executionCue && (
+              <div className="border-l-2 border-[var(--main-color)]/40 pl-2.5 py-0.5">
+                <p className="text-xs text-slate-300 leading-relaxed font-sans line-clamp-2">
+                  {ex.executionCue}
+                </p>
+              </div>
+            )}
           </div>
-          <p className="text-xs text-slate-400 font-sans">
-            Movement directory, execution directives, and in-gym alternatives.
+
+          <div className="pt-2 border-t border-white/[0.06] flex items-center justify-between gap-2">
+            <div>
+              {ex.videoUrl ? (
+                <button
+                  type="button"
+                  onClick={() => setVideoModalExercise(ex)}
+                  className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-[var(--main-color)]/15 hover:bg-[var(--main-color)]/25 border border-[var(--main-color)]/30 text-xs font-semibold text-[var(--main-color)] hover:text-white transition-all cursor-pointer"
+                >
+                  <Play className="w-3 h-3 fill-current" />
+                  <span>Video Guide</span>
+                </button>
+              ) : (
+                <span className="text-[10px] text-slate-600 font-mono">No Video</span>
+              )}
+            </div>
+
+            <div className="flex items-center gap-1">
+              <button
+                type="button"
+                onClick={() => handleOpenEdit(ex)}
+                className="px-2 py-1 rounded text-xs font-medium text-slate-400 hover:text-white hover:bg-white/[0.06] transition-colors cursor-pointer"
+              >
+                Edit
+              </button>
+              <button
+                type="button"
+                onClick={() => setDeletingExercise(ex)}
+                className="px-2 py-1 rounded text-xs font-medium text-slate-400 hover:text-rose-400 hover:bg-rose-500/10 transition-colors cursor-pointer"
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+
+  const renderContentGridOrTable = () => (
+    <>
+      {filteredExercises.length === 0 ? (
+        <div className="py-12 px-4 text-center rounded-xl bg-[var(--card-bg)] border border-[var(--card-border)] space-y-2">
+          <h3 className="text-sm font-bold text-white">No Movements Found</h3>
+          <p className="text-xs text-slate-400 max-w-sm mx-auto font-sans">
+            No exercises match your current filters. Try changing equipment or clearing search terms.
           </p>
+          <button
+            type="button"
+            onClick={handleResetFilters}
+            className="px-3 py-1 rounded-lg bg-[var(--card-subtle-bg)] hover:bg-white/[0.06] text-xs font-semibold text-white border border-[var(--card-border)] hover:border-white/20 transition-colors cursor-pointer"
+          >
+            Reset Filters
+          </button>
+        </div>
+      ) : viewMode === 'grid' ? (
+        renderCardGrid()
+      ) : (
+        <>
+          {/* Mobile is always Cards mode */}
+          <div className="md:hidden">
+            {renderCardGrid()}
+          </div>
+          {/* Desktop & Tablet Table mode */}
+          <div className="hidden md:block rounded-xl bg-[var(--card-bg)] border border-[var(--card-border)] overflow-hidden shadow-xs">
+            <div className="overflow-x-auto">
+              <table className="w-full text-left text-xs border-collapse">
+                <thead>
+                  <tr className="border-b border-[var(--card-border)] bg-[var(--card-subtle-bg)] text-[10px] font-mono uppercase text-slate-400">
+                    <th className="py-2.5 px-3 font-semibold">Movement</th>
+                    <th className="py-2.5 px-3 font-semibold">Target Muscle</th>
+                    <th className="py-2.5 px-3 font-semibold">Equipment</th>
+                    <th className="py-2.5 px-3 font-semibold">Type</th>
+                    <th className="py-2.5 px-3 font-semibold">Alternative (Badeel)</th>
+                    <th className="py-2.5 px-3 text-right font-semibold">Actions</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-[var(--card-border)]">
+                  {filteredExercises.map((ex) => (
+                    <tr
+                      key={ex.id}
+                      className="hover:bg-white/[0.02] transition-colors"
+                    >
+                      <td className="py-2 px-3 font-bold text-white whitespace-nowrap">
+                        {ex.name}
+                      </td>
+                      <td className="py-2 px-3 text-slate-300 font-mono whitespace-nowrap">
+                        {ex.targetMuscle}
+                      </td>
+                      <td className="py-2 px-3 text-slate-400 font-mono whitespace-nowrap">
+                        {ex.equipment}
+                      </td>
+                      <td className="py-2 px-3 whitespace-nowrap">
+                        <span className={`text-[10px] font-mono px-1.5 py-0.5 rounded border ${
+                          ex.category === 'Compound'
+                            ? 'border-[var(--main-color)]/30 text-[var(--main-color)] bg-[var(--main-color)]/15'
+                            : 'border-white/10 text-slate-300 bg-white/[0.04]'
+                        }`}>
+                          {ex.category}
+                        </span>
+                      </td>
+                      <td className="py-2 px-3 text-slate-300 font-mono text-[11px] truncate max-w-[180px]">
+                        {ex.alternativeExercise || '—'}
+                      </td>
+                      <td className="py-2 px-3 text-right whitespace-nowrap">
+                        <div className="flex items-center justify-end gap-1.5">
+                          {ex.videoUrl && (
+                            <button
+                              type="button"
+                              onClick={() => setVideoModalExercise(ex)}
+                              className="px-2 py-0.5 rounded bg-[var(--card-subtle-bg)] hover:bg-white/[0.06] text-[11px] font-medium text-slate-200 border border-[var(--card-border)] hover:border-white/20 cursor-pointer"
+                            >
+                              Video Guide
+                            </button>
+                          )}
+                          <button
+                            type="button"
+                            onClick={() => handleOpenEdit(ex)}
+                            className="px-2 py-0.5 rounded text-[11px] text-slate-400 hover:text-white cursor-pointer"
+                          >
+                            Edit
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => setDeletingExercise(ex)}
+                            className="px-2 py-0.5 rounded text-[11px] text-slate-400 hover:text-rose-400 cursor-pointer"
+                          >
+                            Delete
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </>
+      )}
+    </>
+  );
+
+  return (
+    <div className="space-y-2.5 w-full max-w-none select-none pb-20 md:pb-6">
+      {/* Header Row */}
+      <div className="flex items-center justify-between gap-1.5 sm:gap-2.5 pb-2 border-b border-white/[0.07]">
+        <div className="min-w-0 flex items-center gap-1.5 sm:gap-2">
+          {onToggleSidebar && (
+            <button
+              type="button"
+              onClick={onToggleSidebar}
+              className="p-1 sm:p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-white/[0.06] border border-white/[0.08] transition-colors flex items-center justify-center cursor-pointer shrink-0 min-[1025px]:hidden"
+              title={isSidebarOpen ? "Collapse sidebar (Ctrl+B)" : "Expand sidebar (Ctrl+B)"}
+              aria-label="Toggle Navigation Sidebar"
+            >
+              <PanelLeft className="w-4 h-4 text-slate-300" />
+            </button>
+          )}
+          <div className="min-w-0">
+            <div className="flex items-center gap-1.5 sm:gap-2">
+              <h1 className="gym-heading-page text-xs sm:text-base md:text-lg truncate">Exercise Library</h1>
+              <span className="gym-delta-neutral text-[9.5px] sm:text-[10px] min-[1025px]:hidden shrink-0">
+                <span className="sm:inline hidden">{exercises.length} Movements</span>
+                <span className="sm:hidden">{exercises.length}</span>
+              </span>
+            </div>
+            <p className="gym-subtext mt-0.5 truncate hidden md:block">
+              Movement directory, execution directives, and in-gym alternatives.
+            </p>
+          </div>
         </div>
 
-        <div className="flex items-center gap-2 flex-wrap flex-shrink-0">
-          {/* View Mode Toggle: Cards vs Table */}
-          <div className="flex items-center p-0.5 rounded-lg bg-[#05080e] border border-[#16202e] text-xs font-semibold">
+        <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
+          {/* Telemetry capsules (Desktop only > 1024px; completely hidden on Tablet & Mobile) */}
+          <div className="hidden min-[1025px]:flex items-center gap-1.5 font-mono text-[10.5px]">
+            <div className="gym-card-subtle px-2 py-1 flex items-center gap-1">
+              <span className="gym-label-mono text-slate-400">Total:</span>
+              <span className="gym-num text-white">{exercises.length}</span>
+            </div>
+            <div className="gym-card-subtle px-2 py-1 flex items-center gap-1">
+              <span className="gym-label-mono text-slate-400">Compound:</span>
+              <span className="gym-num text-white">{compoundCount}</span>
+            </div>
+            <div className="gym-card-subtle px-2 py-1 flex items-center gap-1">
+              <span className="gym-label-mono text-slate-400">Isolation:</span>
+              <span className="gym-num text-slate-300">{isolationCount}</span>
+            </div>
+          </div>
+
+          {/* View Toggle (Desktop & Tablet only: hidden on mobile) */}
+          <div className="hidden md:flex items-center p-0.5 rounded-lg bg-[var(--card-subtle-bg)] border border-white/[0.08] text-xs shrink-0">
             <button
               type="button"
               onClick={() => setViewMode('grid')}
-              className={`px-3 py-1 rounded-md transition-all cursor-pointer ${
-                viewMode === 'grid'
-                  ? 'bg-white/[0.1] border border-white/20 text-white font-bold shadow-xs'
-                  : 'text-slate-400 hover:text-white'
+              className={`px-2 sm:px-2.5 py-1 rounded-md text-[11px] sm:text-xs font-medium transition-all cursor-pointer ${
+                viewMode === 'grid' ? 'bg-white/[0.1] text-white shadow-xs font-bold' : 'text-slate-400 hover:text-white'
               }`}
             >
               Cards
@@ -184,283 +407,155 @@ export const ExerciseLibraryView: React.FC = () => {
             <button
               type="button"
               onClick={() => setViewMode('table')}
-              className={`px-3 py-1 rounded-md transition-all cursor-pointer ${
-                viewMode === 'table'
-                  ? 'bg-white/[0.1] border border-white/20 text-white font-bold shadow-xs'
-                  : 'text-slate-400 hover:text-white'
+              className={`px-2 sm:px-2.5 py-1 rounded-md text-[11px] sm:text-xs font-medium transition-all cursor-pointer ${
+                viewMode === 'table' ? 'bg-white/[0.1] text-white shadow-xs font-bold' : 'text-slate-400 hover:text-white'
               }`}
             >
-              Compact Table
+              Table
             </button>
           </div>
 
+          {/* Search Icon Button (Mobile only < md) */}
+          <button
+            type="button"
+            onClick={() => setIsMobileSearchOpen(!isMobileSearchOpen)}
+            className={`md:hidden p-1.5 rounded-lg border transition-all cursor-pointer flex items-center justify-center shrink-0 ${
+              isMobileSearchOpen || searchQuery
+                ? 'bg-[var(--main-color)]/15 border-[var(--main-color)]/40 text-[var(--main-color)] shadow-xs'
+                : 'text-slate-400 hover:text-white hover:bg-white/[0.06] border-white/[0.08]'
+            }`}
+            title="Search Movements"
+            aria-label="Toggle Search"
+          >
+            <Search className="w-4 h-4" />
+          </button>
+
+          {/* Add Movement Button: Single element with responsive text `+` on mobile, `+ Add Movement` on desktop */}
           <button
             type="button"
             onClick={() => setIsAddModalOpen(true)}
-            className="py-1.5 px-3.5 rounded-lg bg-white hover:bg-slate-100 text-[#080c14] font-bold text-xs transition-all active:scale-95 cursor-pointer shadow-xs"
+            className="gym-btn-primary text-xs px-2.5 sm:px-3 py-1.5 h-[32px] sm:h-[34px] font-semibold shrink-0 cursor-pointer flex items-center justify-center gap-1"
           >
-            + Add Movement
+            <span className="sm:hidden font-bold text-sm">+</span>
+            <span className="hidden sm:inline">+ Add Movement</span>
           </button>
         </div>
       </div>
 
-      {/* 2. Unified Filter Toolbar (Search, Type, Equipment, Target Muscle) */}
-      <div className="p-2.5 sm:p-3 rounded-xl bg-[#090e17] border border-[#141b26] space-y-2 shadow-xs">
-        {/* Row 1: Search Input & Category & Equipment Pills */}
-        <div className="flex flex-col md:flex-row items-stretch md:items-center gap-2">
+      {/* Mobile Collapsible Search Bar (< md) */}
+      {isMobileSearchOpen && (
+        <div className="md:hidden gym-card !p-2 flex items-center gap-2 animate-in fade-in slide-in-from-top-1 duration-150 shadow-xs border-[var(--main-color)]/30">
+          <Search className="w-3.5 h-3.5 text-[var(--main-color)] shrink-0" />
+          <input
+            type="text"
+            autoFocus
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="Search movement, cue, or alternative..."
+            className="w-full bg-transparent text-xs text-white placeholder-slate-500 focus:outline-none"
+          />
+          {searchQuery && (
+            <button
+              type="button"
+              onClick={() => setSearchQuery('')}
+              className="text-slate-400 hover:text-white p-0.5 cursor-pointer"
+            >
+              <X className="w-3.5 h-3.5" />
+            </button>
+          )}
+        </div>
+      )}
+
+      {/* Unified Command Filter Bar (One Row, Zero Clutter) */}
+      <div className="gym-card !p-1.5 sm:!p-2 flex flex-col md:flex-row items-stretch md:items-center justify-between gap-1.5 sm:gap-2 shadow-xs">
+        {/* Desktop Search Input (hidden on mobile since mobile has the header search button) */}
+        <div className="relative flex-1 hidden md:block">
+          <Search className="w-3.5 h-3.5 text-slate-500 absolute left-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
           <input
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search movement, cue, or alternative..."
-            className="flex-1 px-3 py-1.5 rounded-lg bg-[#05080e] border border-[#16202e] text-xs text-white placeholder-slate-500 focus:outline-none focus:border-slate-400 font-sans transition-colors"
+            className="w-full gym-input !pl-8 pr-7 text-xs"
           />
+          {searchQuery && (
+            <button
+              type="button"
+              onClick={() => setSearchQuery('')}
+              className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-500 hover:text-white p-0.5 cursor-pointer"
+            >
+              <X className="w-3.5 h-3.5" />
+            </button>
+          )}
+        </div>
 
-          <div className="flex items-center gap-1.5 flex-wrap">
-            {/* Lift Type Switcher */}
-            <div className="flex items-center gap-0.5 p-0.5 rounded-lg bg-[#05080e] border border-[#16202e] text-xs font-semibold flex-shrink-0">
-              {(['All', 'Compound', 'Isolation'] as const).map((cat) => (
+        {/* 2-Tier Filter Layout: Zero Scroll on Mobile, 100% Visible */}
+        <div className="flex flex-col md:flex-row items-stretch md:items-center gap-2 w-full md:w-auto shrink-0">
+          {/* Tier 1: Full-width 3-Column Segmented Switcher on mobile / flex on desktop */}
+          <div className="grid grid-cols-3 md:flex md:items-center p-0.5 rounded-lg bg-[var(--card-subtle-bg)] border border-white/[0.08] text-xs w-full md:w-auto">
+            {(['All', 'Compound', 'Isolation'] as const).map((cat) => {
+              const count = cat === 'All' ? exercises.length : cat === 'Compound' ? compoundCount : isolationCount;
+              return (
                 <button
                   key={cat}
                   type="button"
                   onClick={() => setSelectedCategory(cat)}
-                  className={`px-2.5 py-1 rounded-md text-[11px] font-mono font-medium transition-all cursor-pointer ${
+                  className={`py-1.5 px-2 md:px-2.5 rounded-md text-[11px] font-mono transition-all cursor-pointer text-center flex items-center justify-center gap-1 ${
                     selectedCategory === cat
-                      ? 'bg-white/[0.1] border border-white/20 text-white font-bold shadow-xs'
-                      : 'text-slate-400 hover:text-white hover:bg-white/[0.04] border border-transparent'
+                      ? 'bg-[var(--main-color)] text-white font-bold shadow-xs'
+                      : 'text-slate-400 hover:text-white'
                   }`}
                 >
-                  {cat}
+                  <span>{cat}</span>
+                  <span className="opacity-70 text-[10px]">({count})</span>
                 </button>
-              ))}
-            </div>
-
-            {/* Equipment Quick Filter Pills */}
-            <div className="flex items-center gap-0.5 p-0.5 rounded-lg bg-[#05080e] border border-[#16202e] overflow-x-auto custom-scrollbar text-xs">
-              {['All', 'Barbell', 'Dumbbell', 'Cable', 'Machine', 'Bodyweight', 'Smith Machine'].map((eq) => (
-                <button
-                  key={eq}
-                  type="button"
-                  onClick={() => setSelectedEquipment(eq)}
-                  className={`px-2 py-1 rounded-md text-[11px] font-mono font-medium transition-all flex-shrink-0 cursor-pointer ${
-                    selectedEquipment === eq
-                      ? 'bg-white/[0.1] border border-white/20 text-white font-bold shadow-xs'
-                      : 'text-slate-400 hover:text-white hover:bg-white/[0.04] border border-transparent'
-                  }`}
-                >
-                  {eq}
-                </button>
-              ))}
-            </div>
+              );
+            })}
           </div>
-        </div>
 
-        {/* Row 2: Target Muscle Strip */}
-        <div className="flex items-center gap-1 overflow-x-auto custom-scrollbar pb-0.5 pt-1.5 border-t border-[#141b26] text-xs">
-          <span className="text-[10px] font-mono uppercase text-slate-500 font-semibold mr-1 flex-shrink-0">
-            Muscle:
-          </span>
-          {['All', 'Chest', 'Back', 'Shoulders', 'Quads', 'Hamstrings', 'Arms', 'Core'].map((muscle) => {
-            const count = muscle === 'All' ? exercises.length : exercises.filter((e) => e.targetMuscle === muscle).length;
-            if (muscle !== 'All' && count === 0) return null;
-            return (
+          {/* Tier 2: Two 50%/50% Dropdown Selectors on mobile / auto on desktop */}
+          <div className="flex items-center gap-1.5 w-full md:w-auto">
+            {/* Muscle Selector Dropdown */}
+            <select
+              value={selectedMuscle}
+              onChange={(e) => setSelectedMuscle(e.target.value)}
+              className="gym-input text-xs !py-1.5 !px-2.5 font-mono cursor-pointer bg-[var(--card-subtle-bg)] border-white/10 flex-1 md:w-auto md:flex-initial"
+            >
+              <option value="All">All Muscles ({exercises.length})</option>
+              {activeMuscleGroups.map((m) => (
+                <option key={m.name} value={m.name}>{m.name} ({m.count})</option>
+              ))}
+            </select>
+
+            {/* Equipment Selector Dropdown */}
+            <select
+              value={selectedEquipment}
+              onChange={(e) => setSelectedEquipment(e.target.value)}
+              className="gym-input text-xs !py-1.5 !px-2.5 font-mono cursor-pointer bg-[var(--card-subtle-bg)] border-white/10 flex-1 md:w-auto md:flex-initial"
+            >
+              <option value="All">All Equipment</option>
+              {EQUIPMENT_TYPES.map((eq) => (
+                <option key={eq} value={eq}>{eq}</option>
+              ))}
+            </select>
+
+            {/* Reset Filters Button */}
+            {hasActiveFilters && (
               <button
-                key={muscle}
                 type="button"
-                onClick={() => setSelectedMuscle(muscle)}
-                className={`px-2.5 py-0.5 rounded-md text-[11px] font-mono transition-all flex-shrink-0 cursor-pointer ${
-                  selectedMuscle === muscle
-                    ? 'bg-white/[0.1] border border-white/20 text-white font-bold shadow-xs'
-                    : 'bg-[#05080e] hover:bg-white/[0.04] text-slate-400 hover:text-white border border-[#16202e]'
-                }`}
+                onClick={handleResetFilters}
+                className="p-1.5 rounded-lg text-slate-400 hover:text-rose-400 hover:bg-rose-500/10 border border-white/10 hover:border-rose-500/30 transition-colors cursor-pointer shrink-0"
+                title="Reset filters"
               >
-                {muscle} ({count})
+                <X className="w-3.5 h-3.5" />
               </button>
-            );
-          })}
+            )}
+          </div>
         </div>
       </div>
 
-      {/* 3. Main Content: Grid Mode vs Compact Table Mode */}
-      {filteredExercises.length === 0 ? (
-        <div className="py-12 px-4 text-center rounded-xl bg-[#090e17] border border-[#141b26] space-y-2">
-          <h3 className="text-sm font-bold text-white">No Movements Found</h3>
-          <p className="text-xs text-slate-400 max-w-sm mx-auto font-sans">
-            No exercises match your current filters. Try changing equipment or clearing search terms.
-          </p>
-          <button
-            type="button"
-            onClick={() => {
-              setSelectedMuscle('All');
-              setSelectedEquipment('All');
-              setSelectedCategory('All');
-              setSearchQuery('');
-            }}
-            className="px-3 py-1 rounded-lg bg-[#05080e] hover:bg-white/[0.06] text-xs font-semibold text-white border border-[#16202e] hover:border-white/20 transition-colors cursor-pointer"
-          >
-            Reset Filters
-          </button>
-        </div>
-      ) : viewMode === 'grid' ? (
-        /* CARDS GRID MODE (Neat, Monochrome, Zero Icon Clutter) */
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2.5">
-          {filteredExercises.map((ex) => (
-            <div
-              key={ex.id}
-              className="p-3.5 rounded-xl bg-[#090e17] border border-[#141b26] hover:border-white/20 transition-all flex flex-col justify-between space-y-2.5 shadow-xs"
-            >
-              <div className="space-y-2">
-                {/* Header: Title & Badges */}
-                <div>
-                  <div className="flex items-start justify-between gap-2">
-                    <h3 className="text-xs sm:text-sm font-bold text-white tracking-tight truncate">
-                      {ex.name}
-                    </h3>
-                    <span className="text-[9.5px] font-mono px-1.5 py-0.5 rounded bg-white/[0.04] text-slate-400 border border-white/10 flex-shrink-0">
-                      {ex.category}
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-1.5 mt-1.5 flex-wrap">
-                    <span className="text-[9.5px] font-mono font-medium px-2 py-0.5 rounded bg-white/[0.04] text-slate-200 border border-white/10">
-                      {ex.targetMuscle}
-                    </span>
-                    <span className="text-[9.5px] font-mono font-medium px-2 py-0.5 rounded bg-white/[0.04] text-slate-400 border border-white/10">
-                      {ex.equipment}
-                    </span>
-                  </div>
-                </div>
-
-                {/* Alternative Movement (Badeel) */}
-                {ex.alternativeExercise && (
-                  <div className="p-1.5 px-2 rounded-lg bg-[#05080e] border border-[#16202e] text-xs flex items-center justify-between font-mono">
-                    <span className="text-[9.5px] uppercase text-slate-500 font-semibold">
-                      Badeel:
-                    </span>
-                    <span className="text-slate-300 font-medium truncate text-[11px]">
-                      {ex.alternativeExercise}
-                    </span>
-                  </div>
-                )}
-
-                {/* Key Form Cue */}
-                {ex.executionCue && (
-                  <div className="p-2 rounded-lg bg-[#05080e] border border-[#16202e]">
-                    <span className="text-[9px] font-mono uppercase text-slate-500 font-semibold block mb-0.5">
-                      Key Form Cue
-                    </span>
-                    <p className="text-[11px] text-slate-300 leading-relaxed font-sans line-clamp-2">
-                      {ex.executionCue}
-                    </p>
-                  </div>
-                )}
-              </div>
-
-              {/* Action Buttons: Clean Text-Only (No Icons) */}
-              <div className="pt-2 border-t border-[#16202e] flex items-center justify-between gap-2">
-                <div>
-                  {ex.videoUrl && (
-                    <button
-                      type="button"
-                      onClick={() => setVideoModalExercise(ex)}
-                      className="px-2.5 py-1 rounded-md bg-[#05080e] hover:bg-white/[0.06] active:scale-95 border border-[#16202e] hover:border-white/20 text-xs font-medium text-slate-200 hover:text-white transition-all cursor-pointer"
-                    >
-                      Video Guide
-                    </button>
-                  )}
-                </div>
-
-                <div className="flex items-center gap-1">
-                  <button
-                    type="button"
-                    onClick={() => handleOpenEdit(ex)}
-                    className="px-2 py-0.5 rounded text-xs font-medium text-slate-400 hover:text-white hover:bg-white/[0.06] transition-colors cursor-pointer"
-                  >
-                    Edit
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setDeletingExercise(ex)}
-                    className="px-2 py-0.5 rounded text-xs font-medium text-slate-400 hover:text-rose-400 hover:bg-rose-500/10 transition-colors cursor-pointer"
-                  >
-                    Delete
-                  </button>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      ) : (
-        /* COMPACT TABLE MODE (Dense, High Speed, Zero Scroll) */
-        <div className="rounded-xl bg-[#090e17] border border-[#141b26] overflow-hidden shadow-xs">
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs border-collapse">
-              <thead>
-                <tr className="border-b border-[#141b26] bg-[#070a0f] text-[10px] font-mono uppercase text-slate-400">
-                  <th className="py-2.5 px-3 font-semibold">Movement</th>
-                  <th className="py-2.5 px-3 font-semibold">Target Muscle</th>
-                  <th className="py-2.5 px-3 font-semibold">Equipment</th>
-                  <th className="py-2.5 px-3 font-semibold">Type</th>
-                  <th className="py-2.5 px-3 font-semibold">Alternative (Badeel)</th>
-                  <th className="py-2.5 px-3 text-right font-semibold">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-[#141b26]">
-                {filteredExercises.map((ex) => (
-                  <tr
-                    key={ex.id}
-                    className="hover:bg-white/[0.02] transition-colors"
-                  >
-                    <td className="py-2 px-3 font-bold text-white whitespace-nowrap">
-                      {ex.name}
-                    </td>
-                    <td className="py-2 px-3 text-slate-300 font-mono whitespace-nowrap">
-                      {ex.targetMuscle}
-                    </td>
-                    <td className="py-2 px-3 text-slate-400 font-mono whitespace-nowrap">
-                      {ex.equipment}
-                    </td>
-                    <td className="py-2 px-3 whitespace-nowrap">
-                      <span className="text-[10px] font-mono px-1.5 py-0.5 rounded border border-white/10 text-slate-300 bg-white/[0.04]">
-                        {ex.category}
-                      </span>
-                    </td>
-                    <td className="py-2 px-3 text-slate-300 font-mono text-[11px] truncate max-w-[180px]">
-                      {ex.alternativeExercise || '—'}
-                    </td>
-                    <td className="py-2 px-3 text-right whitespace-nowrap">
-                      <div className="flex items-center justify-end gap-1.5">
-                        {ex.videoUrl && (
-                          <button
-                            type="button"
-                            onClick={() => setVideoModalExercise(ex)}
-                            className="px-2 py-0.5 rounded bg-[#05080e] hover:bg-white/[0.06] text-[11px] font-medium text-slate-200 border border-[#16202e] hover:border-white/20"
-                          >
-                            Video Guide
-                          </button>
-                        )}
-                        <button
-                          type="button"
-                          onClick={() => handleOpenEdit(ex)}
-                          className="px-2 py-0.5 rounded text-[11px] text-slate-400 hover:text-white"
-                        >
-                          Edit
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => setDeletingExercise(ex)}
-                          className="px-2 py-0.5 rounded text-[11px] text-slate-400 hover:text-rose-400"
-                        >
-                          Delete
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      )}
+      {/* Content */}
+      {renderContentGridOrTable()}
 
       {/* 4. In-App Video Demonstration Modal */}
       <ExerciseVideoModal
@@ -469,342 +564,36 @@ export const ExerciseLibraryView: React.FC = () => {
         onClose={() => setVideoModalExercise(null)}
       />
 
-      {/* 5. Add New Exercise Modal (Clean Typography, Closes on Backdrop Click) */}
-      <Modal
+      {/* 5. Add New Exercise Modal (Shared ExerciseFormModal Component) */}
+      <ExerciseFormModal
         isOpen={isAddModalOpen}
         onClose={() => setIsAddModalOpen(false)}
-        maxWidth="max-w-md"
-        title={
-          <div>
-            <h3 className="text-sm font-bold text-white tracking-tight">
-              Add New Exercise
-            </h3>
-            <p className="text-[11px] text-slate-400 font-sans">
-              Create a new exercise with form cues and video guidance.
-            </p>
-          </div>
-        }
-      >
-        <form onSubmit={handleCreateExercise} className="space-y-3.5 text-xs p-1">
-          <div>
-            <label className="block text-[10px] font-mono uppercase tracking-wider text-slate-400 mb-1 font-semibold">
-              Exercise Name *
-            </label>
-            <input
-              type="text"
-              required
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              placeholder="e.g. Incline Dumbbell Bench Press"
-              className="w-full px-3 py-2 rounded-xl bg-black border border-white/10 text-white placeholder-slate-500 focus:outline-none focus:border-white/30 font-sans"
-            />
-          </div>
+        title="Add New Exercise"
+        subtitle="Create a new exercise with form cues and video guidance."
+        submitLabel="Save Exercise"
+        onSubmit={handleCreateExerciseSubmit}
+      />
 
-          {/* Modern Custom Dropdowns */}
-          <div className="grid grid-cols-2 gap-2.5">
-            <SelectDropdown
-              label="Target Muscle"
-              value={targetMuscle}
-              onChange={(val) => setTargetMuscle(val as MuscleGroup)}
-              options={MUSCLE_GROUPS}
-            />
-
-            <SelectDropdown
-              label="Equipment"
-              value={equipment}
-              onChange={(val) => setEquipment(val as EquipmentType)}
-              options={EQUIPMENT_TYPES}
-            />
-          </div>
-
-          {/* Modern Segmented Lift Type */}
-          <div>
-            <label className="block text-[10px] font-mono uppercase tracking-wider text-slate-400 mb-1 font-semibold">
-              Lift Type
-            </label>
-            <div className="flex items-center p-1 rounded-xl bg-black border border-white/10 text-xs font-semibold">
-              <button
-                type="button"
-                onClick={() => setCategory('Compound')}
-                className={`flex-1 py-1.5 rounded-lg transition-all cursor-pointer text-center ${
-                  category === 'Compound'
-                    ? 'bg-white text-black font-bold shadow'
-                    : 'text-slate-400 hover:text-white'
-                }`}
-              >
-                Compound Lift
-              </button>
-              <button
-                type="button"
-                onClick={() => setCategory('Isolation')}
-                className={`flex-1 py-1.5 rounded-lg transition-all cursor-pointer text-center ${
-                  category === 'Isolation'
-                    ? 'bg-white text-black font-bold shadow'
-                    : 'text-slate-400 hover:text-white'
-                }`}
-              >
-                Isolation Movement
-              </button>
-            </div>
-          </div>
-
-          <div>
-            <div className="flex items-center justify-between mb-1">
-              <label className="block text-[10px] font-mono uppercase tracking-wider text-slate-400 font-semibold">
-                Alternative Exercise (Badeel)
-              </label>
-              <span className="text-[10px] text-slate-500 font-mono">
-                Swap if machine is busy
-              </span>
-            </div>
-            <input
-              type="text"
-              value={alternativeExercise}
-              onChange={(e) => setAlternativeExercise(e.target.value)}
-              placeholder="e.g. Chest Press Machine / Smith Press"
-              className="w-full px-3 py-2 rounded-xl bg-black border border-white/10 text-white placeholder-slate-500 focus:outline-none focus:border-white/30 font-sans"
-            />
-          </div>
-
-          <div>
-            <div className="flex items-center justify-between mb-1">
-              <label className="block text-[10px] font-mono uppercase tracking-wider text-slate-400 font-semibold">
-                Video Guide URL
-              </label>
-              <span className="text-[10px] text-slate-500 font-mono">
-                YouTube or direct video
-              </span>
-            </div>
-            <input
-              type="url"
-              value={videoUrl}
-              onChange={(e) => setVideoUrl(e.target.value)}
-              placeholder="https://youtube.com/... or MP4 link"
-              className="w-full px-3 py-2 rounded-xl bg-black border border-white/10 text-white placeholder-slate-500 focus:outline-none focus:border-white/30 font-sans"
-            />
-          </div>
-
-          <div>
-            <div className="flex items-center justify-between mb-1">
-              <label className="block text-[10px] font-mono uppercase tracking-wider text-slate-400 font-semibold">
-                Key Form Cue
-              </label>
-              <span className="text-[10px] text-slate-500 font-mono">
-                Main technique cue for athlete
-              </span>
-            </div>
-            <input
-              type="text"
-              value={executionCue}
-              onChange={(e) => setExecutionCue(e.target.value)}
-              placeholder="e.g. Retract scapulae, touch lower sternum, control descent"
-              className="w-full px-3 py-2 rounded-xl bg-black border border-white/10 text-white placeholder-slate-500 focus:outline-none focus:border-white/30 font-sans"
-            />
-          </div>
-
-          <div>
-            <div className="flex items-center justify-between mb-1">
-              <label className="block text-[10px] font-mono uppercase tracking-wider text-slate-400 font-semibold">
-                Form Checklist (Optional)
-              </label>
-              <span className="text-[10px] text-slate-500 font-mono">
-                Comma separated
-              </span>
-            </div>
-            <input
-              type="text"
-              value={tipInput}
-              onChange={(e) => setTipInput(e.target.value)}
-              placeholder="e.g. Keep wrists neutral, Drive heels into floor"
-              className="w-full px-3 py-2 rounded-xl bg-black border border-white/10 text-white placeholder-slate-500 focus:outline-none focus:border-white/30 font-sans"
-            />
-          </div>
-
-          <div className="flex items-center justify-end gap-2 pt-2 border-t border-white/10">
-            <button
-              type="button"
-              onClick={() => setIsAddModalOpen(false)}
-              className="px-3.5 py-1.5 rounded-lg text-slate-400 hover:text-white cursor-pointer font-semibold transition-colors"
-            >
-              Cancel
-            </button>
-            <button
-              type="submit"
-              className="px-4 py-1.5 rounded-lg bg-white text-black font-bold hover:bg-slate-100 shadow cursor-pointer active:scale-95 transition-all"
-            >
-              Save Exercise
-            </button>
-          </div>
-        </form>
-      </Modal>
-
-      {/* 6. Edit Existing Exercise Modal (Closes on Backdrop Click) */}
-      <Modal
+      {/* 6. Edit Existing Exercise Modal (Shared ExerciseFormModal Component) */}
+      <ExerciseFormModal
         isOpen={Boolean(editingExercise)}
         onClose={() => setEditingExercise(null)}
-        maxWidth="max-w-md"
-        title={
-          <div>
-            <h3 className="text-sm font-bold text-white tracking-tight">
-              Edit Exercise
-            </h3>
-            <p className="text-[11px] text-slate-400 font-sans">
-              Update movement cues, equipment, or alternative.
-            </p>
-          </div>
-        }
-      >
-        <form onSubmit={handleSaveEdit} className="space-y-3.5 text-xs p-1">
-          <div>
-            <label className="block text-[10px] font-mono uppercase tracking-wider text-slate-400 mb-1 font-semibold">
-              Exercise Name *
-            </label>
-            <input
-              type="text"
-              required
-              value={editName}
-              onChange={(e) => setEditName(e.target.value)}
-              className="w-full px-3 py-2 rounded-xl bg-black border border-white/10 text-white focus:outline-none focus:border-white/30 font-sans"
-            />
-          </div>
-
-          {/* Modern Custom Dropdowns */}
-          <div className="grid grid-cols-2 gap-2.5">
-            <SelectDropdown
-              label="Target Muscle"
-              value={editTargetMuscle}
-              onChange={(val) => setEditTargetMuscle(val as MuscleGroup)}
-              options={MUSCLE_GROUPS}
-            />
-
-            <SelectDropdown
-              label="Equipment"
-              value={editEquipment}
-              onChange={(val) => setEditEquipment(val as EquipmentType)}
-              options={EQUIPMENT_TYPES}
-            />
-          </div>
-
-          {/* Modern Segmented Lift Type */}
-          <div>
-            <label className="block text-[10px] font-mono uppercase tracking-wider text-slate-400 mb-1 font-semibold">
-              Lift Type
-            </label>
-            <div className="flex items-center p-1 rounded-xl bg-black border border-white/10 text-xs font-semibold">
-              <button
-                type="button"
-                onClick={() => setEditCategory('Compound')}
-                className={`flex-1 py-1.5 rounded-lg transition-all cursor-pointer text-center ${
-                  editCategory === 'Compound'
-                    ? 'bg-white text-black font-bold shadow'
-                    : 'text-slate-400 hover:text-white'
-                }`}
-              >
-                Compound Lift
-              </button>
-              <button
-                type="button"
-                onClick={() => setEditCategory('Isolation')}
-                className={`flex-1 py-1.5 rounded-lg transition-all cursor-pointer text-center ${
-                  editCategory === 'Isolation'
-                    ? 'bg-white text-black font-bold shadow'
-                    : 'text-slate-400 hover:text-white'
-                }`}
-              >
-                Isolation Movement
-              </button>
-            </div>
-          </div>
-
-          <div>
-            <div className="flex items-center justify-between mb-1">
-              <label className="block text-[10px] font-mono uppercase tracking-wider text-slate-400 font-semibold">
-                Alternative Exercise (Badeel)
-              </label>
-              <span className="text-[10px] text-slate-500 font-mono">
-                Swap if machine is busy
-              </span>
-            </div>
-            <input
-              type="text"
-              value={editAlternativeExercise}
-              onChange={(e) => setEditAlternativeExercise(e.target.value)}
-              placeholder="e.g. Chest Press Machine / Smith Press"
-              className="w-full px-3 py-2 rounded-xl bg-black border border-white/10 text-white focus:outline-none focus:border-white/30 font-sans"
-            />
-          </div>
-
-          <div>
-            <div className="flex items-center justify-between mb-1">
-              <label className="block text-[10px] font-mono uppercase tracking-wider text-slate-400 font-semibold">
-                Video Guide URL
-              </label>
-              <span className="text-[10px] text-slate-500 font-mono">
-                YouTube or direct video
-              </span>
-            </div>
-            <input
-              type="url"
-              value={editVideoUrl}
-              onChange={(e) => setEditVideoUrl(e.target.value)}
-              placeholder="https://youtube.com/... or MP4 link"
-              className="w-full px-3 py-2 rounded-xl bg-black border border-white/10 text-white focus:outline-none focus:border-white/30 font-sans"
-            />
-          </div>
-
-          <div>
-            <div className="flex items-center justify-between mb-1">
-              <label className="block text-[10px] font-mono uppercase tracking-wider text-slate-400 font-semibold">
-                Key Form Cue
-              </label>
-              <span className="text-[10px] text-slate-500 font-mono">
-                Main technique cue for athlete
-              </span>
-            </div>
-            <input
-              type="text"
-              value={editExecutionCue}
-              onChange={(e) => setEditExecutionCue(e.target.value)}
-              placeholder="e.g. Retract scapulae, touch lower sternum, control descent"
-              className="w-full px-3 py-2 rounded-xl bg-black border border-white/10 text-white focus:outline-none focus:border-white/30 font-sans"
-            />
-          </div>
-
-          <div>
-            <div className="flex items-center justify-between mb-1">
-              <label className="block text-[10px] font-mono uppercase tracking-wider text-slate-400 font-semibold">
-                Form Checklist (Optional)
-              </label>
-              <span className="text-[10px] text-slate-500 font-mono">
-                Comma separated
-              </span>
-            </div>
-            <input
-              type="text"
-              value={editTipInput}
-              onChange={(e) => setEditTipInput(e.target.value)}
-              placeholder="e.g. Keep wrists neutral, Drive heels into floor"
-              className="w-full px-3 py-2 rounded-xl bg-black border border-white/10 text-white focus:outline-none focus:border-white/30 font-sans"
-            />
-          </div>
-
-          <div className="flex items-center justify-end gap-2 pt-2 border-t border-white/10">
-            <button
-              type="button"
-              onClick={() => setEditingExercise(null)}
-              className="px-3.5 py-1.5 rounded-lg text-slate-400 hover:text-white cursor-pointer font-semibold transition-colors"
-            >
-              Cancel
-            </button>
-            <button
-              type="submit"
-              className="px-4 py-1.5 rounded-lg bg-white text-black font-bold hover:bg-slate-100 shadow cursor-pointer active:scale-95 transition-all"
-            >
-              Save Changes
-            </button>
-          </div>
-        </form>
-      </Modal>
+        title="Edit Exercise"
+        subtitle="Update movement cues, equipment, or alternative."
+        submitLabel="Save Changes"
+        initialData={editingExercise ? {
+          name: editingExercise.name,
+          targetMuscle: editingExercise.targetMuscle,
+          equipment: editingExercise.equipment,
+          category: editingExercise.category || 'Compound',
+          videoUrl: editingExercise.videoUrl,
+          alternativeExercise: editingExercise.alternativeExercise,
+          alternativeVideoUrl: editingExercise.alternativeVideoUrl,
+          executionCue: editingExercise.executionCue,
+          tips: editingExercise.tips
+        } : undefined}
+        onSubmit={handleSaveEditSubmit}
+      />
 
       {/* 7. Delete Confirmation Dialog (Closes on Backdrop Click) */}
       <Modal

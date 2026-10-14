@@ -97,30 +97,33 @@ export const TraineeHabitsView: React.FC = () => {
   return (
     <div className="w-full max-w-xl md:max-w-5xl lg:max-w-6xl xl:max-w-7xl mx-auto space-y-6 pb-28 md:pb-12 px-1 sm:px-0">
       
-      {/* 1. Header: Top Action Bar & Title */}
-      <div className="space-y-3 pt-1">
-        {/* Title Row */}
-        <div className="text-center">
-          <span className="text-[10px] font-mono uppercase tracking-widest text-[#2f80ed] font-bold block">
-            DISCIPLINE & SOBRIETY
-          </span>
-          <h1 className="text-xl sm:text-2xl font-black text-white tracking-tight whitespace-nowrap">
+      {/* 1. Header: Top Action Bar & Title (Centered) */}
+      <div className="flex flex-col items-center text-center gap-3 pt-1">
+        <div className="flex flex-col items-center">
+          <div className="flex items-center justify-center gap-1.5">
+            <span className="w-1.5 h-1.5 rounded-full bg-[var(--main-color)]" />
+            <span className="gym-label-mono text-[var(--main-color)]">Daily Protocols</span>
+          </div>
+          <h1 className="gym-heading-page mt-0.5">
             Habits Tracker
           </h1>
+          <p className="gym-subtext mt-0.5">
+            Discipline, hydration and streak monitoring
+          </p>
         </div>
 
         {/* Action Buttons Row */}
-        <div className="grid grid-cols-2 gap-2">
+        <div className="flex items-center justify-center gap-2">
           <button
             onClick={() => handleOpenAddModal('daily')}
-            className="py-2 px-3 rounded-xl bg-[#18191e] hover:bg-[#1c1d22] border border-[#24262e] text-white font-bold text-xs flex items-center justify-center gap-1.5 shadow-sm active:scale-95 transition-all cursor-pointer whitespace-nowrap"
+            className="gym-btn-secondary text-xs flex items-center justify-center gap-1.5 whitespace-nowrap"
           >
-            <Plus className="w-3.5 h-3.5 text-[#2f80ed]" />
+            <Plus className="w-3.5 h-3.5 text-[var(--main-color)]" />
             <span>Add Routine</span>
           </button>
           <button
             onClick={() => handleOpenAddModal('quit')}
-            className="py-2 px-3 rounded-xl btn-cyan text-xs font-black flex items-center justify-center gap-1.5 shadow-md shadow-[#2f80ed]/25 active:scale-95 transition-all cursor-pointer whitespace-nowrap"
+            className="gym-btn-primary text-xs flex items-center justify-center gap-1.5 whitespace-nowrap"
           >
             <CigaretteOff className="w-3.5 h-3.5 stroke-[2.5]" />
             <span>Quit Bad Habit</span>
@@ -137,7 +140,7 @@ export const TraineeHabitsView: React.FC = () => {
 
       {/* 3. Segmented Filter Pills */}
       <div className="space-y-2">
-        <div className="grid grid-cols-3 p-1 rounded-xl bg-[#141519] border border-[#24262e] text-xs font-bold">
+        <div className="grid grid-cols-3 p-1 rounded-xl bg-[var(--card-subtle-bg)] border border-[var(--card-border)] text-xs font-semibold">
           <button
             type="button"
             onClick={() => {
@@ -146,8 +149,8 @@ export const TraineeHabitsView: React.FC = () => {
             }}
             className={`py-1.5 px-2 rounded-lg transition-all cursor-pointer text-center whitespace-nowrap ${
               activeTab === 'all'
-                ? 'bg-[#18191e] text-white shadow-sm border border-[#24262e]'
-                : 'text-zinc-500 hover:text-zinc-300'
+                ? 'bg-[var(--card-bg)] text-white shadow-sm border border-[var(--card-border)] font-bold'
+                : 'text-slate-400 hover:text-white'
             }`}
           >
             All ({habits.length})
@@ -157,8 +160,8 @@ export const TraineeHabitsView: React.FC = () => {
             onClick={() => setActiveTab('quit')}
             className={`py-1.5 px-2 rounded-lg transition-all cursor-pointer text-center whitespace-nowrap ${
               activeTab === 'quit'
-                ? 'bg-[#18191e] text-[#2f80ed] shadow-sm border border-[#24262e]'
-                : 'text-zinc-500 hover:text-zinc-300'
+                ? 'bg-[var(--card-bg)] text-[var(--main-color)] shadow-sm border border-[var(--card-border)] font-bold'
+                : 'text-slate-400 hover:text-white'
             }`}
           >
             Quit Timers ({quitHabits.length})
@@ -168,8 +171,8 @@ export const TraineeHabitsView: React.FC = () => {
             onClick={() => setActiveTab('daily')}
             className={`py-1.5 px-2 rounded-lg transition-all cursor-pointer text-center whitespace-nowrap ${
               activeTab === 'daily'
-                ? 'bg-[#18191e] text-white shadow-sm border border-[#24262e]'
-                : 'text-zinc-500 hover:text-zinc-300'
+                ? 'bg-[var(--card-bg)] text-white shadow-sm border border-[var(--card-border)] font-bold'
+                : 'text-slate-400 hover:text-white'
             }`}
           >
             Daily ({dailyHabits.length})
@@ -186,8 +189,8 @@ export const TraineeHabitsView: React.FC = () => {
                 onClick={() => setDailyCategory(cat)}
                 className={`px-2.5 py-1 rounded-lg font-bold whitespace-nowrap transition-all cursor-pointer text-[11px] ${
                   dailyCategory === cat
-                    ? 'bg-[#2f80ed] text-white shadow-sm'
-                    : 'bg-[#141519] text-zinc-400 hover:text-zinc-200 border border-[#24262e]'
+                    ? 'bg-[var(--main-color)] text-white shadow-sm'
+                    : 'bg-[var(--card-subtle-bg)] text-zinc-400 hover:text-zinc-200 border border-[var(--card-border)]'
                 }`}
               >
                 {cat === 'all' ? 'All Routines' : cat}
@@ -226,8 +229,8 @@ export const TraineeHabitsView: React.FC = () => {
         })}
 
         {displayedHabits.length === 0 && (
-          <div className="p-8 rounded-3xl bg-[#18191e] border border-[#24262e] text-center shadow-md space-y-3 md:col-span-2">
-            <div className="w-12 h-12 rounded-2xl bg-[#141519] text-[#2f80ed] border border-[#24262e] flex items-center justify-center mx-auto">
+          <div className="p-8 rounded-3xl bg-[var(--card-bg)] border border-[var(--card-border)] text-center shadow-md space-y-3 md:col-span-2">
+            <div className="w-12 h-12 rounded-2xl bg-[var(--card-subtle-bg)] text-[var(--main-color)] border border-[var(--card-border)] flex items-center justify-center mx-auto">
               <Sparkles className="w-6 h-6" />
             </div>
             <h3 className="text-base font-extrabold text-white">No Habits In This View</h3>
@@ -238,7 +241,7 @@ export const TraineeHabitsView: React.FC = () => {
             </p>
             <button
               onClick={() => handleOpenAddModal(activeTab === 'quit' ? 'quit' : 'daily')}
-              className="btn-cyan px-5 py-2.5 rounded-xl text-white text-xs font-black inline-flex items-center gap-2 cursor-pointer shadow-md shadow-[#2f80ed]/30 active:scale-95 mt-2"
+              className="gym-btn-primary text-xs inline-flex items-center gap-2 mt-2"
             >
               <Plus className="w-4 h-4 stroke-[3]" />
               <span>Create {activeTab === 'quit' ? 'Quit Protocol' : 'Daily Habit'}</span>

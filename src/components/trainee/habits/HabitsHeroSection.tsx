@@ -40,10 +40,10 @@ export const HabitsHeroSection: React.FC<HabitsHeroSectionProps> = ({
   };
 
   return (
-    <div className="relative rounded-2xl sm:rounded-3xl bg-gradient-to-b from-[#18191e] to-[#141519] border border-[#24262e] p-4 sm:p-5 shadow-2xl overflow-hidden space-y-3.5">
+    <div className="relative rounded-2xl sm:rounded-3xl bg-[var(--card-bg)] border border-[var(--card-border)] p-4 sm:p-5 shadow-2xl overflow-hidden space-y-3.5">
       {/* Ambient background glow */}
-      <div className="absolute top-0 right-0 w-64 h-64 bg-[#2f80ed]/10 rounded-full blur-[90px] pointer-events-none" />
-      <div className="absolute bottom-0 left-0 w-48 h-48 bg-[#00f0ff]/5 rounded-full blur-[80px] pointer-events-none" />
+      <div className="absolute top-0 right-0 w-64 h-64 bg-[var(--main-color)]/10 rounded-full blur-[90px] pointer-events-none" />
+      <div className="absolute bottom-0 left-0 w-48 h-48 bg-[var(--main-color)]/5 rounded-full blur-[80px] pointer-events-none" />
 
       {/* Main Hero Header + Radial Dial Row */}
       <div className="relative z-10 flex flex-col sm:flex-row items-center sm:items-stretch justify-between gap-3 sm:gap-4">
@@ -63,8 +63,8 @@ export const HabitsHeroSection: React.FC<HabitsHeroSectionProps> = ({
             <svg className="w-full h-full -rotate-90 transform" viewBox="0 0 100 100">
               <defs>
                 <linearGradient id="habitsHeroGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" stopColor="#2f80ed" />
-                  <stop offset="100%" stopColor="#00f0ff" />
+                  <stop offset="0%" stopColor="var(--main-color)" />
+                  <stop offset="100%" stopColor="var(--main-color-hover)" />
                 </linearGradient>
               </defs>
 
@@ -73,7 +73,7 @@ export const HabitsHeroSection: React.FC<HabitsHeroSectionProps> = ({
                 cx="50"
                 cy="50"
                 r={radius}
-                stroke="#1f2129"
+                stroke="var(--card-border)"
                 strokeWidth={strokeWidth}
                 fill="transparent"
               />
@@ -110,9 +110,9 @@ export const HabitsHeroSection: React.FC<HabitsHeroSectionProps> = ({
       </div>
 
       {/* 3 Metric Badges Bar (Zero Icons - Swiss Tabular Clarity - Centered) */}
-      <div className="grid grid-cols-3 gap-2 sm:gap-2.5 pt-2 border-t border-[#24262e] relative z-10 font-numeric">
+      <div className="grid grid-cols-3 gap-2 sm:gap-2.5 pt-2 border-t border-[var(--card-border)] relative z-10 font-numeric">
         {/* Streak Tile */}
-        <div className="p-2 sm:p-2.5 rounded-xl bg-[#141519]/80 border border-[#24262e] flex flex-col items-center justify-center text-center w-full">
+        <div className="p-2 sm:p-2.5 rounded-xl bg-[var(--card-subtle-bg)] border border-[var(--card-border)] flex flex-col items-center justify-center text-center w-full">
           <span className="text-[9px] font-mono uppercase font-bold tracking-wider text-zinc-500 truncate mb-0.5 text-center w-full block">
             Streak
           </span>
@@ -127,7 +127,7 @@ export const HabitsHeroSection: React.FC<HabitsHeroSectionProps> = ({
         </div>
 
         {/* Today's Protocols */}
-        <div className="p-2 sm:p-2.5 rounded-xl bg-[#141519]/80 border border-[#24262e] flex flex-col items-center justify-center text-center w-full">
+        <div className="p-2 sm:p-2.5 rounded-xl bg-[var(--card-subtle-bg)] border border-[var(--card-border)] flex flex-col items-center justify-center text-center w-full">
           <span className="text-[9px] font-mono uppercase font-bold tracking-wider text-zinc-500 truncate mb-0.5 text-center w-full block">
             Today
           </span>
@@ -142,7 +142,7 @@ export const HabitsHeroSection: React.FC<HabitsHeroSectionProps> = ({
         </div>
 
         {/* Savings or Rate Tile */}
-        <div className="p-2 sm:p-2.5 rounded-xl bg-[#141519]/80 border border-[#24262e] flex flex-col items-center justify-center text-center w-full">
+        <div className="p-2 sm:p-2.5 rounded-xl bg-[var(--card-subtle-bg)] border border-[var(--card-border)] flex flex-col items-center justify-center text-center w-full">
           <span className="text-[9px] font-mono uppercase font-bold tracking-wider text-zinc-500 truncate mb-0.5 text-center w-full block">
             {quitSavings.totalSaved > 0 ? 'Total Saved' : 'Adherence'}
           </span>

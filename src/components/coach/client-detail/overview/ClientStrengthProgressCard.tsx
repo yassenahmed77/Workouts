@@ -21,10 +21,10 @@ export const ClientStrengthProgressCard: React.FC<ClientStrengthProgressCardProp
   onSelectDiagnosticReport
 }) => {
   return (
-    <div className="p-3 rounded-xl bg-[#090d14] border border-white/[0.07] space-y-2">
-      <div className="flex items-center justify-between pb-1 border-b border-white/[0.05]">
+    <div className="gym-card space-y-2">
+      <div className="flex items-center justify-between pb-1.5 border-b border-white/[0.07]">
         <div className="flex items-center gap-2">
-          <span className="text-[10px] font-mono uppercase tracking-wider text-slate-300 font-bold">
+          <span className="gym-label-mono">
             CORE LIFTS OVERLOAD
           </span>
           <span className={`text-[10px] font-mono font-semibold ${overloadDiagnosticSummary.statusClass}`}>
@@ -32,13 +32,13 @@ export const ClientStrengthProgressCard: React.FC<ClientStrengthProgressCardProp
           </span>
         </div>
         <div className="flex items-center gap-2">
-          <span className="text-[10px] font-mono text-cyan-400 font-bold">
+          <span className="gym-label-mono text-[var(--main-color)]">
             {overloadDiagnosticSummary.strengthIndex}
           </span>
           <button
             type="button"
             onClick={() => onNavigateSubTab('logs')}
-            className="px-2.5 py-0.5 rounded-lg bg-white/[0.05] hover:bg-white/[0.1] active:scale-95 border border-white/[0.1] text-[10px] font-semibold text-slate-200 hover:text-white transition-all cursor-pointer shadow-sm"
+            className="gym-btn-secondary gym-btn-sm"
           >
             Exercise History
           </button>
@@ -46,18 +46,18 @@ export const ClientStrengthProgressCard: React.FC<ClientStrengthProgressCardProp
       </div>
 
       {analyzedCoreLifts.length === 0 ? (
-        <div className="p-4 rounded-lg bg-[#05080e] border border-white/[0.04] text-center space-y-1.5">
-          <span className="text-xs font-semibold text-slate-300 block">
+        <div className="gym-card-subtle text-center space-y-1.5 py-4">
+          <span className="gym-heading-card block">
             Awaiting Workout Logs
           </span>
-          <p className="text-[11px] text-slate-500 font-mono max-w-sm mx-auto">
+          <p className="gym-subtext max-w-sm mx-auto">
             Overload telemetry &amp; plateau diagnostics activate automatically once the athlete logs their first session.
           </p>
           <div className="pt-1">
             <button
               type="button"
               onClick={() => onNavigateSubTab('workout')}
-              className="px-2.5 py-1 rounded-md bg-white/[0.05] hover:bg-white/[0.1] border border-white/[0.08] text-[11px] font-medium text-slate-300 hover:text-white transition-all cursor-pointer"
+              className="gym-btn-secondary gym-btn-sm"
             >
               View Assigned Workout Split
             </button>
@@ -69,20 +69,20 @@ export const ClientStrengthProgressCard: React.FC<ClientStrengthProgressCardProp
             <div
               key={idx}
               onClick={() => onNavigateSubTab('logs', lift.exerciseName)}
-              className="p-2.5 rounded-lg bg-[#05080e] border border-white/[0.05] hover:border-white/20 transition-all cursor-pointer flex items-center justify-between group"
+              className="gym-card-subtle hover:border-white/20 transition-all cursor-pointer flex items-center justify-between group"
               title="Click to view exercise history & progression graph"
             >
               <div>
-                <span className="text-xs sm:text-sm font-bold text-white block group-hover:text-cyan-300 transition-colors">
+                <span className="gym-heading-card block group-hover:text-[var(--main-color)] transition-colors">
                   {lift.exerciseName}
                 </span>
-                <span className="text-[10px] font-mono text-slate-400 block mt-0.5">
+                <span className="gym-subtext font-mono block mt-0.5">
                   Start: {lift.startWorkingSet} • Latest: {lift.latestWorkingSet}
                 </span>
               </div>
 
               <div className="flex items-center gap-2.5">
-                <span className="text-xs font-mono font-bold text-slate-200">
+                <span className="gym-num text-xs">
                   {lift.totalGainText}
                 </span>
                 <button

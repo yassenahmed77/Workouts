@@ -70,25 +70,25 @@ export const AssignPlanModal: React.FC<AssignPlanModalProps> = ({
       }}
     >
       <div 
-        className="w-full max-w-2xl bg-[#18191e] border border-[#24262e] rounded-3xl p-5 sm:p-6 shadow-2xl relative max-h-[90vh] flex flex-col animate-in zoom-in-95 duration-150"
+        className="gym-card w-full max-w-2xl p-4 sm:p-5 shadow-2xl relative max-h-[90vh] flex flex-col animate-in zoom-in-95 duration-150"
         onClick={(e) => e.stopPropagation()}
       >
         <button
           onClick={onClose}
-          className="absolute top-5 right-5 text-zinc-500 hover:text-white p-2 rounded-xl hover:bg-[#141519] transition-colors cursor-pointer"
+          className="absolute top-4 right-4 text-slate-400 hover:text-white p-1.5 rounded-lg hover:bg-white/[0.05] transition-colors cursor-pointer"
         >
-          <X className="w-5 h-5" />
+          <X className="w-4 h-4" />
         </button>
 
-        <div className="flex items-center gap-3 mb-5 pb-4 border-b border-[#24262e]">
-          <div className="w-10 h-10 rounded-2xl bg-[#141519] text-[#2f80ed] border border-[#24262e] flex items-center justify-center flex-shrink-0">
-            <Target className="w-5 h-5" />
+        <div className="flex items-center gap-3 mb-4 pb-3 border-b border-white/[0.08]">
+          <div className="w-9 h-9 rounded-xl bg-[var(--card-subtle-bg)] text-[var(--main-color)] border border-white/[0.08] flex items-center justify-center flex-shrink-0">
+            <Target className="w-4 h-4" />
           </div>
           <div>
-            <h3 className="text-base font-extrabold text-white tracking-tight">
+            <h3 className="gym-heading-section">
               Assign Training Split
             </h3>
-            <p className="text-xs text-zinc-400">
+            <p className="gym-subtext mt-0.5">
               Select an athlete and deploy a customized workout split.
             </p>
           </div>
@@ -116,8 +116,8 @@ export const AssignPlanModal: React.FC<AssignPlanModalProps> = ({
                     }}
                     className={`flex items-center justify-between p-3 rounded-2xl border text-left transition-all cursor-pointer ${
                       isSelected
-                        ? 'bg-[#141519] border-[#2f80ed]/50 shadow-md shadow-[#2f80ed]/15'
-                        : 'bg-[#141519] border-[#24262e] hover:border-zinc-700'
+                        ? 'bg-[var(--card-subtle-bg)] border-[var(--main-color)]/50 shadow-md shadow-[var(--main-color)]/15'
+                        : 'bg-[var(--card-bg)] border-[var(--card-border)] hover:border-white/20'
                     }`}
                   >
                     <div className="flex items-center gap-2.5 min-w-0">
@@ -125,10 +125,10 @@ export const AssignPlanModal: React.FC<AssignPlanModalProps> = ({
                         <img
                           src={trainee.avatarUrl}
                           alt={trainee.name}
-                          className="w-8 h-8 rounded-full object-cover border border-[#2f80ed]/40 flex-shrink-0"
+                          className="w-8 h-8 rounded-full object-cover border border-[var(--main-color)]/40 flex-shrink-0"
                         />
                       ) : (
-                        <div className="w-8 h-8 rounded-full bg-[#18191e] border border-[#24262e] flex items-center justify-center font-mono font-bold text-xs text-[#2f80ed] flex-shrink-0">
+                        <div className="w-8 h-8 rounded-full bg-[var(--card-subtle-bg)] border border-[var(--card-border)] flex items-center justify-center font-mono font-bold text-xs text-[var(--main-color)] flex-shrink-0">
                           {trainee.avatarText}
                         </div>
                       )}
@@ -142,7 +142,7 @@ export const AssignPlanModal: React.FC<AssignPlanModalProps> = ({
                       </div>
                     </div>
                     {isSelected && (
-                      <div className="w-5 h-5 rounded-full bg-[#2f80ed] text-white flex items-center justify-center flex-shrink-0 shadow-sm">
+                      <div className="w-5 h-5 rounded-full bg-[var(--main-color)] text-white flex items-center justify-center flex-shrink-0 shadow-sm">
                         <Check className="w-3 h-3 stroke-[3]" />
                       </div>
                     )}
@@ -172,13 +172,13 @@ export const AssignPlanModal: React.FC<AssignPlanModalProps> = ({
                     onClick={() => setSelectedPlanId(plan.id)}
                     className={`p-4 rounded-2xl border cursor-pointer transition-all ${
                       isSelected
-                        ? 'bg-[#141519] border-[#2f80ed]/50 shadow-md shadow-[#2f80ed]/15'
-                        : 'bg-[#141519] border-[#24262e] hover:border-zinc-700'
+                        ? 'bg-[var(--card-subtle-bg)] border-[var(--main-color)]/50 shadow-md shadow-[var(--main-color)]/15'
+                        : 'bg-[var(--card-bg)] border-[var(--card-border)] hover:border-white/20'
                     }`}
                   >
                     <div className="flex items-center justify-between gap-3">
                       <div className="flex items-center gap-2.5 min-w-0">
-                        <span className="w-7 h-7 rounded-lg bg-[#18191e] text-[#2f80ed] border border-[#24262e] flex items-center justify-center font-mono text-xs font-black flex-shrink-0">
+                        <span className="w-7 h-7 rounded-lg bg-[var(--card-subtle-bg)] text-[var(--main-color)] border border-[var(--card-border)] flex items-center justify-center font-mono text-xs font-black flex-shrink-0">
                           {idx + 1}
                         </span>
                         <div className="min-w-0">
@@ -194,15 +194,15 @@ export const AssignPlanModal: React.FC<AssignPlanModalProps> = ({
                       <div className="flex items-center gap-2 flex-shrink-0">
                         <div className={`w-5 h-5 rounded-full border flex items-center justify-center flex-shrink-0 transition-all ${
                           isSelected 
-                            ? 'border-[#2f80ed] bg-[#2f80ed] text-white shadow-md shadow-[#2f80ed]/25' 
-                            : 'border-[#24262e] bg-[#18191e]'
+                            ? 'border-[var(--main-color)] bg-[var(--main-color)] text-white shadow-md shadow-[var(--main-color)]/25' 
+                            : 'border-[var(--card-border)] bg-[var(--card-subtle-bg)]'
                         }`}>
                           {isSelected && <Check className="w-3 h-3 stroke-[3]" />}
                         </div>
                       </div>
                     </div>
 
-                    <div className="flex flex-wrap items-center gap-3 mt-3 pt-2.5 border-t border-[#24262e] text-[11px] text-zinc-400 font-numeric">
+                    <div className="flex flex-wrap items-center gap-3 mt-3 pt-2.5 border-t border-[var(--card-border)] text-[11px] text-zinc-400 font-numeric">
                       <span className="flex items-center gap-1.5 font-bold text-zinc-300">
                         <Calendar className="w-3.5 h-3.5 text-zinc-500" />
                         {plan.daysPerWeek} Days / Wk
@@ -213,7 +213,7 @@ export const AssignPlanModal: React.FC<AssignPlanModalProps> = ({
                         {totalExercises} Total Exercises
                       </span>
                       <span className="text-zinc-700">•</span>
-                      <span className="font-bold text-[#2f80ed] font-mono">
+                      <span className="font-bold text-[var(--main-color)] font-mono">
                         {plan.durationWeeks} Wks Cycle
                       </span>
                     </div>
@@ -222,8 +222,8 @@ export const AssignPlanModal: React.FC<AssignPlanModalProps> = ({
               })}
 
               {plans.length === 0 && (
-                <div className="p-8 rounded-2xl bg-[#141519] border border-dashed border-[#24262e] text-center space-y-2">
-                  <div className="w-10 h-10 rounded-xl bg-[#18191e] text-[#2f80ed] border border-[#24262e] flex items-center justify-center mx-auto mb-2">
+                <div className="p-8 rounded-2xl bg-[var(--card-subtle-bg)] border border-dashed border-[var(--card-border)] text-center space-y-2">
+                  <div className="w-10 h-10 rounded-xl bg-[var(--card-bg)] text-[var(--main-color)] border border-[var(--card-border)] flex items-center justify-center mx-auto mb-2">
                     <Layers className="w-5 h-5 stroke-[2.5]" />
                   </div>
                   <h4 className="text-xs font-extrabold text-white">No Workout Splits Created Yet</h4>
@@ -237,7 +237,7 @@ export const AssignPlanModal: React.FC<AssignPlanModalProps> = ({
         </div>
 
         {/* Footer actions */}
-        <div className="pt-4 mt-4 border-t border-[#24262e] flex items-center justify-between gap-3">
+        <div className="pt-4 mt-4 border-t border-[var(--card-border)] flex items-center justify-between gap-3">
           <p className="text-xs text-zinc-400 truncate">
             {currentSelectedUser ? (
               <>Assigning to: <span className="text-white font-bold">{currentSelectedUser.name}</span></>
@@ -249,7 +249,7 @@ export const AssignPlanModal: React.FC<AssignPlanModalProps> = ({
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 text-xs font-bold text-zinc-400 hover:text-white rounded-xl hover:bg-[#141519] transition-colors cursor-pointer"
+              className="gym-btn-ghost text-xs"
             >
               Cancel
             </button>
@@ -257,7 +257,7 @@ export const AssignPlanModal: React.FC<AssignPlanModalProps> = ({
               type="button"
               disabled={!selectedUserId || !selectedPlanId || plans.length === 0}
               onClick={handleAssign}
-              className="px-4 sm:px-5 py-2.5 rounded-xl btn-cyan text-white text-xs font-black flex items-center gap-1.5 cursor-pointer shadow-md shadow-[#2f80ed]/30 disabled:opacity-40 disabled:pointer-events-none active:scale-95 transition-all"
+              className="gym-btn-primary text-xs flex items-center gap-1.5"
             >
               <span>Deploy Plan</span>
               <ArrowRight className="w-3.5 h-3.5" />

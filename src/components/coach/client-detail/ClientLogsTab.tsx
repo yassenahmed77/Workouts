@@ -76,9 +76,9 @@ export const ClientLogsTab: React.FC<ClientLogsTabProps> = ({ client, initialExe
 
   if (clientLogs.length === 0) {
     return (
-      <div className="p-6 text-center rounded-xl bg-[#090d14] border border-white/[0.07] space-y-1.5 select-none">
-        <h3 className="text-xs font-bold text-white">No Workout Sessions Logged Yet</h3>
-        <p className="text-[11px] text-slate-400 max-w-sm mx-auto">
+      <div className="gym-card p-6 text-center space-y-1.5 select-none">
+        <h3 className="gym-heading-card">No Workout Sessions Logged Yet</h3>
+        <p className="gym-subtext max-w-sm mx-auto">
           When {client.name} executes and logs active training sessions at the gym, their recorded movements, weights, reps, and overload progression graphs will appear here.
         </p>
       </div>
@@ -97,9 +97,9 @@ export const ClientLogsTab: React.FC<ClientLogsTabProps> = ({ client, initialExe
     <div className="flex flex-col h-full space-y-1.5 select-none">
       
       {/* 1. Header Navigation & View Toggle (Slim Single-Line Bar for Viewport Fit) */}
-      <div className="flex items-center justify-between gap-2 px-3 py-1.5 rounded-xl bg-[#090d14] border border-white/[0.07] flex-shrink-0">
+      <div className="gym-card flex items-center justify-between gap-2 px-3 py-1.5 flex-shrink-0">
         <div className="flex items-center gap-2 min-w-0">
-          <h3 className="text-xs font-bold text-white tracking-tight truncate">
+          <h3 className="gym-heading-card truncate">
             Progressive Overload Telemetry
           </h3>
           <span className="text-slate-600 text-xs hidden sm:inline">&bull;</span>
@@ -148,7 +148,7 @@ export const ClientLogsTab: React.FC<ClientLogsTabProps> = ({ client, initialExe
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search movements..."
-                className="w-full px-2.5 py-1 rounded-lg bg-[#05080e] border border-white/[0.06] text-xs text-white placeholder-slate-400 focus:outline-none focus:border-white/20"
+                className="w-full px-2.5 py-1 rounded-lg bg-[var(--input-bg)] border border-[var(--input-border)] text-xs text-white placeholder-slate-400 focus:outline-none focus:border-[var(--main-color)]"
               />
 
               {/* Quick Muscle Pills */}
@@ -173,7 +173,7 @@ export const ClientLogsTab: React.FC<ClientLogsTabProps> = ({ client, initialExe
             {/* Exercises List (Internal Scroll) */}
             <div className="flex-1 min-h-0 overflow-y-auto custom-scrollbar space-y-1 pr-1">
               {filteredExercises.length === 0 ? (
-                <div className="p-3 text-center rounded-lg bg-[#05080e] border border-white/[0.04] text-xs text-slate-400">
+                <div className="p-3 text-center rounded-lg bg-[var(--card-subtle-bg)] border border-[var(--card-border)] text-xs text-slate-400">
                   No movements matching filter.
                 </div>
               ) : (
@@ -187,8 +187,8 @@ export const ClientLogsTab: React.FC<ClientLogsTabProps> = ({ client, initialExe
                       onClick={() => setSelectedExerciseName(ex.exerciseName)}
                       className={`p-2 rounded-lg border transition-all cursor-pointer ${
                         isSelected
-                          ? 'bg-white/[0.08] border-white/20 shadow-xs'
-                          : 'bg-[#090d14] border-white/[0.05] hover:bg-white/[0.03] hover:border-white/10'
+                          ? 'bg-[var(--main-color)]/15 border-[var(--main-color)]/30 text-white shadow-xs'
+                          : 'bg-[var(--card-subtle-bg)] border-[var(--card-border)] hover:border-white/20'
                       }`}
                     >
                       <div className="flex items-center justify-between gap-1.5">
@@ -233,7 +233,7 @@ export const ClientLogsTab: React.FC<ClientLogsTabProps> = ({ client, initialExe
             {activeExercise && activeDiagnostic ? (
               <>
                 {/* Active Exercise Hero Telemetry */}
-                <div className="p-2.5 rounded-xl bg-[#090d14] border border-white/[0.07] space-y-1.5 flex-shrink-0">
+                <div className="p-2.5 rounded-xl bg-[var(--card-bg)] border border-white/[0.07] space-y-1.5 flex-shrink-0">
                   <div className="flex items-center justify-between gap-2">
                     <div className="flex items-center gap-1.5 min-w-0">
                       <span className="text-xs sm:text-sm font-bold text-white tracking-tight truncate">
@@ -271,7 +271,7 @@ export const ClientLogsTab: React.FC<ClientLogsTabProps> = ({ client, initialExe
                   {/* 4 Compact Telemetry Boxes */}
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-1.5 pt-1 border-t border-white/[0.05]">
                     {/* 1. Starting Top Set */}
-                    <div className="p-1.5 rounded-lg bg-[#05080e] border border-white/[0.04] text-center">
+                    <div className="p-1.5 rounded-lg bg-[var(--card-subtle-bg)] border border-white/[0.04] text-center">
                       <span className="text-[9px] font-mono uppercase tracking-wider text-slate-400 font-semibold block">
                         Starting Top Set
                       </span>
@@ -284,7 +284,7 @@ export const ClientLogsTab: React.FC<ClientLogsTabProps> = ({ client, initialExe
                     </div>
 
                     {/* 2. Current Top Set */}
-                    <div className="p-1.5 rounded-lg bg-[#05080e] border border-white/[0.04] text-center">
+                    <div className="p-1.5 rounded-lg bg-[var(--card-subtle-bg)] border border-white/[0.04] text-center">
                       <span className="text-[9px] font-mono uppercase tracking-wider text-slate-400 font-semibold block">
                         Current Top Set
                       </span>
@@ -297,7 +297,7 @@ export const ClientLogsTab: React.FC<ClientLogsTabProps> = ({ client, initialExe
                     </div>
 
                     {/* 3. Net Progression */}
-                    <div className="p-1.5 rounded-lg bg-[#05080e] border border-white/[0.04] text-center">
+                    <div className="p-1.5 rounded-lg bg-[var(--card-subtle-bg)] border border-white/[0.04] text-center">
                       <span className="text-[9px] font-mono uppercase tracking-wider text-slate-400 font-semibold block">
                         Net Progression
                       </span>
@@ -317,10 +317,10 @@ export const ClientLogsTab: React.FC<ClientLogsTabProps> = ({ client, initialExe
                           setDiagnosticModalReport(rep);
                         }
                       }}
-                      className="p-1.5 rounded-lg bg-[#05080e] border border-white/[0.04] hover:border-white/20 text-center cursor-pointer transition-all group"
+                      className="p-1.5 rounded-lg bg-[var(--card-subtle-bg)] border border-white/[0.04] hover:border-white/20 text-center cursor-pointer transition-all group"
                       title="Click to view full movement diagnostic report"
                     >
-                      <span className="text-[9px] font-mono uppercase tracking-wider text-slate-400 font-semibold block group-hover:text-cyan-300 transition-colors">
+                      <span className="text-[9px] font-mono uppercase tracking-wider text-slate-400 font-semibold block group-hover:text-[var(--main-color)] transition-colors">
                         Lift Status
                       </span>
                       <div className="mt-0.5 flex items-center justify-center">
@@ -384,7 +384,7 @@ export const ClientLogsTab: React.FC<ClientLogsTabProps> = ({ client, initialExe
                           className={`p-2 rounded-xl border transition-colors ${
                             isPR || hasWeightGain || hasRepsGain
                               ? 'bg-white/[0.04] border-white/20'
-                              : 'bg-[#090d14] border-white/[0.06]'
+                              : 'bg-[var(--card-bg)] border-white/[0.06]'
                           }`}
                         >
                           {/* Session Header */}
@@ -421,7 +421,7 @@ export const ClientLogsTab: React.FC<ClientLogsTabProps> = ({ client, initialExe
                                   className={`px-2 py-0.5 rounded text-[11px] font-mono flex items-center gap-1 ${
                                     set.isTopSet
                                       ? 'bg-white/[0.1] text-white border border-white/25 font-semibold shadow-2xs'
-                                      : 'bg-[#05080e] text-slate-300 border border-white/[0.04]'
+                                      : 'bg-[var(--card-subtle-bg)] text-slate-300 border border-white/[0.04]'
                                   }`}
                                 >
                                   <span className="text-[10px] text-slate-400">S{set.setNumber}:</span>
@@ -440,7 +440,7 @@ export const ClientLogsTab: React.FC<ClientLogsTabProps> = ({ client, initialExe
                 </div>
               </>
             ) : (
-              <div className="p-6 text-center rounded-xl bg-[#090d14] border border-white/[0.07] text-xs text-slate-400">
+              <div className="p-6 text-center rounded-xl bg-[var(--card-bg)] border border-white/[0.07] text-xs text-slate-400">
                 Select an exercise from the left to view progression graphs and set details.
               </div>
             )}
@@ -463,7 +463,7 @@ export const ClientLogsTab: React.FC<ClientLogsTabProps> = ({ client, initialExe
               return (
                 <div
                   key={log.id}
-                  className="p-2.5 rounded-xl bg-[#090d14] border border-white/[0.07] space-y-1.5"
+                  className="p-2.5 rounded-xl bg-[var(--card-bg)] border border-white/[0.07] space-y-1.5"
                 >
                   <div className="flex items-center justify-between pb-1.5 border-b border-white/[0.05]">
                     <div>
@@ -486,7 +486,7 @@ export const ClientLogsTab: React.FC<ClientLogsTabProps> = ({ client, initialExe
                     {log.completedExercises.map((ex, idx) => (
                       <div
                         key={idx}
-                        className="px-2 py-1 rounded-lg bg-[#05080e] border border-white/[0.04] flex items-center justify-between gap-2 text-xs"
+                        className="px-2 py-1 rounded-lg bg-[var(--card-subtle-bg)] border border-white/[0.04] flex items-center justify-between gap-2 text-xs"
                       >
                         <div className="min-w-0">
                           <span className="font-medium text-slate-200 block truncate text-[11px]">
@@ -512,7 +512,7 @@ export const ClientLogsTab: React.FC<ClientLogsTabProps> = ({ client, initialExe
                   </div>
 
                   {log.coachFeedback && (
-                    <div className="p-2 rounded-lg bg-[#05080e] border border-white/[0.04] text-xs text-slate-300">
+                    <div className="p-2 rounded-lg bg-[var(--card-subtle-bg)] border border-white/[0.04] text-xs text-slate-300">
                       <span className="text-[9px] font-mono uppercase text-slate-400 font-semibold block">Coach Note:</span>
                       <p className="mt-0.5 italic text-slate-300 text-[11px]">&ldquo;{log.coachFeedback}&rdquo;</p>
                     </div>

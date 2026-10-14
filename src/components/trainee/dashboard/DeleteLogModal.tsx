@@ -23,14 +23,14 @@ export const DeleteLogModal: React.FC<DeleteLogModalProps> = ({
       aria-modal="true"
       aria-label="Delete Workout Log Confirmation"
     >
-      <div className="w-full max-w-sm bg-[#18191e] border border-[#24262e] rounded-3xl p-6 shadow-2xl text-center relative animate-in zoom-in-95 duration-150 space-y-4">
+      <div className="w-full max-w-sm bg-[var(--card-bg)] border border-[var(--card-border)] rounded-3xl p-6 shadow-2xl text-center relative animate-in zoom-in-95 duration-150 space-y-4">
         <div className="w-12 h-12 rounded-2xl bg-rose-500/15 border border-rose-500/30 text-rose-400 flex items-center justify-center mx-auto shadow-inner">
           <Trash2 className="w-6 h-6 stroke-[2.5]" />
         </div>
 
         <div>
           <h3 className="text-base font-extrabold text-white">Delete Today&apos;s Workout Log?</h3>
-          <p className="text-xs text-[#94a3b8] mt-1">
+          <p className="text-xs text-slate-400 mt-1">
             Are you sure you want to remove today&apos;s workout log from your history? Your streak and stats will be updated.
           </p>
         </div>
@@ -39,7 +39,7 @@ export const DeleteLogModal: React.FC<DeleteLogModalProps> = ({
           <button
             type="button"
             onClick={onClose}
-            className="py-2.5 px-3 rounded-xl bg-[#1c1d22] border border-[#24262e] text-xs font-bold text-zinc-300 hover:text-white cursor-pointer"
+            className="py-2.5 px-3 rounded-xl bg-[var(--card-subtle-bg)] border border-[var(--card-border)] text-xs font-bold text-zinc-300 hover:text-white cursor-pointer"
           >
             Cancel
           </button>

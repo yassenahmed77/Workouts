@@ -122,13 +122,13 @@ export const BarcodeScannerModal: React.FC<BarcodeScannerModalProps> = ({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-3 bg-black/85 backdrop-blur-md animate-in fade-in duration-200 select-none font-sans text-slate-100">
       <div 
-        className="w-full max-w-md bg-[#18191e] border border-[#24262e] rounded-2xl overflow-hidden shadow-2xl space-y-4 flex flex-col"
+        className="w-full max-w-md bg-[var(--card-bg)] border border-[var(--card-border)] rounded-2xl overflow-hidden shadow-2xl space-y-4 flex flex-col"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="flex items-center justify-between p-4 pb-3 border-b border-[#24262e] bg-[#141519]">
+        <div className="flex items-center justify-between p-4 pb-3 border-b border-[var(--card-border)] bg-[var(--card-subtle-bg)]">
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-[#2f80ed]/15 border border-[#2f80ed]/30 flex items-center justify-center text-[#2f80ed]">
+            <div className="w-8 h-8 rounded-lg bg-[var(--main-color)]/15 border border-[var(--main-color)]/30 flex items-center justify-center text-[var(--main-color)]">
               <Barcode className="w-4 h-4" />
             </div>
             <div>
@@ -138,7 +138,7 @@ export const BarcodeScannerModal: React.FC<BarcodeScannerModalProps> = ({
           </div>
           <button
             onClick={onClose}
-            className="w-7 h-7 rounded-lg bg-[#18191e] border border-[#24262e] text-zinc-400 hover:text-white flex items-center justify-center transition-colors cursor-pointer"
+            className="w-7 h-7 rounded-lg bg-[var(--card-bg)] border border-[var(--card-border)] text-zinc-400 hover:text-white flex items-center justify-center transition-colors cursor-pointer"
           >
             <X className="w-4 h-4" />
           </button>
@@ -146,7 +146,7 @@ export const BarcodeScannerModal: React.FC<BarcodeScannerModalProps> = ({
 
         {/* Camera Viewfinder or Simulated Scan Box */}
         <div className="px-4">
-          <div className="relative aspect-video w-full rounded-xl bg-black border border-[#24262e] overflow-hidden flex items-center justify-center">
+          <div className="relative aspect-video w-full rounded-xl bg-black border border-[var(--card-border)] overflow-hidden flex items-center justify-center">
             {isCameraActive ? (
               <video
                 ref={videoRef}
@@ -165,10 +165,10 @@ export const BarcodeScannerModal: React.FC<BarcodeScannerModalProps> = ({
             )}
 
             {/* Glowing Laser Scan Bar */}
-            <div className="absolute inset-x-8 top-1/2 -translate-y-1/2 h-0.5 bg-[#2f80ed] shadow-[0_0_12px_#2f80ed] animate-pulse" />
+            <div className="absolute inset-x-8 top-1/2 -translate-y-1/2 h-0.5 bg-[var(--main-color)] shadow-[0_0_12px_var(--main-color)] animate-pulse" />
             
             {/* Viewfinder Target Corners */}
-            <div className="absolute inset-6 pointer-events-none border-2 border-dashed border-[#2f80ed]/50 rounded-lg" />
+            <div className="absolute inset-6 pointer-events-none border-2 border-dashed border-[var(--main-color)]/50 rounded-lg" />
           </div>
         </div>
 
@@ -188,13 +188,13 @@ export const BarcodeScannerModal: React.FC<BarcodeScannerModalProps> = ({
                 placeholder="Enter UPC / Barcode (e.g. 748927024104)..."
                 value={manualBarcode}
                 onChange={(e) => setManualBarcode(e.target.value)}
-                className="w-full pl-9 pr-3 py-2 rounded-xl bg-[#141519] border border-[#24262e] text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-[#2f80ed] font-mono"
+                className="w-full pl-9 pr-3 py-2 rounded-xl bg-[var(--input-bg)] border border-[var(--input-border)] text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-[var(--main-color)] font-mono transition-colors"
               />
             </div>
             <button
               type="submit"
               disabled={!manualBarcode.trim() || isScanning}
-              className="py-2 px-3.5 rounded-xl btn-cyan disabled:opacity-40 text-white text-xs font-bold transition-all shadow-md shadow-[#2f80ed]/30 cursor-pointer active:scale-95 inline-flex items-center gap-1.5 flex-shrink-0"
+              className="gym-btn-primary text-xs inline-flex items-center gap-1.5 flex-shrink-0"
             >
               {isScanning ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Search className="w-3.5 h-3.5" />}
               <span>Lookup</span>
@@ -223,9 +223,9 @@ export const BarcodeScannerModal: React.FC<BarcodeScannerModalProps> = ({
                     setManualBarcode(item.code);
                     handleLookupBarcode(item.code);
                   }}
-                  className="p-2 rounded-lg bg-[#141519] border border-[#24262e] hover:border-[#2f80ed]/40 text-left transition-all cursor-pointer group"
+                  className="p-2 rounded-lg bg-[var(--card-subtle-bg)] border border-[var(--card-border)] hover:border-[var(--main-color)]/40 text-left transition-all cursor-pointer group"
                 >
-                  <span className="text-[11px] font-bold text-zinc-200 group-hover:text-[#2f80ed] block truncate">
+                  <span className="text-[11px] font-bold text-zinc-200 group-hover:text-[var(--main-color)] block truncate">
                     {item.label}
                   </span>
                   <span className="text-[9px] font-mono text-zinc-500 block">

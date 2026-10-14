@@ -50,7 +50,7 @@ export const DailyHabitCard: React.FC<DailyHabitCardProps> = ({
           particleCount: 30,
           spread: 45,
           origin: { y: 0.8 },
-          colors: [habit.color || '#2f80ed', '#00f0ff', '#10b981']
+          colors: [habit.color || '#2f80ed', '#60a5fa', '#ffffff']
         });
       } catch {
         // Safe fallback in test or SSR
@@ -67,7 +67,7 @@ export const DailyHabitCard: React.FC<DailyHabitCardProps> = ({
           particleCount: 30,
           spread: 45,
           origin: { y: 0.8 },
-          colors: [habit.color || '#2f80ed', '#00f0ff', '#10b981']
+          colors: [habit.color || '#2f80ed', '#60a5fa', '#ffffff']
         });
       } catch {
         // Safe fallback
@@ -80,16 +80,16 @@ export const DailyHabitCard: React.FC<DailyHabitCardProps> = ({
     <div
       className={`p-4 sm:p-5 rounded-3xl border transition-all space-y-3.5 ${
         record.completed
-          ? 'bg-[#18191e] border-[#2f80ed]/40 shadow-lg shadow-[#2f80ed]/5'
-          : 'bg-[#18191e] border-[#24262e] hover:border-zinc-700'
+          ? 'bg-[var(--card-bg)] border-[var(--main-color)]/40 shadow-lg shadow-[var(--main-color)]/5'
+          : 'bg-[var(--card-bg)] border border-[var(--card-border)] hover:border-zinc-700'
       }`}
     >
       {/* Header Row */}
       <div className="flex items-center justify-between gap-3">
         <div className="flex items-center gap-2.5 min-w-0 flex-1">
           <div 
-            className="w-9 h-9 rounded-xl flex items-center justify-center font-bold text-sm flex-shrink-0 bg-[#141519] border border-[#24262e] shadow-sm"
-            style={{ color: habit.color || '#2f80ed' }}
+            className="w-9 h-9 rounded-xl flex items-center justify-center font-bold text-sm flex-shrink-0 bg-[var(--card-subtle-bg)] border border-[var(--card-border)] shadow-sm"
+            style={{ color: habit.color || 'var(--main-color)' }}
           >
             <RenderHabitIcon iconKey={habit.iconKey} className="w-4 h-4" />
           </div>
@@ -100,7 +100,7 @@ export const DailyHabitCard: React.FC<DailyHabitCardProps> = ({
                 {habit.title}
               </h3>
               {streak > 0 && (
-                <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-[#2f80ed]/10 text-[#2f80ed] border border-[#2f80ed]/20 flex items-center gap-1 flex-shrink-0">
+                <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-[var(--main-color)]/10 text-[var(--main-color)] border border-[var(--main-color)]/20 flex items-center gap-1 flex-shrink-0">
                   <Flame className="w-3 h-3 fill-current" />
                   {streak}d
                 </span>
@@ -132,7 +132,7 @@ export const DailyHabitCard: React.FC<DailyHabitCardProps> = ({
       </div>
 
       {/* 7-Day Consistency Dots */}
-      <div className="pt-2.5 border-t border-[#24262e]/70">
+      <div className="pt-2.5 border-t border-[var(--card-border)]/70">
         <div className="flex items-center justify-between mb-2">
           <span className="text-[10px] font-mono uppercase tracking-wider text-zinc-500 font-bold">
             7-Day Consistency
@@ -148,7 +148,7 @@ export const DailyHabitCard: React.FC<DailyHabitCardProps> = ({
               className="flex flex-col items-center gap-1"
               title={`${day.dateStr}: ${day.completed ? 'Completed' : day.isToday ? 'Today (Pending)' : 'Missed'}`}
             >
-              <span className={`text-[9px] font-mono font-bold ${day.isToday ? 'text-[#2f80ed]' : 'text-zinc-500'}`}>
+              <span className={`text-[9px] font-mono font-bold ${day.isToday ? 'text-[var(--main-color)]' : 'text-zinc-500'}`}>
                 {day.dayLabel}
               </span>
               <div 
@@ -156,15 +156,15 @@ export const DailyHabitCard: React.FC<DailyHabitCardProps> = ({
                   day.completed 
                     ? 'shadow-sm text-white' 
                     : day.isToday 
-                    ? 'border border-dashed border-[#2f80ed]/60 bg-[#141519]' 
-                    : 'bg-[#141519] border border-[#24262e]'
+                    ? 'border border-dashed border-[var(--main-color)]/60 bg-[var(--card-subtle-bg)]' 
+                    : 'bg-[var(--card-subtle-bg)] border border-[var(--card-border)]'
                 }`}
-                style={day.completed ? { backgroundColor: habit.color || '#2f80ed' } : undefined}
+                style={day.completed ? { backgroundColor: habit.color || 'var(--main-color)' } : undefined}
               >
                 {day.completed ? (
                   <Check className="w-3 h-3 stroke-[3]" />
                 ) : (
-                  <span className={`w-1 h-1 rounded-full ${day.isToday ? 'bg-[#2f80ed]' : 'bg-zinc-600'}`} />
+                  <span className={`w-1 h-1 rounded-full ${day.isToday ? 'bg-[var(--main-color)]' : 'bg-zinc-600'}`} />
                 )}
               </div>
             </div>
@@ -174,7 +174,7 @@ export const DailyHabitCard: React.FC<DailyHabitCardProps> = ({
 
       {/* Progress & Tracking Section */}
       {habit.type === 'boolean' ? (
-        <div className="flex items-center justify-between pt-2.5 border-t border-[#24262e] gap-3">
+        <div className="flex items-center justify-between pt-2.5 border-t border-[var(--card-border)] gap-3">
           <span className="text-xs text-zinc-400 font-medium truncate">
             {record.completed ? 'Protocol completed today' : 'Tap checkmark when done today'}
           </span>
@@ -184,8 +184,8 @@ export const DailyHabitCard: React.FC<DailyHabitCardProps> = ({
             onClick={handleToggleWithConfetti}
             className={`w-8 h-8 rounded-xl flex items-center justify-center cursor-pointer transition-all active:scale-95 flex-shrink-0 ${
               record.completed
-                ? 'bg-[#2f80ed] text-white shadow-md shadow-[#2f80ed]/25'
-                : 'bg-[#141519] hover:bg-[#1c1d22] border border-[#24262e] hover:border-zinc-600 text-zinc-500 hover:text-white'
+                ? 'bg-[var(--main-color)] text-white shadow-md shadow-[var(--main-color)]/25'
+                : 'bg-[var(--card-subtle-bg)] hover:bg-white/[0.04] border border-[var(--card-border)] hover:border-zinc-600 text-zinc-500 hover:text-white'
             }`}
             aria-label={record.completed ? 'Mark incomplete' : 'Mark complete'}
           >
@@ -193,26 +193,26 @@ export const DailyHabitCard: React.FC<DailyHabitCardProps> = ({
           </button>
         </div>
       ) : (
-        <div className="pt-2.5 border-t border-[#24262e] space-y-2">
+        <div className="pt-2.5 border-t border-[var(--card-border)] space-y-2">
           <div className="flex items-center justify-between gap-3 text-xs">
             <div className="flex items-center gap-1.5 font-numeric">
               <span className="text-xs sm:text-sm font-extrabold text-white">{record.value}</span>
               <span className="text-zinc-500">/ {habit.targetValue} {habit.unit}</span>
-              <span className="text-[10px] font-mono font-bold text-[#2f80ed]">({pct}%)</span>
+              <span className="text-[10px] font-mono font-bold text-[var(--main-color)]">({pct}%)</span>
             </div>
 
             <div className="flex items-center gap-1.5">
               <button
                 type="button"
                 onClick={() => handleAdjustWithConfetti(-1)}
-                className="w-7 h-7 rounded-lg bg-[#141519] hover:bg-[#1c1d22] border border-[#24262e] text-zinc-300 hover:text-white flex items-center justify-center font-bold transition-colors cursor-pointer active:scale-95"
+                className="w-7 h-7 rounded-lg bg-[var(--card-subtle-bg)] hover:bg-white/[0.04] border border-[var(--card-border)] text-zinc-300 hover:text-white flex items-center justify-center font-bold transition-colors cursor-pointer active:scale-95"
               >
                 <Minus className="w-3 h-3" />
               </button>
               <button
                 type="button"
                 onClick={() => handleAdjustWithConfetti(1)}
-                className="w-7 h-7 rounded-lg bg-[#2f80ed] hover:bg-[#3897f0] text-white flex items-center justify-center font-bold transition-colors cursor-pointer shadow-sm active:scale-95"
+                className="w-7 h-7 rounded-lg bg-[var(--main-color)] hover:brightness-110 text-white flex items-center justify-center font-bold transition-colors cursor-pointer shadow-sm active:scale-95"
               >
                 <Plus className="w-3 h-3 stroke-[2.5]" />
               </button>
@@ -220,12 +220,12 @@ export const DailyHabitCard: React.FC<DailyHabitCardProps> = ({
           </div>
 
           {/* Progress Bar */}
-          <div className="w-full h-1.5 rounded-full bg-[#141519] overflow-hidden">
+          <div className="w-full h-1.5 rounded-full bg-[var(--card-subtle-bg)] overflow-hidden">
             <div 
               className="h-full rounded-full transition-all duration-300"
               style={{ 
                 width: `${pct}%`,
-                backgroundColor: habit.color || '#2f80ed'
+                backgroundColor: habit.color || 'var(--main-color)'
               }}
             />
           </div>

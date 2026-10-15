@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { X, Trophy, Plus } from 'lucide-react';
 import { competitorService } from '@/services/competitorService';
 import { useEscapeKey } from '@/hooks/useEscapeKey';
+import { useToast } from '@/context/ToastContext';
 
 export const AddCompetitorModal = ({ isOpen, onClose, availableTrainees, onAddCompetitor }) => {
     const { showToast } = useToast();

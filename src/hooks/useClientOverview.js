@@ -105,17 +105,87 @@ export function useClientOverview(client, clientLogs, clientCheckIns, assignedPl
         const startIdx = Math.max(0, endIdx - POINTS_PER_PAGE);
         return allWeightEntries.slice(startIdx, endIdx);
     }, [allWeightEntries, activePage]);
-    // Overall trajectory metrics (lifetime starting vs latest)
+    // Overall trajectory metrics (lifetime starting vs latest) with Goal Awareness
     const overallWeightStats = useMemo(() => {
         const fallbackWeight = client?.weightKg || 70;
+        const targetWeight = client?.targetWeightKg || fallbackWeight;
+        const goalLower = (client?.goal || '').toLowerCase();
+
+        // Determine goal phase (Bulking vs Cutting vs Maintenance)
+        const isBulking = goalLower.includes('hypertrophy') ||
+                          goalLower.includes('muscle gain') ||
+                          goalLower.includes('strength') ||
+                          (targetWeight > fallbackWeight);
+
+        const isCutting = goalLower.includes('fat loss') ||
+                          goalLower.includes('conditioning') ||
+                          goalLower.includes('cutting') ||
+                          (targetWeight < fallbackWeight);
+
         if (allWeightEntries.length === 0) {
-            return { startingWeight: fallbackWeight, latestWeight: fallbackWeight, totalDropped: 0 };
+            return {
+                startingWeight: fallbackWeight,
+                latestWeight: fallbackWeight,
+                totalDropped: 0,
+                netDeltaKg: 0,
+                isBulking,
+                isCutting,
+                isOnTrack: true,
+                statusMessage: isBulking ? 'Awaiting Weigh-ins (Bulk Phase)' : isCutting ? 'Awaiting Weigh-ins (Cut Phase)' : 'Awaiting First Weigh-in',
+                statusTone: 'neutral'
+            };
         }
+
         const startingWeight = allWeightEntries[0].weightKg;
         const latestWeight = allWeightEntries[allWeightEntries.length - 1].weightKg;
         const totalDropped = Math.round((startingWeight - latestWeight) * 10) / 10;
-        return { startingWeight, latestWeight, totalDropped };
-    }, [allWeightEntries, client?.weightKg]);
+        const netDeltaKg = Math.round((latestWeight - startingWeight) * 10) / 10;
+
+        let isOnTrack = true;
+        let statusMessage = 'Weight Stable (0.0 kg)';
+        let statusTone = 'neutral'; // 'positive' | 'warning' | 'neutral'
+
+        if (isBulking) {
+            if (netDeltaKg > 0) {
+                isOnTrack = true;
+                statusTone = 'positive';
+                statusMessage = `+${netDeltaKg} kg Gained (Clean Bulk On Track)`;
+            } else if (netDeltaKg < 0) {
+                isOnTrack = false;
+                statusTone = 'warning';
+                statusMessage = `${netDeltaKg} kg Dropped (Caloric Deficit Warning)`;
+            } else {
+                statusMessage = '0.0 kg (Weight Stable)';
+            }
+        } else if (isCutting) {
+            if (netDeltaKg < 0) {
+                isOnTrack = true;
+                statusTone = 'positive';
+                statusMessage = `${netDeltaKg} kg Dropped (Fat Loss On Track)`;
+            } else if (netDeltaKg > 0) {
+                isOnTrack = false;
+                statusTone = 'warning';
+                statusMessage = `+${netDeltaKg} kg Gained (Caloric Surplus Warning)`;
+            } else {
+                statusMessage = '0.0 kg (Weight Stable)';
+            }
+        } else {
+            statusTone = Math.abs(netDeltaKg) <= 1.5 ? 'positive' : 'warning';
+            statusMessage = `${netDeltaKg >= 0 ? '+' : ''}${netDeltaKg} kg Net Change`;
+        }
+
+        return {
+            startingWeight,
+            latestWeight,
+            totalDropped,
+            netDeltaKg,
+            isBulking,
+            isCutting,
+            isOnTrack,
+            statusMessage,
+            statusTone
+        };
+    }, [allWeightEntries, client?.weightKg, client?.targetWeightKg, client?.goal]);
     // SVG Coordinates for visible points
     const trajectorySvgData = useMemo(() => {
         const width = 440;
@@ -247,6 +317,7 @@ export function useClientOverview(client, clientLogs, clientCheckIns, assignedPl
             const dateStr = `${y}-${m}-${day}`;
             const dayNum = d.getDate();
             const isToday = d.getTime() === todayMidnight.getTime();
+            const isPast = d.getTime() < todayMidnight.getTime();
             const log = (clientLogs || []).find((l) => l.date === dateStr);
             const hasWorkout = Boolean(log);
             return {
@@ -254,6 +325,7 @@ export function useClientOverview(client, clientLogs, clientCheckIns, assignedPl
                 dayNum,
                 dateStr,
                 isToday,
+                isPast,
                 hasWorkout,
                 workoutTitle: log?.dayName || (hasWorkout ? 'Done' : undefined)
             };
@@ -261,16 +333,47 @@ export function useClientOverview(client, clientLogs, clientCheckIns, assignedPl
         const endDate = new Date(startDate);
         endDate.setDate(startDate.getDate() + 6);
         const dateRangeLabel = `${startDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} – ${endDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`;
+        const startDateStr = `${startDate.getFullYear()}-${String(startDate.getMonth() + 1).padStart(2, '0')}-${String(startDate.getDate()).padStart(2, '0')}`;
+        const endDateStr = `${endDate.getFullYear()}-${String(endDate.getMonth() + 1).padStart(2, '0')}-${String(endDate.getDate()).padStart(2, '0')}`;
         const completedCount = days.filter((d) => d.hasWorkout).length;
         const percentage = targetSessions > 0 ? Math.min(100, Math.round((completedCount / targetSessions) * 100)) : 0;
         return {
             days,
             dateRangeLabel,
+            startDateStr,
+            endDateStr,
             completedCount,
             targetSessions,
-            percentage
+            percentage,
+            isCurrentWeek: weekOffset === 0,
+            isPastWeek: weekOffset < 0,
+            isFutureWeek: weekOffset > 0
         };
     }, [clientLogs, targetSessions, weekOffset]);
+
+    const selectDateFromCalendar = useCallback((dateStr) => {
+        if (!dateStr) return;
+        const parts = dateStr.split('-').map(Number);
+        if (parts.length !== 3) return;
+        const chosenDate = new Date(parts[0], parts[1] - 1, parts[2], 0, 0, 0, 0);
+
+        const now = new Date();
+        const todayMidnight = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0, 0);
+
+        const currentDayOfWeek = todayMidnight.getDay();
+        const currentDayOffset = (currentDayOfWeek + 1) % 7;
+        const currentWeekStart = new Date(todayMidnight);
+        currentWeekStart.setDate(todayMidnight.getDate() - currentDayOffset);
+
+        const chosenDayOfWeek = chosenDate.getDay();
+        const chosenDayOffset = (chosenDayOfWeek + 1) % 7;
+        const chosenWeekStart = new Date(chosenDate);
+        chosenWeekStart.setDate(chosenDate.getDate() - chosenDayOffset);
+
+        const diffMs = chosenWeekStart.getTime() - currentWeekStart.getTime();
+        const diffWeeks = Math.round(diffMs / (7 * 24 * 60 * 60 * 1000));
+        setWeekOffset(diffWeeks);
+    }, []);
     // ── Subscription Lifecycle Telemetry ──────────────────────────────────────
     const subscriptionInfo = useMemo(() => {
         const sub = client?.subscription;
@@ -365,6 +468,7 @@ export function useClientOverview(client, clientLogs, clientCheckIns, assignedPl
         weekAttendance,
         weekOffset,
         setWeekOffset,
+        selectDateFromCalendar,
         targetSessions,
         // Subscription
         subscriptionInfo,

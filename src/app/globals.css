@@ -733,5 +733,12 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover {
   .viewport-mobile-standard { display: none !important; }
 }
 
-
-
+/* Timeline Modal Card Telemetry Responsive Rules (< 410px vs >= 410px) */
+@media (max-width: 409px) {
+  .session-telemetry-compact { display: inline !important; }
+  .session-telemetry-full { display: none !important; }
+}
+@media (min-width: 410px) {
+  .session-telemetry-compact { display: none !important; }
+  .session-telemetry-full { display: inline !important; }
+}

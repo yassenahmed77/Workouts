@@ -137,7 +137,9 @@ export function buildWhatsAppCheckInReminderUrl({
   phone,
   clientName,
   lastCheckInDate,
-  coachName = 'Coach'
+  coachName = 'Coach',
+  scope,
+  coachNotes
 }) {
   const cleanPhone = formatWhatsAppPhone(phone);
   const cleanClient = sanitizeText(clientName);
@@ -146,7 +148,18 @@ export function buildWhatsAppCheckInReminderUrl({
   if (lastCheckInDate) {
     message += ` Last update was on ${lastCheckInDate}.`;
   }
-  message += ` Please log your morning weight, biofeedback, and progress photos so we can fine-tune your plan for the week! 🚀`;
+  
+  const scopeItems = [];
+  if (scope?.weight !== false) scopeItems.push('morning weight');
+  if (scope?.photos !== false) scopeItems.push('physique photos');
+  if (scope?.inBody !== false) scopeItems.push('InBody scan');
+  const scopeStr = scopeItems.length > 0 ? scopeItems.join(', ') : 'progress audit';
+
+  message += ` Please log your ${scopeStr} so we can fine-tune your plan for the week! 🚀`;
+
+  if (coachNotes && coachNotes.trim()) {
+    message += `\n\n📋 Coach Directive:\n${sanitizeText(coachNotes.trim())}`;
+  }
 
   if (!cleanPhone) {
     return `https://api.whatsapp.com/send?text=${encodeURIComponent(message)}`;
@@ -183,6 +196,51 @@ export function buildWhatsAppCompetitorUpdateUrl({
     message += `📋 Protocol Adjustments:\n${coachNotes.trim()}\n\n`;
   }
   message += `Lock in your water, posing, and sodium targets. We take the trophy! 🥇`;
+
+  if (!cleanPhone) {
+    return `https://api.whatsapp.com/send?text=${encodeURIComponent(message)}`;
+  }
+
+  return `https://wa.me/${cleanPhone}?text=${encodeURIComponent(message)}`;
+}
+
+/**
+ * توليد رابط واتساب لإرسال مراجعة وملاحظات الكوتش على تقرير المتابعة (Check-In Review)
+ * @param {Object} options
+ * @param {string} [options.phone] - رقم الهاتف
+ * @param {string} options.clientName - اسم المتدرب
+ * @param {string} options.checkInDate - تاريخ التقرير
+ * @param {number|string} [options.weightKg] - وزن المتدرب
+ * @param {number|string} [options.weightDelta] - فارق الوزن
+ * @param {string} [options.coachFeedback] - ملاحظات الكوتش
+ * @param {string} [options.coachName='Coach'] - اسم الكوتش
+ * @returns {string} رابط الواتساب
+ */
+export function buildWhatsAppCheckInFeedbackUrl({
+  phone,
+  clientName,
+  checkInDate,
+  weightKg,
+  weightDelta,
+  coachFeedback,
+  coachName = 'Coach'
+}) {
+  const cleanPhone = formatWhatsAppPhone(phone);
+  const cleanClient = sanitizeText(clientName);
+
+  let message = `👋 مرحباً ${cleanClient}، راجعت تقرير المتابعة الخاص بك لتاريخ ${checkInDate}.\n`;
+  if (weightKg) {
+    message += `⚖️ الوزن المسجل: ${weightKg} كجم`;
+    if (weightDelta !== undefined && weightDelta !== null && weightDelta !== 0) {
+      const deltaSign = weightDelta > 0 ? `+${weightDelta}` : `${weightDelta}`;
+      message += ` (${deltaSign} كجم)`;
+    }
+    message += `\n`;
+  }
+  if (coachFeedback && coachFeedback.trim()) {
+    message += `\n📋 ملاحظات الكوتش:\n${coachFeedback.trim()}\n`;
+  }
+  message += `\nعاش يا بطل، مستمرين في التطور! 💪🚀`;
 
   if (!cleanPhone) {
     return `https://api.whatsapp.com/send?text=${encodeURIComponent(message)}`;

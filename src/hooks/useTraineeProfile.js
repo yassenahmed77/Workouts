@@ -186,10 +186,8 @@ export function useTraineeProfile() {
             userId: currentUser.id,
             date: newCheckInDate,
             weightKg: val,
-            measurements: {
-                waistCm: newWaistCm ? parseFloat(newWaistCm) : undefined,
-                chestCm: newChestCm ? parseFloat(newChestCm) : undefined,
-                armsCm: newArmsCm ? parseFloat(newArmsCm) : undefined
+            inBody: {
+                bodyFatPct: currentUser.bodyFatPercentage ? Number(currentUser.bodyFatPercentage) : undefined
             },
             photos: [],
             reviewed: false,

@@ -1,5 +1,11 @@
-import { describe, it, expect } from 'vitest';
-import { formatWhatsAppPhone, buildWhatsAppFormCheckUrl, buildWhatsAppRenewalAlertUrl, buildWhatsAppCheckInReminderUrl, buildWhatsAppCompetitorUpdateUrl } from '@/lib/whatsapp';
+import {
+    formatWhatsAppPhone,
+    buildWhatsAppFormCheckUrl,
+    buildWhatsAppRenewalAlertUrl,
+    buildWhatsAppCheckInReminderUrl,
+    buildWhatsAppCompetitorUpdateUrl,
+    buildWhatsAppCheckInFeedbackUrl
+} from '@/lib/whatsapp';
 describe('whatsapp utility — Phone Normalization & Safe Link Generation', () => {
     it('normalizes Egyptian local and international phone numbers correctly', () => {
         // Egyptian 11 digits: 01012345678 -> 201012345678
@@ -70,5 +76,20 @@ describe('whatsapp utility — Phone Normalization & Safe Link Generation', () =
         expect(competitorUrl).toContain('wa.me/201511112222');
         expect(competitorUrl).toContain(encodeURIComponent('NPC Egypt Pro'));
         expect(competitorUrl).toContain(encodeURIComponent('14 Days Out'));
+    });
+    it('generates check-in feedback WhatsApp URL with weight delta and coach feedback', () => {
+        const feedbackUrl = buildWhatsAppCheckInFeedbackUrl({
+            phone: '01055554444',
+            clientName: 'Yassen',
+            checkInDate: '2026-10-16',
+            weightKg: 82.5,
+            weightDelta: -0.7,
+            coachFeedback: 'Solid deficit adherence this week!'
+        });
+        expect(feedbackUrl).toContain('wa.me/201055554444');
+        expect(feedbackUrl).toContain(encodeURIComponent('Yassen'));
+        expect(feedbackUrl).toContain(encodeURIComponent('82.5'));
+        expect(feedbackUrl).toContain(encodeURIComponent('-0.7'));
+        expect(feedbackUrl).toContain(encodeURIComponent('Solid deficit adherence this week!'));
     });
 });

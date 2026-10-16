@@ -592,16 +592,12 @@ export const WeeklyNutritionMealsModal = ({
             )}
           </div>
 
-          {/* 3. Footer Bar: Contextual Guidance */}
-          <div className="px-3 sm:px-4 py-2.5 bg-[var(--card-subtle-bg)] border-t border-[var(--card-border)] flex items-center justify-between flex-shrink-0 text-xs font-mono">
-            <span className="text-slate-400 text-[11px]">
-              Daily Target: {dailyTelemetry.targetCalories} kcal &bull; {dailyTelemetry.targetProteinG}g P &bull; {dailyTelemetry.targetCarbsG}g C &bull; {dailyTelemetry.targetFatsG}g F
-            </span>
-
+          {/* 3. Footer Bar */}
+          <div className="px-3 sm:px-4 py-2 bg-[var(--card-subtle-bg)] border-t border-[var(--card-border)] flex items-center justify-end flex-shrink-0">
             <button
               type="button"
               onClick={onClose}
-              className="gym-btn-primary text-[11px] py-1 px-3"
+              className="gym-btn-primary text-[11px] py-1 px-3.5"
             >
               Done
             </button>

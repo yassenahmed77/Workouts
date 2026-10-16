@@ -14,7 +14,7 @@ const STORAGE_KEY_PLANS = 'pro_gym_plans_v9';
 const STORAGE_KEY_EXERCISES = 'pro_gym_exercises_v9';
 const STORAGE_KEY_LOGS = 'pro_gym_logs_v9';
 const STORAGE_KEY_CURRENT_USER_ID = 'pro_gym_active_user_id_v9';
-const STORAGE_KEY_CHECKINS = 'pro_gym_checkins_v10';
+const STORAGE_KEY_CHECKINS = 'pro_gym_checkins_v11';
 const STORAGE_KEY_DIET_PLANS = 'pro_gym_diet_plans_v10';
 const STORAGE_KEY_FORM_CHECKS = 'pro_gym_form_checks_v1';
 const STORAGE_KEY_COACH_SETTINGS = 'pro_gym_coach_settings_v1';
@@ -558,11 +558,28 @@ export function GymProvider({ children }) {
         const updated = [newCheckIn, ...checkIns];
         setCheckIns(updated);
         localStorage.setItem(STORAGE_KEY_CHECKINS, JSON.stringify(updated));
-        // Update user lastCheckInDate & current weight
-        await updateUserProfile(checkIn.userId, {
+
+        // Advance or fulfill pending requests queue
+        const targetUser = users.find((u) => u.id === checkIn.userId);
+        let nextPending = null;
+        let nextQueue = [];
+        if (Array.isArray(targetUser?.pendingCheckInRequests) && targetUser.pendingCheckInRequests.length > 1) {
+            nextQueue = targetUser.pendingCheckInRequests.slice(1);
+            nextPending = nextQueue[0] || null;
+        }
+
+        const profileUpdate = {
             weightKg: checkIn.weightKg,
-            lastCheckInDate: checkIn.date
-        });
+            lastCheckInDate: checkIn.date,
+            pendingCheckInRequest: nextPending,
+            pendingCheckInRequests: nextQueue
+        };
+
+        if (checkIn.inBody?.bodyFatPct) {
+            profileUpdate.bodyFatPercentage = checkIn.inBody.bodyFatPct;
+        }
+
+        await updateUserProfile(checkIn.userId, profileUpdate);
         return newCheckIn;
     };
     const getDietPlanForUser = (userId) => {

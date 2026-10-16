@@ -126,23 +126,25 @@ export default function Home() {
       {currentUser.role === 'coach' ? (
         // Coach Experience: Left Vertical Sidebar on Desktop, Mobile Bar on Phones
         <div className="h-full flex flex-col md:flex-row md:overflow-hidden relative">
-          {/* Mobile Top Navbar (Hidden on Desktop) */}
-          <div className="md:hidden flex-shrink-0">
-            <Navbar activeTab={activeTab} setActiveTab={handleNavigateTab} onOpenNewTraineeModal={() => setIsNewTraineeModalOpen(true)}/>
-          </div>
+          {/* Mobile Top Navbar (Hidden on Desktop, and hidden when inside Client 360 on Mobile) */}
+          {!selectedClientFor360 && (
+            <div className="md:hidden flex-shrink-0">
+              <Navbar activeTab={activeTab} setActiveTab={handleNavigateTab} onOpenNewTraineeModal={() => setIsNewTraineeModalOpen(true)}/>
+            </div>
+          )}
 
           {/* Desktop & Tablet Coach Sidebar (Collapsible / Slide-over Drawer) */}
           <CoachSidebar activeTab={activeTab} setActiveTab={handleNavigateTab} onOpenNewTraineeModal={() => setIsNewTraineeModalOpen(true)} onOpenPlanBuilder={() => handleOpenPlanBuilder()} onSwitchToTrainee={handleSwitchToTrainee} onOpenAlerts={() => setIsAlertCenterOpen(true)} alertsCount={coachAlerts.length} isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)}/>
 
           {/* Main Coach Workspace Area - Full Width Fit with Proper Top Breathing Room */}
           <main className={`flex-1 w-full max-w-none fluid-page-px transition-all h-full select-none ${selectedClientFor360
-                ? 'pt-4 sm:pt-5 pb-3 overflow-hidden flex flex-col min-h-0'
+                ? 'pt-0 sm:pt-5 pb-0 overflow-hidden flex flex-col min-h-0'
                 : (activeTab === 'splits-studio' || activeTab === 'diet')
                     ? 'pt-2.5 sm:pt-3 pb-20 md:pb-2.5 overflow-y-auto lg:overflow-hidden flex flex-col min-h-0'
                     : activeTab === 'dashboard'
                         ? 'pt-2 sm:pt-2.5 pb-2 overflow-y-auto custom-scrollbar'
                         : activeTab === 'clients'
-                            ? 'pt-2 sm:pt-3 pb-2.5 md:pb-2.5 overflow-y-auto md:overflow-hidden flex flex-col min-h-0 h-full custom-scrollbar'
+                            ? 'pt-2 sm:pt-3 pb-1 md:pb-2.5 overflow-hidden flex flex-col min-h-0 h-full'
                             : 'pt-4 sm:pt-6 pb-6 overflow-y-auto custom-scrollbar'}`}>
             {activeTab === 'dashboard' && (<CoachDashboardView onOpenAssignModal={(u) => {
                     const target = u || users.find((x) => x.role === 'trainee') || users[0];
@@ -185,7 +187,7 @@ export default function Home() {
           <Navbar activeTab={activeTab} setActiveTab={handleNavigateTab} onOpenNewTraineeModal={() => setIsNewTraineeModalOpen(true)}/>
 
           <main className="flex-1 w-full max-w-md md:max-w-4xl lg:max-w-5xl mx-auto px-3 sm:px-6 lg:px-8 pt-1.5 sm:pt-4 pb-24 md:pb-12 transition-all">
-            {activeTab === 'today' && (<TraineeDashboard onNavigateToSplit={() => handleNavigateTab('split')} onNavigateToHistory={() => handleNavigateTab('history')} onNavigateToHabits={() => handleNavigateTab('habits')} onNavigateToDiet={() => handleNavigateTab('diet')}/>)}
+            {activeTab === 'today' && (<TraineeDashboard onNavigateToSplit={() => handleNavigateTab('split')} onNavigateToHistory={() => handleNavigateTab('history')} onNavigateToHabits={() => handleNavigateTab('habits')} onNavigateToDiet={() => handleNavigateTab('diet')} onNavigateToProfile={() => handleNavigateTab('profile')}/>)}
 
             {activeTab === 'split' && <WeeklySplitView />}
 

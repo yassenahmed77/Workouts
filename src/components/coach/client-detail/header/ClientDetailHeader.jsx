@@ -63,13 +63,15 @@ export const ClientDetailHeader = ({
             <span className="capitalize">{client.status}</span>
           </span>
 
-          {/* Red Flag / Warning Pill (Injuries or Attention required) */}
-          {client.attentionNote && client.attentionNote.type !== 'none' && (
+          {/* Red Flag / Critical Medical Injury Only (No routine notes like Photos Due) */}
+          {client.attentionNote && (client.attentionNote.type === 'injury' || client.attentionNote.type === 'critical') && (
             <span
-              className="hidden lg:inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-mono font-semibold bg-rose-500/10 text-rose-400 border border-rose-500/20"
+              className="hidden lg:inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-mono font-semibold border bg-rose-500/10 text-rose-400 border-rose-500/20"
               title={client.attentionNote.label}
             >
-              <span className="truncate max-w-[140px]">[ATTN] {client.attentionNote.label}</span>
+              <span className="truncate max-w-[140px]">
+                [ATTN] {client.attentionNote.label}
+              </span>
             </span>
           )}
         </div>
@@ -95,7 +97,7 @@ export const ClientDetailHeader = ({
         {client.targetWeightKg && client.targetWeightKg !== client.weightKg && (
           <div className="px-2.5 py-1 flex items-center gap-1">
             <span className="text-slate-500 text-[10px]">Goal:</span>
-            <span className="text-[var(--main-color)] font-semibold">{client.targetWeightKg}kg</span>
+            <span className="text-slate-200 font-semibold">{client.targetWeightKg}kg</span>
           </div>
         )}
 

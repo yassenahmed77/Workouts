@@ -15,9 +15,10 @@ import { DailyMealsChecklist } from './dashboard/DailyMealsChecklist';
 import { CalendarStrip } from './dashboard/CalendarStrip';
 import { ProtocolReadinessCard } from './dashboard/ProtocolReadinessCard';
 import { TodayWorkoutCard } from './dashboard/TodayWorkoutCard';
+import { TraineeCheckInBanner } from './dashboard/TraineeCheckInBanner';
 import { getUserHabits, getTodayRecordForHabit, setHabitRecord, calculateHabitStreak, calculateQuitLiveStats, getHabitsAdherenceForDate, calculateDailyAdherenceScore } from '@/lib/habitsEngine';
 import { getActiveWorkoutDraft, hasActiveWorkoutDraft, clearActiveWorkoutDraft, clearUnfinishedStatus } from '@/lib/activeWorkoutEngine';
-export const TraineeDashboard = ({ onNavigateToSplit, onNavigateToHistory, onNavigateToHabits, onNavigateToDiet }) => {
+export const TraineeDashboard = ({ onNavigateToSplit, onNavigateToHistory, onNavigateToHabits, onNavigateToDiet, onNavigateToProfile }) => {
     const { currentUser, getPlanForUser, getUserLogs, deleteWorkoutLog, getDietPlanForUser } = useGym();
     const { showToast } = useToast();
     const [activeSessionDay, setActiveSessionDay] = useState(null);
@@ -391,6 +392,9 @@ export const TraineeDashboard = ({ onNavigateToSplit, onNavigateToHistory, onNav
     }
     return (<div className="w-full max-w-md lg:max-w-5xl mx-auto pb-6 md:pb-8 px-0 select-none animate-in fade-in duration-200">
       
+      {/* On-Demand Check-In Audit Banner (Real-Time Seen Telemetry) */}
+      <TraineeCheckInBanner onNavigateProfile={onNavigateToProfile} />
+
       {/* Responsive Grid: Frozen single column on mobile (< 1024px), Pro 2-Column Split on Desktop (>= 1024px) */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-3 sm:gap-3.5">
         

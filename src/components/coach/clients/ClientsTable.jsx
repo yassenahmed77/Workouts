@@ -23,8 +23,8 @@ export function ClientsTable({
   onOpenAssignDiet
 }) {
   return (
-    <div className="hidden md:flex flex-col h-fit gym-card p-0 overflow-hidden shadow-lg border border-white/[0.07]">
-      <div className="w-full overflow-x-auto overflow-y-hidden custom-scrollbar">
+    <div className="hidden md:flex flex-col flex-1 min-h-0 gym-card p-0 overflow-hidden shadow-lg border border-white/[0.07]">
+      <div className="w-full h-full overflow-x-auto overflow-y-hidden custom-scrollbar">
         <table className="w-full text-left border-collapse min-w-full">
           <thead className="sticky top-0 bg-[var(--card-subtle-bg)] z-10">
             <tr className="border-b border-white/[0.07] bg-[var(--card-subtle-bg)] text-[10px] xl:text-[10px] min-[1388px]:text-[10.5px] font-mono font-semibold uppercase tracking-wider text-slate-400">

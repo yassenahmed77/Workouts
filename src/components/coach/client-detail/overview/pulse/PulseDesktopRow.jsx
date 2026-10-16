@@ -16,6 +16,8 @@ export const PulseDesktopRow = ({
   weekOffset,
   setWeekOffset,
   onOpenCalendar,
+  telemetry,
+  checkInTelemetry,
   consumedCalories,
   targetCalories,
   consumedProtein,
@@ -29,6 +31,15 @@ export const PulseDesktopRow = ({
   onOpenWeeklySessions,
   onOpenNutritionModal
 }) => {
+  const targetCal = telemetry ? telemetry.targetCalories : (targetCalories || 2200);
+  const avgCal = telemetry ? telemetry.avgCalories : (consumedCalories || 1850);
+  const avgProt = telemetry ? telemetry.avgProteinG : (consumedProtein || 140);
+  const avgCarb = telemetry ? telemetry.avgCarbsG : (consumedCarbs || 220);
+  const avgFat = telemetry ? telemetry.avgFatsG : (consumedFats || 55);
+  const status = telemetry?.status;
+  const deltaText = telemetry?.deltaText;
+  const statusLabel = telemetry?.statusLabel;
+  const pillClass = telemetry?.pillClass;
   return (
     <div className="gym-card space-y-1.5 select-none p-2 sm:p-2.5 flex-shrink-0">
       {/* Header: Title + Week Navigator + Calendar Picker */}
@@ -115,7 +126,7 @@ export const PulseDesktopRow = ({
           </span>
         </div>
 
-        {/* 2. Nutrition Meals & Target Macros */}
+        {/* 2. Nutrition Meals & Target Macros (Coach Magic Eye Desktop) */}
         <div
           onClick={onOpenNutritionModal || (() => onNavigateSubTab('nutrition'))}
           className="gym-card-subtle p-2 flex flex-col justify-between hover:border-white/20 cursor-pointer transition-colors group"
@@ -123,26 +134,38 @@ export const PulseDesktopRow = ({
         >
           <div className="flex items-center justify-between text-slate-400 text-[10px] font-mono">
             <span className="font-semibold text-slate-300">NUTRITION</span>
+            {statusLabel && (
+              <span className={`px-1.5 py-0.2 rounded text-[7.5px] font-bold border ${pillClass}`}>
+                {statusLabel}
+              </span>
+            )}
           </div>
 
           <div className="my-0.5">
-            <div className="py-0.5">
+            <div className="py-0.5 flex items-baseline gap-1.5 flex-wrap">
               <span className="text-xs sm:text-sm font-bold text-white font-mono tracking-tight block">
-                {consumedCalories.toLocaleString()} / {targetCalories.toLocaleString()} kcal
+                {avgCal.toLocaleString()} / {targetCal.toLocaleString()} kcal
               </span>
+              {deltaText && deltaText !== '±0 kcal' && (
+                <span className="text-[9.5px] font-mono font-semibold text-slate-300">
+                  ({deltaText})
+                </span>
+              )}
             </div>
 
             <div className="flex items-center gap-1.5 mt-1 text-[9px] font-mono">
-              <span className="text-emerald-400 font-semibold">{consumedProtein}g P</span>
+              <span className="text-[var(--main-color)] font-semibold">{avgProt}g P</span>
               <span className="text-slate-600">&bull;</span>
-              <span className="text-amber-400 font-semibold">{consumedCarbs}g C</span>
+              <span className="text-white/70 font-semibold">{avgCarb}g C</span>
               <span className="text-slate-600">&bull;</span>
-              <span className="text-rose-400 font-semibold">{consumedFats}g F</span>
+              <span className="text-white/50 font-semibold">{avgFat}g F</span>
             </div>
           </div>
 
           <span className="text-[9px] font-mono text-slate-400 block truncate mt-2 sm:mt-2.5 pt-0.5 border-t border-white/[0.04]">
-            {adherencePct}% prescribed meals on track
+            {telemetry
+              ? `${telemetry.loggedDaysCount}/${telemetry.totalDays} days logged • ${telemetry.adherencePct}% energy track`
+              : `${adherencePct}% prescribed meals on track`}
           </span>
         </div>
 
@@ -157,9 +180,7 @@ export const PulseDesktopRow = ({
               className={`text-xs font-bold font-mono block truncate ${
                 hasActiveInjury
                   ? 'text-rose-400'
-                  : hasWarning
-                  ? 'text-amber-400'
-                  : 'text-emerald-400'
+                  : 'text-white'
               }`}
             >
               {attention?.label || '100% Fit & Healthy'}
@@ -174,7 +195,7 @@ export const PulseDesktopRow = ({
           </span>
         </div>
 
-        {/* 4. Check-in Timeline Status */}
+        {/* 4. Check-in Timeline Status (Coach Magic Eye) */}
         <div
           onClick={() => onNavigateSubTab('checkins')}
           className="gym-card-subtle p-2 flex flex-col justify-between hover:border-white/20 cursor-pointer transition-colors group"
@@ -182,22 +203,26 @@ export const PulseDesktopRow = ({
         >
           <div className="flex items-center justify-between text-slate-400 text-[10px] font-mono">
             <span className="font-semibold text-slate-300">CHECK-IN STATUS</span>
-            <span className="text-[9px] text-[var(--main-color)] font-mono opacity-0 group-hover:opacity-100 transition-opacity">
-              VIEW &rarr;
-            </span>
+            {checkInTelemetry?.statusLabel && (
+              <span className={`px-1.5 py-0.2 rounded text-[7.5px] font-bold border ${checkInTelemetry.pillClass}`}>
+                {checkInTelemetry.statusLabel}
+              </span>
+            )}
           </div>
 
           <div className="my-1">
             <span className="text-xs sm:text-sm font-bold text-white font-mono block truncate">
-              {client?.lastCheckInDate ? `Last: ${client.lastCheckInDate}` : 'Friday Due'}
+              {checkInTelemetry?.headline || (client?.lastCheckInDate ? `Last: ${client.lastCheckInDate}` : 'Friday Due')}
             </span>
-            <span className="text-[9px] font-mono text-[var(--main-color)] font-semibold block mt-0.5">
-              Weekly progress audit
+            <span className={`text-[9px] font-mono font-semibold block mt-0.5 truncate ${
+              checkInTelemetry?.hasNewSubmission ? 'text-[var(--main-color)]' : 'text-slate-400'
+            }`}>
+              {checkInTelemetry?.subline || 'Weekly progress audit'}
             </span>
           </div>
 
-          <span className="text-[9px] font-mono text-slate-400">
-            Scale + 3 Photos + Tape cm
+          <span className="text-[9px] font-mono text-slate-400 truncate">
+            Scale ({checkInTelemetry?.pillars?.scale?.value || '—'}) • Photos ({checkInTelemetry?.photosCount || 0}) • InBody ({checkInTelemetry?.pillars?.inBody?.value || 'Pending'})
           </span>
         </div>
       </div>

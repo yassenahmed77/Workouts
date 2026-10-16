@@ -25,6 +25,8 @@ export const PulseMobileGrid = ({
   weekOffset,
   setWeekOffset,
   onOpenCalendar,
+  telemetry,
+  checkInTelemetry,
   consumedCalories,
   targetCalories,
   consumedProtein,
@@ -42,10 +44,10 @@ export const PulseMobileGrid = ({
   onOpenNutritionModal
 }) => {
   return (
-    <div className="select-none p-0 bg-transparent h-full flex-1 flex flex-col justify-between space-y-1.5 min-h-0">
+    <div className="select-none p-0 bg-transparent h-full flex-1 flex flex-col justify-between space-y-1 min-h-0">
       {/* 1. Header: Title + Week Navigator */}
-      <div className="flex flex-col items-center justify-between pb-1.5 border-b border-white/[0.06] gap-1.5 flex-shrink-0">
-        <span className="gym-label-mono font-bold tracking-wider text-center w-full">
+      <div className="flex flex-col items-center justify-between pb-1 border-b border-white/[0.06] gap-1 flex-shrink-0">
+        <span className="gym-label-mono font-bold tracking-wider text-center w-full text-[8.5px] min-[390px]:text-[9px]">
           WEEKLY ACTIVITY & HEALTH STATUS
         </span>
 
@@ -59,7 +61,7 @@ export const PulseMobileGrid = ({
       </div>
 
       {/* 2. 2x2 Rich Telemetry Grid */}
-      <div className="grid grid-cols-2 gap-2 flex-1 min-h-0 items-stretch">
+      <div className="grid grid-cols-2 gap-1.5 min-[390px]:gap-2 flex-1 min-h-0 items-stretch">
         {/* Top-Left: Workouts */}
         <WorkoutPulseTile
           weekAttendance={weekAttendance}
@@ -69,6 +71,7 @@ export const PulseMobileGrid = ({
 
         {/* Top-Right: Nutrition */}
         <NutritionPulseTile
+          telemetry={telemetry}
           consumedCalories={consumedCalories}
           targetCalories={targetCalories}
           consumedProtein={consumedProtein}
@@ -91,6 +94,7 @@ export const PulseMobileGrid = ({
         {/* Bottom-Right: Check-In Status */}
         <CheckInPulseTile
           client={client}
+          telemetry={checkInTelemetry}
           onNavigateSubTab={onNavigateSubTab}
         />
       </div>

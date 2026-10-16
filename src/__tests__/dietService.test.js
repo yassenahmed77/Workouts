@@ -277,6 +277,60 @@ describe('dietService — Zod Contract Validation & XSS Defense', () => {
         // Preserves previous food portion
         expect(dietService.getLastUsedPortion('food-chicken-breast')).toBe(250);
     });
+
+    describe('Coach Magic Eye — Precision Nutrition Telemetry Engine', () => {
+        const mockDiet = {
+            id: 'diet-1',
+            targetCalories: 2000,
+            targetProteinG: 150,
+            targetCarbsG: 220,
+            targetFatsG: 58,
+            meals: [mockMeal1]
+        };
+
+        it('handles null/undefined plan safely without crashing (Saghra 1)', () => {
+            const telemetry = dietService.calculateNutritionTelemetry({ id: 'u1' }, null);
+            expect(telemetry.hasDietPlan).toBe(false);
+            expect(telemetry.status).toBe('no_plan');
+            expect(telemetry.avgCalories).toBe(0);
+            expect(telemetry.targetCalories).toBe(0);
+        });
+
+        it('detects on_target status when client adherence is within ±5%', () => {
+            const telemetry = dietService.calculateNutritionTelemetry(
+                { id: 'u-target', nutritionAdherence: 102 },
+                mockDiet
+            );
+            expect(telemetry.hasDietPlan).toBe(true);
+            expect(telemetry.status).toBe('on_target');
+            expect(telemetry.statusLabel).toBe('ON TARGET');
+            expect(telemetry.pillClass).toContain('text-emerald-400');
+        });
+
+        it('detects surplus and calculates exact delta (+kcal)', () => {
+            const telemetry = dietService.calculateNutritionTelemetry(
+                { id: 'u-surplus', nutritionAdherence: 115 },
+                mockDiet
+            );
+            expect(telemetry.status).toBe('surplus');
+            expect(telemetry.calorieDelta).toBe(300); // 2300 - 2000
+            expect(telemetry.statusLabel).toContain('+300 KCAL SURPLUS');
+            expect(telemetry.deltaText).toBe('+300 kcal');
+            expect(telemetry.pillClass).toContain('var(--main-color)');
+        });
+
+        it('detects deficit and calculates exact delta (-kcal)', () => {
+            const telemetry = dietService.calculateNutritionTelemetry(
+                { id: 'u-deficit', nutritionAdherence: 80 },
+                mockDiet
+            );
+            expect(telemetry.status).toBe('deficit');
+            expect(telemetry.calorieDelta).toBe(-400); // 1600 - 2000
+            expect(telemetry.statusLabel).toContain('-400 KCAL DEFICIT');
+            expect(telemetry.deltaText).toBe('-400 kcal');
+            expect(telemetry.pillClass).toContain('var(--main-color)');
+        });
+    });
 });
 
 

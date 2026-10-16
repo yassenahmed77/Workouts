@@ -59,15 +59,7 @@ export const ClientPhysiquePhotosCard = ({
         {/* 2. Net Delta Strip */}
         <div className="flex items-center justify-between px-2 py-1 rounded bg-[var(--card-subtle-bg)] border border-[var(--card-border)] text-[10px] font-mono flex-shrink-0">
           <span className="text-slate-400">Net Delta:</span>
-          <span
-            className={`font-bold ${
-              weightDelta !== null && weightDelta < 0
-                ? 'text-emerald-400'
-                : weightDelta !== null && weightDelta > 0
-                ? 'text-amber-400'
-                : 'text-slate-300'
-            }`}
-          >
+          <span className="font-bold text-white font-numeric">
             {weightDelta !== null
               ? `${weightDelta < 0 ? '' : '+'}${weightDelta} kg (${Math.abs(weightDelta)} kg change)`
               : 'Awaiting Check-in Comparison'}
@@ -134,7 +126,7 @@ export const ClientPhysiquePhotosCard = ({
                     {latestCheckIn?.date || 'Latest'}
                   </span>
                   {nowWeight !== null && (
-                    <span className="text-emerald-400 font-bold">{nowWeight} kg</span>
+                    <span className="text-white font-bold">{nowWeight} kg</span>
                   )}
                 </div>
               )}
@@ -191,15 +183,7 @@ export const ClientPhysiquePhotosCard = ({
       {/* 2. Net Transformation Delta Strip (Floated Glass Capsule) */}
       <div className="flex items-center justify-between px-2.5 py-1 rounded-2xl bg-[var(--card-bg)]/85 lg:bg-[var(--card-subtle-bg)] backdrop-blur-md border border-white/[0.08] lg:border-[var(--card-border)] text-[10px] font-mono flex-shrink-0 shadow-md">
         <span className="text-slate-400">Net Delta:</span>
-        <span
-          className={`font-bold ${
-            weightDelta !== null && weightDelta < 0
-              ? 'text-emerald-400'
-              : weightDelta !== null && weightDelta > 0
-              ? 'text-amber-400'
-              : 'text-slate-300'
-          }`}
-        >
+        <span className="font-bold text-white font-numeric">
           {weightDelta !== null
             ? `${weightDelta < 0 ? '' : '+'}${weightDelta} kg (${Math.abs(weightDelta)} kg change)`
             : 'Awaiting Check-in Comparison'}
@@ -275,7 +259,7 @@ export const ClientPhysiquePhotosCard = ({
                   {latestCheckIn?.date || 'Latest'}
                 </span>
                 {nowWeight !== null && (
-                  <span className="text-emerald-400 font-bold">{nowWeight} kg</span>
+                  <span className="text-white font-bold">{nowWeight} kg</span>
                 )}
               </div>
             )}

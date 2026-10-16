@@ -14,6 +14,7 @@ export function ClientMobileAccordion({
   assignedDiet,
   workoutProg,
   statusBadge,
+  membershipBadge,
   attention,
   onSelectDetails,
   onOpenActionSheet
@@ -50,12 +51,21 @@ export function ClientMobileAccordion({
           </div>
 
           <div className="min-w-0 flex-1">
-            <div className="flex items-center gap-1.5">
+            <div className="flex items-center gap-1.5 flex-wrap">
               <h3 className="text-[11.5px] font-bold text-white truncate leading-tight">
                 {trainee.name}
               </h3>
               {attention.dot && (
                 <span className={`w-1.5 h-1.5 rounded-full ${attention.dot} shrink-0`} />
+              )}
+              {membershipBadge?.label && (
+                <span
+                  className={`inline-flex items-center px-1.5 py-0.5 rounded-md text-[9px] font-mono font-medium border leading-none shrink-0 ${
+                    membershipBadge.pillClass || 'bg-white/[0.06] text-slate-300 border-white/10'
+                  }`}
+                >
+                  {membershipBadge.label}
+                </span>
               )}
             </div>
             <p className="text-[9.5px] text-slate-400 font-mono mt-0.5 truncate leading-none">

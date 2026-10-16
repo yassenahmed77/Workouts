@@ -4,3 +4,4 @@ export * from './dietService';
 export * from './alertService';
 export * from './coachSettingsService';
 export * from './competitorService';
+export * from './checkInService';

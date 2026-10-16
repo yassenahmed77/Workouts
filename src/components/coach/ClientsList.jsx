@@ -78,6 +78,7 @@ export const ClientsList = ({
   const [isMobileSearchOpen, setIsMobileSearchOpen] = useState(false);
   const [expandedTraineeId, setExpandedTraineeId] = useState(null);
   const [mobileActionTrainee, setMobileActionTrainee] = useState(null);
+  const listContainerRef = useRef(null);
 
   const statusFilterTabs = [
     { key: 'all', label: 'All' },
@@ -106,26 +107,64 @@ export const ClientsList = ({
     return counts;
   }, [trainees, getAthleteStatus]);
 
-  // حساب السعة المناسبة لعدد الصفوف حسب أبعاد الشاشة
+  // Smart Viewport Pagination Engine: Dynamically calculates optimal itemsPerPage
+  // to perfectly fit any device height (iPhone SE, iPhone 15, Pro Max, Tablet, Desktop)
+  // with ZERO vertical scroll and ZERO empty space.
   useEffect(() => {
     const calculateCapacity = () => {
       if (typeof window === 'undefined') return;
       const windowW = window.innerWidth;
+      const windowH = window.innerHeight;
       const isMobile = windowW < 768;
-      if (isMobile) {
-        if (windowW < 375) {
-          setItemsPerPage(13);
-          return;
+
+      let nextCount = 10;
+      const containerHeight = listContainerRef.current?.clientHeight || 0;
+
+      if (containerHeight > 80) {
+        if (isMobile) {
+          // containerHeight is already purely the space for listContainerRef (between filters and pagination bar).
+          // Mobile card is ~58px + 6px gap = 64px total slot.
+          const available = Math.max(0, containerHeight - 6);
+          nextCount = Math.max(3, Math.floor(available / 64));
+        } else {
+          // Table header is ~38px, table row is ~48px
+          const available = Math.max(0, containerHeight - 40);
+          nextCount = Math.max(4, Math.floor(available / 48));
         }
-        setItemsPerPage(10);
-        return;
+      } else {
+        // Viewport height fallback before container ref measurement
+        if (isMobile) {
+          if (windowH < 700) nextCount = 6;
+          else if (windowH < 800) nextCount = 7;
+          else if (windowH < 900) nextCount = 8;
+          else nextCount = 9;
+        } else {
+          if (windowH < 750) nextCount = 7;
+          else if (windowH < 900) nextCount = 10;
+          else if (windowH < 1100) nextCount = 13;
+          else nextCount = 16;
+        }
       }
-      setItemsPerPage(10);
+
+      setItemsPerPage((prev) => (prev !== nextCount ? nextCount : prev));
     };
 
     calculateCapacity();
+
+    const element = listContainerRef.current;
+    let observer = null;
+    if (element && typeof ResizeObserver !== 'undefined') {
+      observer = new ResizeObserver(() => {
+        calculateCapacity();
+      });
+      observer.observe(element);
+    }
+
     window.addEventListener('resize', calculateCapacity);
-    return () => window.removeEventListener('resize', calculateCapacity);
+    return () => {
+      window.removeEventListener('resize', calculateCapacity);
+      if (observer) observer.disconnect();
+    };
   }, [setItemsPerPage]);
 
   // إغلاق الكارت المفتوح في الموبايل عند النقر خارجه
@@ -334,58 +373,62 @@ export const ClientsList = ({
           </div>
         ) : (
           <>
-            {/* عرض الموبايل للشاشات الصغيرة (< 375px) */}
-            <div className="viewport-mobile-compact space-y-1">
-              {paginatedTrainees.map((trainee) => (
-                <ClientMobileAccordion
-                  key={trainee.id}
-                  trainee={trainee}
-                  isExpanded={expandedTraineeId === trainee.id}
-                  onToggleExpand={() => setExpandedTraineeId(expandedTraineeId === trainee.id ? null : trainee.id)}
-                  assignedPlan={plans.find((p) => p.id === trainee.assignedPlanId)}
-                  assignedDiet={getDietPlanForUser(trainee.id)}
-                  workoutProg={getWorkoutWeeklyProgress(trainee)}
-                  statusBadge={getAthleteStatus(trainee)}
-                  attention={formatSimpleAttention(trainee, getCheckInsForUser(trainee.id))}
-                  onSelectDetails={onSelectTraineeDetails}
-                  onOpenActionSheet={setMobileActionTrainee}
-                />
-              ))}
-            </div>
+            {/* List and Table Container (Monitored by Smart Viewport Pagination Engine) */}
+            <div ref={listContainerRef} className="flex-1 min-h-0 flex flex-col justify-start overflow-hidden">
+              {/* عرض الموبايل للشاشات الصغيرة (< 375px) */}
+              <div className="viewport-mobile-compact space-y-1 flex-1 min-h-0 overflow-y-auto no-scrollbar">
+                {paginatedTrainees.map((trainee) => (
+                  <ClientMobileAccordion
+                    key={trainee.id}
+                    trainee={trainee}
+                    isExpanded={expandedTraineeId === trainee.id}
+                    onToggleExpand={() => setExpandedTraineeId(expandedTraineeId === trainee.id ? null : trainee.id)}
+                    assignedPlan={plans.find((p) => p.id === trainee.assignedPlanId)}
+                    assignedDiet={getDietPlanForUser(trainee.id)}
+                    workoutProg={getWorkoutWeeklyProgress(trainee)}
+                    statusBadge={getAthleteStatus(trainee)}
+                    membershipBadge={clientService.getMembershipBadge(trainee)}
+                    attention={formatSimpleAttention(trainee, getCheckInsForUser(trainee.id))}
+                    onSelectDetails={onSelectTraineeDetails}
+                    onOpenActionSheet={setMobileActionTrainee}
+                  />
+                ))}
+              </div>
 
-            {/* عرض الموبايل القياسي (375px - 767px) */}
-            <div className="viewport-mobile-standard space-y-1.5">
-              {paginatedTrainees.map((trainee) => (
-                <ClientMobileRow
-                  key={trainee.id}
-                  trainee={trainee}
-                  assignedPlan={plans.find((p) => p.id === trainee.assignedPlanId)}
-                  assignedDiet={getDietPlanForUser(trainee.id)}
-                  workoutProg={getWorkoutWeeklyProgress(trainee)}
-                  statusBadge={getAthleteStatus(trainee)}
-                  membershipBadge={clientService.getMembershipBadge(trainee)}
-                  attention={formatSimpleAttention(trainee, getCheckInsForUser(trainee.id))}
-                  onSelectDetails={onSelectTraineeDetails}
-                  onOpenActionSheet={setMobileActionTrainee}
-                />
-              ))}
-            </div>
+              {/* عرض الموبايل القياسي (375px - 767px) */}
+              <div className="viewport-mobile-standard space-y-1.5 flex-1 min-h-0 overflow-y-auto no-scrollbar">
+                {paginatedTrainees.map((trainee) => (
+                  <ClientMobileRow
+                    key={trainee.id}
+                    trainee={trainee}
+                    assignedPlan={plans.find((p) => p.id === trainee.assignedPlanId)}
+                    assignedDiet={getDietPlanForUser(trainee.id)}
+                    workoutProg={getWorkoutWeeklyProgress(trainee)}
+                    statusBadge={getAthleteStatus(trainee)}
+                    membershipBadge={clientService.getMembershipBadge(trainee)}
+                    attention={formatSimpleAttention(trainee, getCheckInsForUser(trainee.id))}
+                    onSelectDetails={onSelectTraineeDetails}
+                    onOpenActionSheet={setMobileActionTrainee}
+                  />
+                ))}
+              </div>
 
-            {/* جدول سطح المكتب والتابلت (768px+) */}
-            <ClientsTable
-              trainees={paginatedTrainees}
-              plans={plans}
-              getDietPlanForUser={getDietPlanForUser}
-              getCheckInsForUser={getCheckInsForUser}
-              getWorkoutWeeklyProgress={getWorkoutWeeklyProgress}
-              getAthleteStatus={getAthleteStatus}
-              formatSimpleAttention={formatSimpleAttention}
-              activeActionMenuId={activeActionMenuId}
-              onOpenMenu={handleOpenMenu}
-              onSelectTraineeDetails={onSelectTraineeDetails}
-              onOpenAssignModal={onOpenAssignModal}
-              onOpenAssignDiet={setAssignDietTrainee}
-            />
+              {/* جدول سطح المكتب والتابلت (768px+) */}
+              <ClientsTable
+                trainees={paginatedTrainees}
+                plans={plans}
+                getDietPlanForUser={getDietPlanForUser}
+                getCheckInsForUser={getCheckInsForUser}
+                getWorkoutWeeklyProgress={getWorkoutWeeklyProgress}
+                getAthleteStatus={getAthleteStatus}
+                formatSimpleAttention={formatSimpleAttention}
+                activeActionMenuId={activeActionMenuId}
+                onOpenMenu={handleOpenMenu}
+                onSelectTraineeDetails={onSelectTraineeDetails}
+                onOpenAssignModal={onOpenAssignModal}
+                onOpenAssignDiet={setAssignDietTrainee}
+              />
+            </div>
 
             {/* القائمة العائمة لإجراءات المتدرب */}
             <ClientActionMenu

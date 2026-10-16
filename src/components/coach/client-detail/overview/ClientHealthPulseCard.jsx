@@ -1,18 +1,20 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { ObsidianCalendarModal } from '@/components/ui/ObsidianCalendarModal';
 import { PulseDesktopRow } from './pulse/PulseDesktopRow';
 import { PulseMobileGrid } from './pulse/PulseMobileGrid';
+import { dietService } from '@/services/dietService';
+import { checkInService } from '@/services/checkInService';
 
 /**
  * ClientHealthPulseCard (Clean Architecture - Layer 1 Orchestrator)
  *
  * Executive 4-metric scorecard summarizing:
  * - Weekly Workout Attendance & adherence %
- * - Nutrition compliance rate & target macros
+ * - Nutrition compliance rate & target macros (Coach Magic Eye)
  * - Active injury / health status
- * - Upcoming check-in due date
+ * - Upcoming check-in due date & trainee submission alerts
  *
  * Viewport Isolation:
  * - Desktop (!isMobile): 100% original, locked compact bottom strip (`PulseDesktopRow`).
@@ -26,6 +28,7 @@ export const ClientHealthPulseCard = ({
   setWeekOffset,
   onSelectDate,
   assignedDiet,
+  clientCheckIns = [],
   onNavigateSubTab,
   onOpenWeeklySessions,
   onOpenNutritionModal,
@@ -38,17 +41,25 @@ export const ClientHealthPulseCard = ({
   const hasActiveInjury = attention && attention.type === 'danger';
   const hasWarning = attention && attention.type === 'warning';
 
-  // Nutrition targets and consumed telemetry
-  const targetCalories = assignedDiet?.targetCalories || 2200;
-  const targetProtein = assignedDiet?.targetProteinG || 160;
-  const targetCarbs = assignedDiet?.targetCarbsG || 240;
-  const targetFats = assignedDiet?.targetFatsG || 60;
-  const adherencePct = client?.nutritionAdherence || 85;
+  // Coach Magic Eye: Nutrition Telemetry (Average intake vs target + surplus/deficit deltas)
+  const nutritionTelemetry = useMemo(() => {
+    return dietService.calculateNutritionTelemetry(client, assignedDiet);
+  }, [client, assignedDiet]);
 
-  const consumedCalories = Math.round(targetCalories * (adherencePct / 100));
-  const consumedProtein = Math.round(targetProtein * (adherencePct / 100));
-  const consumedCarbs = Math.round(targetCarbs * (adherencePct / 100));
-  const consumedFats = Math.round(targetFats * (adherencePct / 100));
+  // Coach Magic Eye: Check-In Telemetry (Schedules, Pending Requests, New Unreviewed Submissions)
+  const checkInTelemetry = useMemo(() => {
+    return checkInService.calculateCheckInTelemetry(client, clientCheckIns);
+  }, [client, clientCheckIns]);
+
+  const targetCalories = nutritionTelemetry.targetCalories || assignedDiet?.targetCalories || 2200;
+  const targetProtein = nutritionTelemetry.targetProteinG || assignedDiet?.targetProteinG || 160;
+  const targetCarbs = nutritionTelemetry.targetCarbsG || assignedDiet?.targetCarbsG || 240;
+  const targetFats = nutritionTelemetry.targetFatsG || assignedDiet?.targetFatsG || 60;
+  const consumedCalories = nutritionTelemetry.avgCalories;
+  const consumedProtein = nutritionTelemetry.avgProteinG;
+  const consumedCarbs = nutritionTelemetry.avgCarbsG;
+  const consumedFats = nutritionTelemetry.avgFatsG;
+  const adherencePct = nutritionTelemetry.adherencePct;
 
   return (
     <>
@@ -59,6 +70,8 @@ export const ClientHealthPulseCard = ({
           weekOffset={weekOffset}
           setWeekOffset={setWeekOffset}
           onOpenCalendar={() => setIsCalendarOpen(true)}
+          telemetry={nutritionTelemetry}
+          checkInTelemetry={checkInTelemetry}
           consumedCalories={consumedCalories}
           targetCalories={targetCalories}
           consumedProtein={consumedProtein}
@@ -79,6 +92,8 @@ export const ClientHealthPulseCard = ({
           weekOffset={weekOffset}
           setWeekOffset={setWeekOffset}
           onOpenCalendar={() => setIsCalendarOpen(true)}
+          telemetry={nutritionTelemetry}
+          checkInTelemetry={checkInTelemetry}
           consumedCalories={consumedCalories}
           targetCalories={targetCalories}
           consumedProtein={consumedProtein}

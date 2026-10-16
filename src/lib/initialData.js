@@ -48,7 +48,8 @@ export const INITIAL_USERS = [
         status: 'active',
         joinedDate: '2024-08-01',
         heightCm: 165,
-        weightKg: 67.8,
+        weightKg: 66.0,
+        startWeight: 69.5,
         targetWeightKg: 60.0,
         goal: 'Fat Loss & Conditioning',
         notes: 'Lifestyle transformation athlete.',
@@ -58,10 +59,11 @@ export const INITIAL_USERS = [
         nutritionAdherence: 87,
         attentionNote: {
             type: 'warning',
-            label: 'Late Check-in',
-            timeframe: '2 days'
+            label: 'New Check-In',
+            timeframe: 'Today'
         },
-        lastCheckInDate: '2026-09-14',
+        lastCheckInDate: '2026-10-16',
+        checkInPreferredDay: 'friday',
         subscription: {
             planType: 'Full VIP Coaching',
             durationMonths: 3,
@@ -87,6 +89,7 @@ export const INITIAL_USERS = [
         joinedDate: '2024-07-15',
         heightCm: 178,
         weightKg: 78.4,
+        startWeight: 77.0,
         targetWeightKg: 75.0,
         goal: 'Hypertrophy / Muscle Gain',
         notes: 'Hypertrophy client focusing on upper chest and shoulder width.',
@@ -96,10 +99,11 @@ export const INITIAL_USERS = [
         nutritionAdherence: 92,
         attentionNote: {
             type: 'info',
-            label: 'Photos Due',
-            timeframe: '12 days'
+            label: 'Check-In Done',
+            timeframe: 'Up to date'
         },
-        lastCheckInDate: '2026-09-16',
+        lastCheckInDate: '2026-10-09',
+        checkInPreferredDay: 'friday',
         subscription: {
             planType: 'Workout Only',
             durationMonths: 1,
@@ -125,6 +129,7 @@ export const INITIAL_USERS = [
         joinedDate: '2024-06-10',
         heightCm: 162,
         weightKg: 62.1,
+        startWeight: 63.5,
         targetWeightKg: 55.0,
         goal: 'Fat Loss & Conditioning',
         notes: 'Recomp and tone focus.',
@@ -134,10 +139,18 @@ export const INITIAL_USERS = [
         nutritionAdherence: 63,
         attentionNote: {
             type: 'warning',
-            label: 'Diet Off Track',
-            timeframe: '63%'
+            label: 'Request Pending',
+            timeframe: 'Due Sun'
         },
-        lastCheckInDate: '2026-09-15',
+        lastCheckInDate: '2026-10-04',
+        checkInPreferredDay: 'sunday',
+        pendingCheckInRequest: {
+            status: 'pending',
+            requestedAt: '2026-10-15',
+            dueDate: '2026-10-18',
+            scope: { weight: true, photos: true, measurements: true },
+            notes: 'Please weigh in fasted Sunday morning and record waist circumference.'
+        },
         subscription: {
             planType: 'Nutrition Only',
             durationMonths: 3,
@@ -965,124 +978,310 @@ export const INITIAL_LOGS = [
     }
 ];
 export const INITIAL_CHECK_INS = [
+    // -------------------------------------------------------------
+    // RAWAN AHMED (user-rawan-1): Active Fat Loss Journey
+    // -------------------------------------------------------------
     {
-        id: 'chk-1',
+        id: 'chk-rawan-4',
         userId: 'user-rawan-1',
-        date: '2026-08-15',
-        weightKg: 69.5,
+        date: '2026-10-16',
+        weightKg: 66.0,
         measurements: {
-            waistCm: 78,
-            chestCm: 92,
-            armsCm: 28.5,
-            hipsCm: 98,
-            thighsCm: 56
+            waistCm: 73.0,
+            chestCm: 90.0,
+            armsCm: 27.5,
+            hipsCm: 94.0,
+            thighsCm: 53.5
         },
         photos: [
             {
-                id: 'p-1',
-                url: 'https://images.unsplash.com/photo-1517838277536-f5f99be501cd?w=600&auto=format&fit=crop&q=80',
+                id: 'p-rawan-4a',
+                url: 'https://images.unsplash.com/photo-1517838277536-f5f99be501cd?w=800&auto=format&fit=crop&q=80',
                 angle: 'front',
-                date: '2026-08-15'
+                date: '2026-10-16'
             },
             {
-                id: 'p-2',
-                url: 'https://images.unsplash.com/photo-1574680096145-d05b474e2155?w=600&auto=format&fit=crop&q=80',
+                id: 'p-rawan-4b',
+                url: 'https://images.unsplash.com/photo-1574680096145-d05b474e2155?w=800&auto=format&fit=crop&q=80',
                 angle: 'side',
-                date: '2026-08-15'
+                date: '2026-10-16'
             },
             {
-                id: 'p-3',
-                url: 'https://images.unsplash.com/photo-1518611012118-696072aa579a?w=600&auto=format&fit=crop&q=80',
+                id: 'p-rawan-4c',
+                url: 'https://images.unsplash.com/photo-1518611012118-696072aa579a?w=800&auto=format&fit=crop&q=80',
                 angle: 'back',
-                date: '2026-08-15'
-            }
-        ],
-        energyRating: 4,
-        sleepQuality: 4,
-        hungerRating: 3,
-        traineeNotes: 'Starting baseline check-in. Excited to start the program.',
-        coachFeedback: 'Great starting baseline photos. Consistency on the step count and sleep is key this first phase.',
-        reviewed: true,
-        reviewedAt: '2026-08-16'
-    },
-    {
-        id: 'chk-2',
-        userId: 'user-rawan-1',
-        date: '2026-08-29',
-        weightKg: 67.8,
-        measurements: {
-            waistCm: 75.5,
-            chestCm: 91,
-            armsCm: 28,
-            hipsCm: 96,
-            thighsCm: 55
-        },
-        photos: [
-            {
-                id: 'p-4',
-                url: 'https://images.unsplash.com/photo-1541534741688-6078c6bfb5c5?w=600&auto=format&fit=crop&q=80',
-                angle: 'front',
-                date: '2026-08-29'
-            },
-            {
-                id: 'p-5',
-                url: 'https://images.unsplash.com/photo-1574680096145-d05b474e2155?w=600&auto=format&fit=crop&q=80',
-                angle: 'side',
-                date: '2026-08-29'
-            },
-            {
-                id: 'p-6',
-                url: 'https://images.unsplash.com/photo-1518611012118-696072aa579a?w=600&auto=format&fit=crop&q=80',
-                angle: 'back',
-                date: '2026-08-29'
-            }
-        ],
-        energyRating: 4,
-        sleepQuality: 3,
-        hungerRating: 2,
-        traineeNotes: 'Energy is high, hitting 10k steps every day. Hunger manageable.',
-        coachFeedback: 'Down 1.7kg with visible waist reduction. Keep water above 3 liters.',
-        reviewed: true,
-        reviewedAt: '2026-08-30'
-    },
-    {
-        id: 'chk-3',
-        userId: 'user-rawan-1',
-        date: '2026-09-12',
-        weightKg: 66.2,
-        measurements: {
-            waistCm: 73,
-            chestCm: 90,
-            armsCm: 28,
-            hipsCm: 94,
-            thighsCm: 54
-        },
-        photos: [
-            {
-                id: 'p-7',
-                url: 'https://images.unsplash.com/photo-1517838277536-f5f99be501cd?w=600&auto=format&fit=crop&q=80',
-                angle: 'front',
-                date: '2026-09-12'
-            },
-            {
-                id: 'p-8',
-                url: 'https://images.unsplash.com/photo-1541534741688-6078c6bfb5c5?w=600&auto=format&fit=crop&q=80',
-                angle: 'side',
-                date: '2026-09-12'
-            },
-            {
-                id: 'p-9',
-                url: 'https://images.unsplash.com/photo-1518611012118-696072aa579a?w=600&auto=format&fit=crop&q=80',
-                angle: 'back',
-                date: '2026-09-12'
+                date: '2026-10-16'
             }
         ],
         energyRating: 5,
         sleepQuality: 4,
+        hungerRating: 2,
+        traineeNotes: 'Felt very energetic this week! Followed the deficit strictly, daily steps averaged 11,200, and recovery was great.',
+        coachFeedback: '',
+        reviewed: false, // NEW SUBMISSION waiting for coach audit!
+        reviewedAt: null
+    },
+    {
+        id: 'chk-rawan-3',
+        userId: 'user-rawan-1',
+        date: '2026-10-02',
+        weightKg: 67.1,
+        measurements: {
+            waistCm: 74.5,
+            chestCm: 90.5,
+            armsCm: 28.0,
+            hipsCm: 95.0,
+            thighsCm: 54.5
+        },
+        photos: [
+            {
+                id: 'p-rawan-3a',
+                url: 'https://images.unsplash.com/photo-1541534741688-6078c6bfb5c5?w=800&auto=format&fit=crop&q=80',
+                angle: 'front',
+                date: '2026-10-02'
+            },
+            {
+                id: 'p-rawan-3b',
+                url: 'https://images.unsplash.com/photo-1574680096145-d05b474e2155?w=800&auto=format&fit=crop&q=80',
+                angle: 'side',
+                date: '2026-10-02'
+            },
+            {
+                id: 'p-rawan-3c',
+                url: 'https://images.unsplash.com/photo-1518611012118-696072aa579a?w=800&auto=format&fit=crop&q=80',
+                angle: 'back',
+                date: '2026-10-02'
+            }
+        ],
+        energyRating: 4,
+        sleepQuality: 4,
         hungerRating: 3,
-        traineeNotes: 'Strength maintained on all compound exercises. Clothes fit significantly looser around waist.',
-        coachFeedback: undefined,
-        reviewed: false
+        traineeNotes: 'Hit PR on Romanian Deadlifts (70kg x 8). Feeling tighter around midsection.',
+        coachFeedback: 'Solid progress Rawan. Waistline is noticeably leaner. Keep water intake above 3L.',
+        reviewed: true,
+        reviewedAt: '2026-10-03'
+    },
+    {
+        id: 'chk-rawan-2',
+        userId: 'user-rawan-1',
+        date: '2026-09-18',
+        weightKg: 68.2,
+        measurements: {
+            waistCm: 76.0,
+            chestCm: 91.5,
+            armsCm: 28.2,
+            hipsCm: 96.5,
+            thighsCm: 55.0
+        },
+        photos: [
+            {
+                id: 'p-rawan-2a',
+                url: 'https://images.unsplash.com/photo-1517838277536-f5f99be501cd?w=800&auto=format&fit=crop&q=80',
+                angle: 'front',
+                date: '2026-09-18'
+            },
+            {
+                id: 'p-rawan-2b',
+                url: 'https://images.unsplash.com/photo-1574680096145-d05b474e2155?w=800&auto=format&fit=crop&q=80',
+                angle: 'side',
+                date: '2026-09-18'
+            },
+            {
+                id: 'p-rawan-2c',
+                url: 'https://images.unsplash.com/photo-1518611012118-696072aa579a?w=800&auto=format&fit=crop&q=80',
+                angle: 'back',
+                date: '2026-09-18'
+            }
+        ],
+        energyRating: 4,
+        sleepQuality: 3,
+        hungerRating: 3,
+        traineeNotes: 'Adjusting to the new meal plan. Meal prep made staying on track easy.',
+        coachFeedback: 'Down 1.3kg in two weeks. Consistent adherence is showing up clearly on the scale.',
+        reviewed: true,
+        reviewedAt: '2026-09-19'
+    },
+    {
+        id: 'chk-rawan-1',
+        userId: 'user-rawan-1',
+        date: '2026-09-04',
+        weightKg: 69.5,
+        measurements: {
+            waistCm: 78.0,
+            chestCm: 92.0,
+            armsCm: 28.5,
+            hipsCm: 98.0,
+            thighsCm: 56.0
+        },
+        photos: [
+            {
+                id: 'p-rawan-1a',
+                url: 'https://images.unsplash.com/photo-1541534741688-6078c6bfb5c5?w=800&auto=format&fit=crop&q=80',
+                angle: 'front',
+                date: '2026-09-04'
+            },
+            {
+                id: 'p-rawan-1b',
+                url: 'https://images.unsplash.com/photo-1574680096145-d05b474e2155?w=800&auto=format&fit=crop&q=80',
+                angle: 'side',
+                date: '2026-09-04'
+            },
+            {
+                id: 'p-rawan-1c',
+                url: 'https://images.unsplash.com/photo-1518611012118-696072aa579a?w=800&auto=format&fit=crop&q=80',
+                angle: 'back',
+                date: '2026-09-04'
+            }
+        ],
+        energyRating: 4,
+        sleepQuality: 4,
+        hungerRating: 3,
+        traineeNotes: 'Initial starting baseline check-in.',
+        coachFeedback: 'Baseline established. Target 10,000 steps and nail the first 2 weeks of protein intake.',
+        reviewed: true,
+        reviewedAt: '2026-09-05'
+    },
+
+    // -------------------------------------------------------------
+    // OMAR HASSAN (user-omar-2): Hypertrophy & Muscle Gain
+    // -------------------------------------------------------------
+    {
+        id: 'chk-omar-3',
+        userId: 'user-omar-2',
+        date: '2026-10-09',
+        weightKg: 78.4,
+        measurements: {
+            waistCm: 82.0,
+            chestCm: 106.5,
+            armsCm: 38.8,
+            hipsCm: 96.0,
+            thighsCm: 60.0
+        },
+        inBody: {
+            bodyFatPct: 14.8,
+            muscleMassKg: 39.4,
+            waterPct: 61.2,
+            visceralFat: 4
+        },
+        photos: [
+            {
+                id: 'p-omar-3a',
+                url: 'https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?w=800&auto=format&fit=crop&q=80',
+                angle: 'front',
+                date: '2026-10-09'
+            },
+            {
+                id: 'p-omar-3b',
+                url: 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=800&auto=format&fit=crop&q=80',
+                angle: 'side',
+                date: '2026-10-09'
+            },
+            {
+                id: 'p-omar-3c',
+                url: 'https://images.unsplash.com/photo-1583454110551-21f2fa2afe61?w=800&auto=format&fit=crop&q=80',
+                angle: 'back',
+                date: '2026-10-09'
+            }
+        ],
+        energyRating: 5,
+        sleepQuality: 5,
+        hungerRating: 4,
+        traineeNotes: 'Great week! Increased bench press to 95kg x 6. Arms and delts look fuller.',
+        coachFeedback: 'Fantastic progression Omar. Chest thickness is clearly moving in the right direction.',
+        reviewed: true,
+        reviewedAt: '2026-10-10'
+    },
+    {
+        id: 'chk-omar-2',
+        userId: 'user-omar-2',
+        date: '2026-09-25',
+        weightKg: 77.8,
+        measurements: {
+            waistCm: 82.0,
+            chestCm: 105.5,
+            armsCm: 38.2,
+            hipsCm: 96.0,
+            thighsCm: 59.5
+        },
+        inBody: {
+            bodyFatPct: 15.2,
+            muscleMassKg: 38.9,
+            waterPct: 60.8,
+            visceralFat: 4
+        },
+        photos: [
+            {
+                id: 'p-omar-2a',
+                url: 'https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?w=800&auto=format&fit=crop&q=80',
+                angle: 'front',
+                date: '2026-09-25'
+            },
+            {
+                id: 'p-omar-2b',
+                url: 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=800&auto=format&fit=crop&q=80',
+                angle: 'side',
+                date: '2026-09-25'
+            },
+            {
+                id: 'p-omar-2c',
+                url: 'https://images.unsplash.com/photo-1583454110551-21f2fa2afe61?w=800&auto=format&fit=crop&q=80',
+                angle: 'back',
+                date: '2026-09-25'
+            }
+        ],
+        energyRating: 4,
+        sleepQuality: 4,
+        hungerRating: 4,
+        traineeNotes: 'Pumping up volume on upper body days. Recovery is on point.',
+        coachFeedback: 'Clean surplus gain. Keep pushing the RIR on squats and pull-ups.',
+        reviewed: true,
+        reviewedAt: '2026-09-26'
+    },
+    {
+        id: 'chk-omar-1',
+        userId: 'user-omar-2',
+        date: '2026-09-11',
+        weightKg: 77.0,
+        measurements: {
+            waistCm: 82.0,
+            chestCm: 104.0,
+            armsCm: 37.5,
+            hipsCm: 96.0,
+            thighsCm: 59.0
+        },
+        inBody: {
+            bodyFatPct: 15.6,
+            muscleMassKg: 38.2,
+            waterPct: 60.5,
+            visceralFat: 5
+        },
+        photos: [
+            {
+                id: 'p-omar-1a',
+                url: 'https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?w=800&auto=format&fit=crop&q=80',
+                angle: 'front',
+                date: '2026-09-11'
+            },
+            {
+                id: 'p-omar-1b',
+                url: 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=800&auto=format&fit=crop&q=80',
+                angle: 'side',
+                date: '2026-09-11'
+            },
+            {
+                id: 'p-omar-1c',
+                url: 'https://images.unsplash.com/photo-1583454110551-21f2fa2afe61?w=800&auto=format&fit=crop&q=80',
+                angle: 'back',
+                date: '2026-09-11'
+            }
+        ],
+        energyRating: 4,
+        sleepQuality: 4,
+        hungerRating: 3,
+        traineeNotes: 'Initial cycle baseline.',
+        coachFeedback: 'Baseline logged. Focus on slow progressive overload.',
+        reviewed: true,
+        reviewedAt: '2026-09-12'
     }
 ];
 export const INITIAL_DIET_PLANS = [

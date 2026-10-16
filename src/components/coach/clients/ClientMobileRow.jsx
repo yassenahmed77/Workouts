@@ -20,7 +20,7 @@ export function ClientMobileRow({
   return (
     <div
       onClick={() => onSelectDetails(trainee, 'overview')}
-      className="flex items-center justify-between p-2.5 rounded-2xl bg-[var(--card-bg)] hover:bg-[var(--card-bg-hover)] border border-[var(--card-border)] hover:border-white/20 transition-all cursor-pointer shadow-sm active:scale-[0.99] gap-2.5"
+      className="flex items-center justify-between p-2 min-[380px]:p-2.5 rounded-2xl bg-[var(--card-bg)] hover:bg-[var(--card-bg-hover)] border border-[var(--card-border)] hover:border-white/20 transition-all cursor-pointer shadow-sm active:scale-[0.99] gap-2 min-[380px]:gap-2.5"
     >
       {/* الصورة الرمزية */}
       <div className="relative shrink-0">
@@ -28,10 +28,10 @@ export function ClientMobileRow({
           <img
             src={trainee.avatarUrl}
             alt={trainee.name}
-            className="w-10 h-10 rounded-full object-cover border border-[var(--card-border)]"
+            className="w-9 h-9 min-[380px]:w-10 min-[380px]:h-10 rounded-full object-cover border border-[var(--card-border)]"
           />
         ) : (
-          <div className="w-10 h-10 rounded-full bg-[var(--card-subtle-bg)] text-slate-300 border border-[var(--card-border)] font-mono text-xs font-semibold flex items-center justify-center">
+          <div className="w-9 h-9 min-[380px]:w-10 min-[380px]:h-10 rounded-full bg-[var(--card-subtle-bg)] text-slate-300 border border-[var(--card-border)] font-mono text-xs font-semibold flex items-center justify-center">
             {trainee.avatarText}
           </div>
         )}
@@ -49,9 +49,15 @@ export function ClientMobileRow({
               title={`${attention.label}${attention.timeframe ? ` • ${attention.timeframe}` : ''}`}
             />
           )}
-          <span className="ml-auto mr-1 text-[10px] font-mono text-slate-400 shrink-0">
-            {membershipBadge.label}
-          </span>
+          {membershipBadge?.label && (
+            <span
+              className={`inline-flex items-center px-1.5 py-0.5 rounded-md text-[9.5px] font-mono font-medium border leading-none shrink-0 ${
+                membershipBadge.pillClass || 'bg-white/[0.06] text-slate-300 border-white/10'
+              }`}
+            >
+              {membershipBadge.label}
+            </span>
+          )}
         </div>
 
         {/* سطر الإحصائيات المصغرة */}

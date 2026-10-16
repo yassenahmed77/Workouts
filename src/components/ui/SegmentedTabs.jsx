@@ -15,7 +15,7 @@ export function SegmentedTabs({ items, value, onChange, className = '', buttonCl
     const getActiveStyles = () => {
         switch (variant) {
             case 'blue':
-                return 'bg-[var(--main-color)]/15 text-[var(--main-color)] border-[var(--main-color)]/35 shadow-sm font-bold';
+                return 'bg-[var(--main-color)] text-white border-[var(--main-color)] shadow-md shadow-[var(--main-color)]/25 font-bold';
             case 'glass':
                 return 'bg-white/[0.12] text-white border-white/20 shadow-sm font-bold';
             case 'solid-white':
@@ -61,9 +61,15 @@ export function SegmentedTabs({ items, value, onChange, className = '', buttonCl
                 ({tab.count})
               </span>)}
 
-            {tab.badge !== undefined && Boolean(tab.badge) && (<span className="px-1.5 py-0.2 rounded-full bg-[var(--main-color)]/15 text-[var(--main-color)] text-[9.5px] font-mono font-bold border border-[var(--main-color)]/30 flex-shrink-0">
+            {tab.badge !== undefined && Boolean(tab.badge) && (
+              <span className={`px-1.5 py-0.2 rounded-full text-[9.5px] font-mono font-bold flex-shrink-0 ${
+                isSelected
+                  ? 'bg-white text-[var(--main-color)] shadow-xs'
+                  : 'bg-[var(--main-color)]/15 text-[var(--main-color)] border border-[var(--main-color)]/30'
+              }`}>
                 {tab.badge}
-              </span>)}
+              </span>
+            )}
           </button>);
         })}
     </div>);

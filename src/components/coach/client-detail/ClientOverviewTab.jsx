@@ -84,6 +84,7 @@ export const ClientOverviewTab = ({
               setWeekOffset={overview.setWeekOffset}
               onSelectDate={overview.selectDateFromCalendar}
               assignedDiet={assignedDiet}
+              clientCheckIns={clientCheckIns}
               onNavigateSubTab={onNavigateSubTab}
               onOpenWeeklySessions={() => setIsWeeklySessionsOpen(true)}
               onOpenNutritionModal={() => setIsNutritionModalOpen(true)}
@@ -166,6 +167,7 @@ export const ClientOverviewTab = ({
           setWeekOffset={overview.setWeekOffset}
           onSelectDate={overview.selectDateFromCalendar}
           assignedDiet={assignedDiet}
+          clientCheckIns={clientCheckIns}
           onNavigateSubTab={onNavigateSubTab}
           onOpenWeeklySessions={() => setIsWeeklySessionsOpen(true)}
           onOpenNutritionModal={() => setIsNutritionModalOpen(true)}

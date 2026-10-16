@@ -20,12 +20,12 @@ export const HealthStatusPulseTile = ({
   const readinessSegments = hasActiveInjury ? 1 : hasWarning ? 3 : 5;
 
   return (
-    <div className="bg-[var(--card-bg)]/90 backdrop-blur-md border border-white/[0.07] hover:border-white/[0.15] rounded-2xl p-2.5 flex flex-col justify-between shadow-md h-full select-none group transition-all">
+    <div className="bg-[var(--card-bg)]/90 backdrop-blur-md border border-white/[0.07] hover:border-white/[0.15] rounded-2xl p-2 min-[390px]:p-2.5 flex flex-col justify-between shadow-md h-full select-none group transition-all">
       {/* 1. Header: Single-Word Label 'HEALTH' + Cohesive Status Badge */}
-      <div className="flex items-center justify-between gap-1 text-[9px] font-mono pb-1 border-b border-white/[0.05] flex-shrink-0">
+      <div className="flex items-center justify-between gap-1 text-[8.5px] min-[390px]:text-[9px] font-mono pb-1 border-b border-white/[0.05] flex-shrink-0">
         <span className="font-semibold text-slate-400 tracking-wider uppercase">HEALTH</span>
         <span
-          className={`px-1.5 py-0.5 rounded-md text-[8px] font-bold whitespace-nowrap ${
+          className={`px-1.5 py-0.5 rounded-md text-[7.5px] min-[390px]:text-[8px] font-bold whitespace-nowrap ${
             hasActiveInjury
               ? 'bg-rose-500/15 text-rose-300 border border-rose-500/25'
               : hasWarning
@@ -38,10 +38,10 @@ export const HealthStatusPulseTile = ({
       </div>
 
       {/* 2. Hero Headline Status */}
-      <div className="my-1 flex flex-col gap-0.5 flex-shrink-0 font-mono sm:items-center sm:text-center">
+      <div className="my-0.5 min-[390px]:my-1 flex flex-col gap-0.5 flex-shrink-0 font-mono sm:items-center sm:text-center">
         <div className="flex items-baseline justify-between sm:justify-center sm:gap-2 w-full">
           <span
-            className={`text-base font-bold tracking-tight ${
+            className={`text-sm min-[390px]:text-base font-bold tracking-tight ${
               hasActiveInjury
                 ? 'text-rose-400'
                 : hasWarning
@@ -51,19 +51,19 @@ export const HealthStatusPulseTile = ({
           >
             {hasActiveInjury ? 'Injury Flag' : hasWarning ? 'Caution' : '100% Fit'}
           </span>
-          <span className="text-[8px] text-slate-500 uppercase tracking-wider">
+          <span className="text-[7.5px] min-[390px]:text-[8px] text-slate-500 uppercase tracking-wider">
             {hasActiveInjury ? 'Review' : 'Healthy'}
           </span>
         </div>
 
-        <span className="text-[8.5px] text-slate-400 truncate sm:text-center">
+        <span className="text-[8px] min-[390px]:text-[8.5px] text-slate-400 truncate sm:text-center">
           {attention?.timeframe || 'Zero injury flags'}
         </span>
       </div>
 
-      {/* 3. 5-Segment Volume Capacity Gauge (Harmonious & Sleek) */}
-      <div className="bg-white/[0.02] border border-white/[0.05] rounded-xl p-2 flex flex-col justify-between flex-1 min-h-[58px] sm:min-h-[72px] my-1">
-        <div className="flex items-center justify-between text-[7.5px] font-mono text-slate-400">
+      {/* 3. 5-Segment Volume Capacity Gauge (Fluid & Sleek) */}
+      <div className="bg-white/[0.02] border border-white/[0.05] rounded-lg min-[390px]:rounded-xl p-1.5 min-[390px]:p-2 flex flex-col justify-between flex-1 min-h-0 my-0.5 min-[390px]:my-1">
+        <div className="flex items-center justify-between text-[7px] min-[390px]:text-[7.5px] font-mono text-slate-400">
           <span className="uppercase tracking-wider">Load Capacity</span>
           <span className={`font-bold ${hasActiveInjury ? 'text-rose-400' : 'text-emerald-400'}`}>
             {readinessSegments * 20}%
@@ -71,7 +71,7 @@ export const HealthStatusPulseTile = ({
         </div>
 
         {/* 5 Sleek Capacity Bars */}
-        <div className="grid grid-cols-5 gap-1 my-auto">
+        <div className="grid grid-cols-5 gap-0.5 min-[390px]:gap-1 my-auto">
           {[1, 2, 3, 4, 5].map((seg) => {
             const isActive = seg <= readinessSegments;
             const barClass = isActive
@@ -91,7 +91,7 @@ export const HealthStatusPulseTile = ({
           })}
         </div>
 
-        <span className="text-[7.5px] font-mono text-slate-500 block truncate">
+        <span className="text-[7px] min-[390px]:text-[7.5px] font-mono text-slate-500 block truncate">
           {hasActiveInjury ? 'Deload recommended' : 'High volume tolerance ready'}
         </span>
       </div>

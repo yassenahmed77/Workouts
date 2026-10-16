@@ -27,8 +27,10 @@ export const PhotoComparisonModal = ({ client, checkIns, isOpen, onClose }) => {
     const weightDelta = baselineCheckIn && latestCheckIn
         ? Math.round((latestCheckIn.weightKg - baselineCheckIn.weightKg) * 10) / 10
         : 0;
-    const waistDelta = baselineCheckIn?.measurements?.waistCm && latestCheckIn?.measurements?.waistCm
-        ? Math.round((latestCheckIn.measurements.waistCm - baselineCheckIn.measurements.waistCm) * 10) / 10
+    const bfBaseline = baselineCheckIn?.inBody?.bodyFatPct ?? baselineCheckIn?.measurements?.bodyFatPercentage;
+    const bfLatest = latestCheckIn?.inBody?.bodyFatPct ?? latestCheckIn?.measurements?.bodyFatPercentage;
+    const bodyFatDelta = bfBaseline && bfLatest
+        ? Math.round((bfLatest - bfBaseline) * 10) / 10
         : null;
     return (<div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/85 backdrop-blur-sm animate-in fade-in duration-200 select-none" onClick={(e) => {
             if (e.target === e.currentTarget)
@@ -87,8 +89,8 @@ export const PhotoComparisonModal = ({ client, checkIns, isOpen, onClose }) => {
             <span className="text-slate-400">
               Weight: <strong className="text-white font-medium">{weightDelta > 0 ? `+${weightDelta}` : weightDelta} kg</strong>
             </span>
-            {waistDelta !== null && (<span className="text-slate-400">
-                Waist: <strong className="text-white font-medium">{waistDelta > 0 ? `+${waistDelta}` : waistDelta} cm</strong>
+            {bodyFatDelta !== null && (<span className="text-slate-400">
+                Body Fat: <strong className="text-white font-medium">{bodyFatDelta > 0 ? `+${bodyFatDelta}` : bodyFatDelta}%</strong>
               </span>)}
           </div>
         </div>

@@ -83,3 +83,71 @@ To keep our execution structured and avoid any confusion:
    - Connect PostgreSQL tables according to [`BACKEND_WIRING_AND_BUGS_CHECKLIST.md`](file:///d:/gym/BACKEND_WIRING_AND_BUGS_CHECKLIST.md).
    - Hook up Cloudflare R2 pre-signed uploads.
    - Run complete end-to-end integration tests.
+
+---
+
+## 📬 5. Check-In Lifecycle Contract: Coach Prompt ➔ Trainee Action ➔ Coach Feedback
+
+This is the exact contract governing how Check-In prompts move from the Coach to the Athlete's screen, how notifications trigger, and how the feedback loop closes:
+
+```
+┌────────────────────────────────────────────────────────────────────────────────────────┐
+│                        THE 4-STAGE CHECK-IN LIFECYCLE CONTRACT                         │
+│                                                                                        │
+│  [1. COACH DISPATCH]                                                                   │
+│  Coach clicks [+ Request Check-In] (or Recurring Schedule triggers, e.g. Friday)        │
+│  Sets Scope (Scale, Photos, Tape), Due Date (Immediate vs Custom), and Directives.     │
+│  Payload: `client.pendingCheckInRequest = { status: 'pending', dueDate, scope, notes }`│
+│                                           │                                            │
+│                                           ▼                                            │
+│  [2. TRAINEE DISCOVERY & NOTIFICATION]                                                 │
+│  A. Trainee Dashboard Hero Banner: High-priority ambient banner                        │
+│     "Coach Audit Requested • Due [Date]" with Scope Chips & Coach Directive Quote      │
+│  B. Trainee Calendar Strip: Glowing check-in pip on target due date                   │
+│  C. Notification Bell: Unread badge + action prompt                                    │
+│  D. External Reminder: 1-Tap WhatsApp deep-link message with direct prompt             │
+│                                           │                                            │
+│                                           ▼                                            │
+│  [3. TRAINEE LOGGING EXPERIENCE]                                                       │
+│  Athlete taps banner to open `TraineeCheckInModal.jsx`:                                │
+│  - Step 1: Scale Weight (fasted morning entry)                                         │
+│  - Step 2: 3 Physique Photos (Front, Side, Back with silhouette guides)                │
+│  - Step 3: Girth Tape Measurements (Waist, Chest, Arms, Hips)                          │
+│  - Step 4: Bio-metrics (Energy, Sleep, Hunger) + Athlete Notes                         │
+│  On Submit: Saves to `checkIns`, sets `reviewed: false`, clears `pendingRequest`.      │
+│                                           │                                            │
+│                                           ▼                                            │
+│  [4. COACH REVIEW & CLOSED LOOP]                                                       │
+│  Coach Cockpit instantly reflects `NEW CHECK-IN` (amber pulse)                         │
+│  Coach audits delta, compares photos side-by-side, inputs directives                   │
+│  Coach clicks [Save & Mark Reviewed ✓] + [Send via WhatsApp 💬]                        │
+│  Trainee Dashboard renders "Coach Feedback Card" with direct directives.              │
+└────────────────────────────────────────────────────────────────────────────────────────┘
+```
+
+### Detailed Component Specifications for Trainee Side:
+
+1. **`TraineeCheckInBanner.jsx` (Placement: `TraineeDashboard.jsx` top hero zone)**
+   - **Trigger Conditions:**
+     - `client.pendingCheckInRequest?.status === 'pending'` (Urgent Cyan/Amber style)
+     - OR `checkInService.calculateCheckInTelemetry(client).daysUntilDue === 0` (Due Today Friday style)
+   - **Content:**
+     - Headline: `"Action Required: Weekly Check-In Due"`
+     - Subline: `"Coach [Name] requested progress audit"`
+     - Directive Quote: Displays coach's custom instruction (e.g., *"Weigh in morning fasted after bathroom"*).
+     - Required Scope Badges: `[⚖️ Weight]` `[📷 3 Photos]` `[📐 Girth Tape]`
+     - CTA Button: `[Complete Check-In Now &rarr;]` -> opens `TraineeCheckInModal.jsx`.
+
+2. **`TraineeCheckInModal.jsx` (Trainee Input Studio)**
+   - Zero-friction multi-step modal with offline draft recovery:
+     - **Step 1 (Scale):** Fasted body weight input with decimal precision.
+     - **Step 2 (Visuals):** 3-angle photo uploader with preview & camera capture.
+     - **Step 3 (Girth):** Waist at navel, chest relaxed, arms flexed, hips widest.
+     - **Step 4 (Bio-Feedback):** Energy (1-5), Sleep Quality (1-5), Hunger (1-5) + personal reflection note.
+   - **Dispatch:** Calls `addCheckIn(payload)` -> sets `reviewed: false`, updates user profile `weightKg` & `lastCheckInDate`, and clears `pendingCheckInRequest`.
+
+3. **`CheckInFeedbackCard.jsx` (Placement: Trainee Feed / Check-In History)**
+   - Renders coach's latest critique when `latestCheckIn.reviewed === true`:
+     - Badge: `Reviewed by Coach on [Date] ✓`
+     - Coach Directives block with verified badge.
+     - Key metrics summary: weight delta, visual comparison thumbnail.
